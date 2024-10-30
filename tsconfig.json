@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-        "target": "ES6",
-        "module": "CommonJS",
+        "target": "ES2015",
+        "module": "ES2020",
+        "moduleResolution": "Node",
         "outDir": "./build",
         "rootDir": "./src",
         "strict": true,
         "esModuleInterop": true,
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    }
 }
