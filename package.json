@@ -1,0 +1,39 @@
+{
+  "name": "todopro",
+  "version": "0.0.1",
+  "description": "To do list generator.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "typescript",
+    "javascript",
+    "html",
+    "css",
+    "supabase",
+    "authentication",
+    "todo-list",
+    "task-manager",
+    "web-development",
+    "backend",
+    "frontend",
+    "fullstack"
+  ],
+  "author": "base",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.46.1",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.8.4",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.6.3"
+  }
+}
