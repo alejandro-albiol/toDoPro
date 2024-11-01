@@ -7,4 +7,8 @@ export class PasswordServices{
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
         return hashedPassword;
     }
+    
+      static async verifyPassword(plainPassword:string, hashedPassword:string) {
+        return await bcrypt.compare(plainPassword, hashedPassword);
+      }
 }
