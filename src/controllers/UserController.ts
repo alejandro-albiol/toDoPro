@@ -1,23 +1,27 @@
+import { User } from '../models/User.js';
 import { UserService } from '../services/UserServices.js';
 
 export class UserController {
 
-  static async newUser(username: string, password: string, email: string): Promise<void> {
+  static async newUser(user:User): Promise<void> {
     try {
-      await UserService.createUser({ username, password, email });
-      console.log(`User ${username} created.`);
+      await UserService.createUser(user);
+      console.log(`User ${user.username} created.`);
     } catch (error) {
       console.error('Error creating user:', error);
     }
   }
 
-  static async checkUserAndPassword(username: string, password: string): Promise<void> {
+  static async checkUserAndPassword(user:User): Promise<boolean> {
     try {
-      const result = await UserService.authenticateUser({ username, password });
-      console.log(result);
-    } catch (error) {
-      console.error('Error authenticating user:', error);
-      throw new Error('Authentication failed');
-    }
+    const result = await UserService.authenticateUser(user);
+    return result
+  }catch{
+    return false
+  }}
+
+  static async sendUserId(user:User):Promise<any>{
+    const result = await UserService.getUserId(user)
+    return result
   }
 }

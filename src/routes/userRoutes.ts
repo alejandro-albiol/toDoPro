@@ -1,12 +1,8 @@
 import { Router } from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import express from 'express';
 import { UserController } from '../controllers/UserController.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { __dirname, __filename } from '../configuration/config.js';
 
 const userRouter = Router();
 
@@ -19,19 +15,25 @@ userRouter.get('/LogIn', (req, res) => {
 });
 
 userRouter.post('/SignIn', async (req: express.Request, res: express.Response) => {
-    const { username, password, email } = req.body;
-    await UserController.newUser(username, password, email);
+    const user = req.body;
+    await UserController.newUser(user);
     res.send('User created successfully.')
 })
 
-userRouter.post('/LogIn', async (req: express.Request, res: express.Response) => {
-    const { username, password } = req.body;
-    try {
-      await UserController.checkUserAndPassword(username, password);
-      res.send(`Welcome ${username}!`);
-    } catch (error) {
-      res.status(401).send(error);
+userRouter.post('/LogIn', async (req, res) => {
+  const user = req.body;
+
+  try {
+    const isAuthenticated = await UserController.checkUserAndPassword(user);
+    if (isAuthenticated) {
+      const userID = await UserController.sendUserId(user)
+      res.redirect(`/tasks/${userID}`);
+    } else {
+      res.status(401).send('Authentication error.');
     }
-  });
+  } catch (error) {
+    res.status(500).send('Internal server error.');
+  }
+});
 
 export default userRouter;
