@@ -5,13 +5,17 @@ Este es mi primer proyecto personal a modo de reto de programación. Para valida
 
 Para probar la aplicación se debe instalar PostgreSQL.
 
+### Creación de la base de datos
+
 A continuación estos son los comandos para crear a base de datos:
 
     ```bash
     -- Crear la base de datos toDoPro
+
     CREATE DATABASE toDoPro;
 
     -- Conectarse a la base de datos toDoPro
+
     \c toDoPro
 
     -- Crear la tabla users
@@ -24,6 +28,7 @@ A continuación estos son los comandos para crear a base de datos:
     );
 
     -- Crear la tabla tasks
+
     CREATE TABLE tasks (
         id SERIAL PRIMARY KEY,
         title VARCHAR(100) NOT NULL,
@@ -59,6 +64,14 @@ A continuación estos son los comandos para crear a base de datos:
     ```
 
 4. Configura las variables de entorno para la conexión a la base de datos en el archivo .env en la raiz del proyecto. Asegúrate de tener la configuración correcta para PostgreSQL.
+
+    ```bash
+    DB_USER=exampleuser    
+    DB_HOST=examplehost
+    DB_NAME=exampledb
+    DB_PASSWORD=examplepassword
+    DB_PORT=exampleport
+    ```
 
 5. Inicia la aplicación:
 
