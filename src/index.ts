@@ -1,21 +1,17 @@
-import express from "express";
-import { app, PORT, publicPath } from "./configuration/config.js";
-import userRouter from "./routes/userRoutes.js";
-import path from "path";
-import tasksRouter from "./routes/taskRouter.js";
+import Express from 'express';
+import { publicPath } from './configuration/config.js';
+import apiRouter from './routes/apiRouter.js';
+import staticRouter from './routes/staticRouter.js';
 
-app.use(express.urlencoded({extended: true}));
+const app = Express();
+const port = 3000;
 
-app.use(express.static(publicPath));
+app.use(Express.urlencoded({extended: true}));
+app.use(Express.static(publicPath));
 
+app.use("/", staticRouter);
+app.use("/api/v1/", apiRouter);
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
-})
-
-app.use("/", userRouter);
-app.use("/", tasksRouter);
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

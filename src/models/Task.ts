@@ -1,6 +1,8 @@
 export interface Task{
 
     id?:string;
-    toDo:string;
+    title:string;
+    description:string;
+    userId?:string;
     
 }
