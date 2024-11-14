@@ -7,28 +7,31 @@ Para probar la aplicación se debe instalar PostgreSQL.
 
 A continuación estos son los comandos para crear a base de datos:
 
--- Crear la base de datos toDoPro
-CREATE DATABASE toDoPro;
+    ```bash
+    -- Crear la base de datos toDoPro
+    CREATE DATABASE toDoPro;
 
--- Conectarse a la base de datos toDoPro
-\c toDoPro
+    -- Conectarse a la base de datos toDoPro
+    \c toDoPro
 
--- Crear la tabla users
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+    -- Crear la tabla users
+    
+    CREATE TABLE users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL
+    );
 
--- Crear la tabla tasks
-CREATE TABLE tasks (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    description TEXT,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+    -- Crear la tabla tasks
+    CREATE TABLE tasks (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(100) NOT NULL,
+        description TEXT,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    ```
 
 
 ### Ejecución de la Aplicación
