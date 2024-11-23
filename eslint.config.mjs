@@ -1,7 +1,8 @@
 // @ts-check
 
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import 'eslint-config-prettier/recom'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -9,16 +10,13 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        project: "./tsconfig.json",
+        project: './tsconfig.json',
         projectService: true,
-        tsconfigRootDir: import.meta.dirname
+        tsconfigRootDir: import.meta.dirname,
       },
-    },
+    }
   },
   {
-    ignores: [
-      "build",
-      "eslint.config.mjs",
-    ]
+    ignores: ['node_modules/*', 'build', 'eslint.config.mjs'],
   }
-);
+)
