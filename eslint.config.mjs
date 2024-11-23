@@ -2,7 +2,6 @@
 
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
-import 'eslint-config-prettier/recom'
 
 export default tseslint.config(
   eslint.configs.recommended,
