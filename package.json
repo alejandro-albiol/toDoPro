@@ -4,6 +4,9 @@
   "description": "To do list generator.",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "start": "tsc && nodemon build/index.js"
   },
   "keywords": [
@@ -33,13 +36,17 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.8.4",
     "@types/pg": "^8.11.10",
+    "eslint": "^9.15.0",
     "nodemon": "^3.1.7",
-    "typescript": "^5.6.3"
+    "prettier": "^3.3.3",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.15.0"
   },
   "type": "module"
 }
