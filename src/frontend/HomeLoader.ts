@@ -23,42 +23,56 @@ class TaskLoader {
         return;
       }
 
-      const response = await fetch(`/api/v1/tasks/${user.id}`);
+      const response = await fetch(`/api/v1/tasks/user/${user.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch tasks');
       }
 
       const result = await response.json();
-      if (!result?.data) {
-        throw new Error('Invalid response format');
-      }
-
-      const tasks: Task[] = JSON.parse(result.data);
       const container = document.getElementById('taskContainer');
       if (!container) {
         throw new Error('Task container not found');
-        return;
       }
 
       container.innerHTML = '';
 
-      if (tasks.length === 0) {
-        container.innerHTML = '<p class="no-tasks">No tasks found</p>';
+      if (result.isSuccess && Array.isArray(result.data) && result.data.length === 0) {
+        container.innerHTML = '<p class="no-tasks">No tasks yet. Create your first task!</p>';
         return;
       }
 
-      tasks.forEach((task) => {
+      if (!result.isSuccess) {
+        container.innerHTML = `<p class="error-message">${result.message}</p>`;
+        return;
+      }
+
+      result.data.forEach((task: Task) => {
         const card = document.createElement('div');
         card.className = `task-card ${task.completed ? 'completed' : ''}`;
         card.innerHTML = this.createTaskCardHTML(task);
+        
+        card.addEventListener('click', (e) => {
+          if (!(e.target as HTMLElement).closest('.task-actions')) {
+            window.location.href = `/tasks/${task.id}`;
+          }
+        });
+        
         container.appendChild(card);
       });
+
+      const profileBtn = document.getElementById('profileBtn');
+      if (profileBtn) {
+        profileBtn.addEventListener('click', () => {
+          window.location.href = `/profile/${user.id}`;
+        });
+      }
     } catch (error) {
       const container = document.getElementById('taskContainer');
       if (container) {
         container.innerHTML =
           '<p class="error-message">Error loading tasks. Please try again later.</p>';
       }
+      console.error('Error loading tasks:', error);
     }
   }
 
