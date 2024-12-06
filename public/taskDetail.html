@@ -3,9 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/taskDetail.css">
+    <script src="/scripts/TaskDetail.js" type="module"></script>
     <title>Task Details</title>
 </head>
 <body>
-    
+    <div class="container">
+        <header>
+            <button id="backBtn" class="back-btn">← Back</button>
+            <h1>Task Details</h1>
+        </header>
+        
+        <form id="taskForm" class="task-form">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <div class="status-group">
+                    <span class="status-label">Created: </span>
+                    <span id="creationDate"></span>
+                </div>
+                <div class="status-group">
+                    <input type="checkbox" id="completed" name="completed">
+                    <label for="completed">Mark as completed</label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="save-btn">Save Changes</button>
+                <button type="button" class="delete-btn">Delete Task</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

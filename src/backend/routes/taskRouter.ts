@@ -1,28 +1,12 @@
 import Express, { Request, Response, NextFunction } from 'express';
 import { TaskController } from '../controllers/TaskController.js';
-import { Task } from '../models/Task.js';
+import { IdValidator } from '../middlewares/IdValidator.js';
 
 const tasksRouter = Express.Router();
 
-tasksRouter.post(
-  '/:userId/newTask',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const taskData = req.body as Task;
-      const result = await TaskController.newTask(taskData, req.params.userId);
-      if (result.isSuccess) {
-        res.status(201).json(result);
-      } else {
-        res.status(400).json(result);
-      }
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
 tasksRouter.get(
-  '/:userId',
+  '/user/:userId',
+  IdValidator.validate('userId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.params.userId;
@@ -39,7 +23,8 @@ tasksRouter.get(
 );
 
 tasksRouter.get(
-  '/id/:taskId',
+  '/detail/:taskId',
+  IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const taskId = req.params.taskId;
@@ -55,12 +40,30 @@ tasksRouter.get(
   },
 );
 
+tasksRouter.post(
+  '/new',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userId, ...taskData } = req.body;
+      const result = await TaskController.newTask(taskData, userId);
+      if (result.isSuccess) {
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 tasksRouter.put(
   '/:taskId',
+  IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const taskId = parseInt(req.params.taskId);
-      const taskData = req.body as Task;
+      const taskData = req.body;
       const result = await TaskController.updateTask(taskId, taskData);
       if (result.isSuccess) {
         res.status(200).json(result);
@@ -75,26 +78,11 @@ tasksRouter.put(
 
 tasksRouter.delete(
   '/:taskId',
+  IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const taskId = req.params.taskId;
       const result = await TaskController.deleteTask(taskId);
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(400).json(result);
-      }
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-tasksRouter.get(
-  '/',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await TaskController.getAllTasks();
       if (result.isSuccess) {
         res.status(200).json(result);
       } else {
@@ -108,6 +96,7 @@ tasksRouter.get(
 
 tasksRouter.patch(
   '/:taskId/complete',
+  IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await TaskController.completeTask(req.params.taskId);
@@ -119,14 +108,6 @@ tasksRouter.patch(
     } catch (error) {
       next(error);
     }
-  },
-);
-
-tasksRouter.use(
-  (error: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-    next(error);
   },
 );
 

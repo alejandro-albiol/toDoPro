@@ -22,31 +22,41 @@ class TaskLoader {
                     window.location.href = '/login';
                     return;
                 }
-                const response = yield fetch(`/api/v1/tasks/${user.id}`);
+                const response = yield fetch(`/api/v1/tasks/user/${user.id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch tasks');
                 }
                 const result = yield response.json();
-                if (!(result === null || result === void 0 ? void 0 : result.data)) {
-                    throw new Error('Invalid response format');
-                }
-                const tasks = JSON.parse(result.data);
                 const container = document.getElementById('taskContainer');
                 if (!container) {
                     throw new Error('Task container not found');
-                    return;
                 }
                 container.innerHTML = '';
-                if (tasks.length === 0) {
-                    container.innerHTML = '<p class="no-tasks">No tasks found</p>';
+                if (result.isSuccess && Array.isArray(result.data) && result.data.length === 0) {
+                    container.innerHTML = '<p class="no-tasks">No tasks yet. Create your first task!</p>';
                     return;
                 }
-                tasks.forEach((task) => {
+                if (!result.isSuccess) {
+                    container.innerHTML = `<p class="error-message">${result.message}</p>`;
+                    return;
+                }
+                result.data.forEach((task) => {
                     const card = document.createElement('div');
                     card.className = `task-card ${task.completed ? 'completed' : ''}`;
                     card.innerHTML = this.createTaskCardHTML(task);
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.task-actions')) {
+                            window.location.href = `/tasks/${task.id}`;
+                        }
+                    });
                     container.appendChild(card);
                 });
+                const profileBtn = document.getElementById('profileBtn');
+                if (profileBtn) {
+                    profileBtn.addEventListener('click', () => {
+                        window.location.href = `/profile/${user.id}`;
+                    });
+                }
             }
             catch (error) {
                 const container = document.getElementById('taskContainer');
@@ -54,6 +64,7 @@ class TaskLoader {
                     container.innerHTML =
                         '<p class="error-message">Error loading tasks. Please try again later.</p>';
                 }
+                console.error('Error loading tasks:', error);
             }
         });
     }
