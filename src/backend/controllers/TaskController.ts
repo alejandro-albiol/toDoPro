@@ -1,86 +1,105 @@
-import { ProcessResult } from '../models/ProcessResult.js';
+import { ProcessResult, SingleTaskResult, TaskListResult, NoDataResult } from '../models/ProcessResult.js';
 import { Task } from '../models/Task.js';
 import { TaskServices } from '../services/TaskServices.js';
 
 export class TaskController {
-  static async newTask(task: Task, userId: string): Promise<ProcessResult> {
+  static async newTask(task: Task, userId: string): Promise<NoDataResult> {
     try {
-      const result = await TaskServices.createTask(task, userId);
-      return result;
+      return await TaskServices.createTask(task, userId);
     } catch (error) {
       console.error('Error creating task.', error);
       return { isSuccess: false, message: 'Error creating task.' };
     }
   }
 
-  static async getTaskById(id: string): Promise<ProcessResult> {
+  static async getTaskById(taskId: string): Promise<SingleTaskResult> {
     try {
-      const result = await TaskServices.getTaskById(id);
-      return result;
+      return await TaskServices.getTaskById(taskId);
     } catch (error) {
-      console.error('Error retrieving task by ID:', error);
-      return { isSuccess: false, message: 'Error retrieving task by ID.' };
+      console.error('Error in getTaskById:', error);
+      return {
+        isSuccess: false,
+        message: "Error retrieving task",
+        data: null
+      };
     }
   }
 
-  static async getAllTasks(): Promise<ProcessResult> {
+  static async getAllTasks(): Promise<TaskListResult> {
     try {
-      const result = await TaskServices.getAllTasks();
-      return result;
+      return await TaskServices.getAllTasks();
     } catch (error) {
       console.error('Error retrieving all tasks:', error);
-      return { isSuccess: false, message: 'Error retrieving all tasks.' };
+      return { 
+        isSuccess: false, 
+        message: 'Error retrieving all tasks.',
+        data: null
+      };
     }
   }
 
-  static async updateTask(taskId: number, task: Task): Promise<ProcessResult> {
+  static async updateTask(taskId: number, task: Task): Promise<SingleTaskResult> {
     try {
       if (!taskId) {
-        return { isSuccess: false, message: 'Task ID is required.' };
+        return { 
+          isSuccess: false, 
+          message: 'Task ID is required.',
+          data: null
+        };
       }
-      const result = await TaskServices.updateTask(taskId, task);
-      return result;
+      return await TaskServices.updateTask(taskId, task);
     } catch (error) {
       console.error('Error updating task:', error);
-      return { isSuccess: false, message: 'Error updating task.' };
+      return { 
+        isSuccess: false, 
+        message: 'Error updating task.',
+        data: null
+      };
     }
   }
 
-  static async deleteTask(taskId: string): Promise<ProcessResult> {
+  static async deleteTask(taskId: string): Promise<NoDataResult> {
     try {
       if (!taskId) {
         return { isSuccess: false, message: 'Task ID is required.' };
       }
-      const result = await TaskServices.deleteTask(taskId);
-      return result;
+      return await TaskServices.deleteTask(taskId);
     } catch (error) {
       console.error('Error deleting task:', error);
       return { isSuccess: false, message: 'Error deleting task.' };
     }
   }
-  static async getTasksByUserId(userId: string): Promise<ProcessResult> {
+
+  static async getTasksByUserId(userId: string): Promise<TaskListResult> {
     try {
-      const result = await TaskServices.getTasksByUserId(userId);
-      return result;
+      return await TaskServices.getTasksByUserId(userId);
     } catch (error) {
       console.error('Error retrieving tasks by user ID:', error);
       return {
         isSuccess: false,
         message: 'Error retrieving tasks by user ID.',
+        data: null
       };
     }
   }
 
-  static async completeTask(taskId: string): Promise<ProcessResult> {
+  static async completeTask(taskId: string): Promise<SingleTaskResult> {
     try {
       if (!taskId) {
-        return { isSuccess: false, message: 'Task ID is required.' };
+        return { 
+          isSuccess: false, 
+          message: 'Task ID is required.',
+          data: null
+        };
       }
-      const result = await TaskServices.toggleTaskComplete(taskId);
-      return result;
+      return await TaskServices.toggleTaskComplete(taskId);
     } catch (error) {
       console.error('Error completing task:', error);
-      return { isSuccess: false, message: 'Error completing task.' };
+      return { 
+        isSuccess: false, 
+        message: 'Error completing task.',
+        data: null
+      };
     }
   }
 }

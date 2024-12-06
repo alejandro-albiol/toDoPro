@@ -1,10 +1,10 @@
 import pool from '../configuration/configDataBase.js';
-import { ProcessResult } from '../models/ProcessResult.js';
+import { SingleUserResult, UserListResult, NoDataResult } from '../models/ProcessResult.js';
 import { User } from '../models/User.js';
 import { PasswordServices } from './PasswordServices.js';
 
 export class UserService {
-  static async createUser(data: User): Promise<ProcessResult> {
+  static async createUser(data: User): Promise<NoDataResult> {
     try {
       const hashedPassword = await PasswordServices.hashPassword(data.password);
       const result = await pool.query(
@@ -14,46 +14,28 @@ export class UserService {
 
       if (result.rows.length === 0) {
         return { isSuccess: false, message: 'Failed to create user.' };
-      } else {
-        return { isSuccess: true, message: 'User created successfully.' };
       }
-    } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        error.message.includes('duplicate key value')
-      ) {
-        return {
-          isSuccess: false,
-          message: `Error creating user: ${error.message}`,
-        };
-      }
-      return {
-        isSuccess: false,
-        message: `Error creating user: ${(error as Error).message}`,
-      };
-    }
-  }
-
-  static async deleteUser(userId: string): Promise<ProcessResult> {
-    try {
-      const result = await pool.query(`DELETE FROM users WHERE id = $1`, [
-        userId,
-      ]);
-
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Failed to delete user.' };
-      } else {
-        return { isSuccess: true, message: `User with ID ${userId} deleted.` };
-      }
+      return { isSuccess: true, message: 'User created successfully.' };
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error deleting user: ${(error as Error).message}`,
-      };
+      if (error instanceof Error && error.message.includes('duplicate key value')) {
+        return { isSuccess: false, message: `Error creating user: ${error.message}` };
+      }
+      return { isSuccess: false, message: `Error creating user: ${(error as Error).message}` };
     }
   }
 
-  static async authenticateUser(inputUser: User): Promise<ProcessResult> {
+  static async deleteUser(userId: string): Promise<NoDataResult> {
+    try {
+      const result = await pool.query(`DELETE FROM users WHERE id = $1`, [userId]);
+      return result.rows.length === 0
+        ? { isSuccess: false, message: 'Failed to delete user.' }
+        : { isSuccess: true, message: `User with ID ${userId} deleted.` };
+    } catch (error) {
+      return { isSuccess: false, message: `Error deleting user: ${(error as Error).message}` };
+    }
+  }
+
+  static async authenticateUser(inputUser: User): Promise<SingleUserResult> {
     try {
       const result = await pool.query(
         `SELECT id, username, email, password FROM users WHERE username = $1`,
@@ -61,7 +43,7 @@ export class UserService {
       );
 
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'User not found.' };
+        return { isSuccess: false, message: 'User not found.', data: null };
       }
 
       const user = result.rows[0];
@@ -71,11 +53,10 @@ export class UserService {
       );
 
       if (!isPasswordValid) {
-        return { isSuccess: false, message: 'Invalid password' };
+        return { isSuccess: false, message: 'Invalid password', data: null };
       }
 
       const { password, ...userWithoutPassword } = user;
-
       return {
         isSuccess: true,
         message: 'Authentication successful',
@@ -85,95 +66,55 @@ export class UserService {
       return {
         isSuccess: false,
         message: `Error authenticating user: ${(error as Error).message}`,
+        data: null,
       };
     }
   }
 
-  static async getUserId(inputUser: User) {
+  static async getUserById(id: string): Promise<SingleUserResult> {
     try {
-      const result = await pool.query(
-        `SELECT id FROM users WHERE username = $1`,
-        [inputUser.username],
-      );
-
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'User not found' };
-      } else {
-        const user = result.rows[0] as User;
-        return {
-          isSuccess: true,
-          message: 'User ID retrieved.',
-          result: JSON.stringify(user.id),
-        };
-      }
-    } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error retrieving user ID: ${(error as Error).message}`,
-      };
-    }
-  }
-
-  static async getUserById(id: string): Promise<ProcessResult> {
-    try {
-      const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [
-        id,
-      ]);
-
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'User not found' };
-      } else {
-        return {
-          isSuccess: true,
-          message: 'User retrieved successfully.',
-          data: JSON.stringify(result.rows[0]),
-        };
-      }
+      const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
+      return result.rows.length === 0
+        ? { isSuccess: false, message: 'User not found', data: null }
+        : { isSuccess: true, message: 'User retrieved successfully.', data: result.rows[0] };
     } catch (error) {
       return {
         isSuccess: false,
         message: `Error retrieving user by ID: ${(error as Error).message}`,
+        data: null,
       };
     }
   }
 
-  static async getAllUsers(): Promise<ProcessResult> {
+  static async getAllUsers(): Promise<UserListResult> {
     try {
       const result = await pool.query(`SELECT * FROM users`);
-
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'No users found.' };
-      } else {
-        return {
-          isSuccess: true,
-          message: 'Users retrieved successfully.',
-          data: JSON.stringify(result.rows),
-        };
-      }
+      return result.rows.length === 0
+        ? { isSuccess: false, message: 'No users found.', data: null }
+        : { isSuccess: true, message: 'Users retrieved successfully.', data: result.rows };
     } catch (error) {
       return {
         isSuccess: false,
         message: `Error retrieving users: ${(error as Error).message}`,
+        data: null,
       };
     }
   }
 
-  static async updateUser(data: User): Promise<ProcessResult> {
+  static async updateUser(data: User): Promise<SingleUserResult> {
     try {
       const result = await pool.query(
         `UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING *`,
         [data.username, data.email, data.id],
       );
-
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Failed to update user.' };
-      } else {
-        return { isSuccess: true, message: 'User updated successfully.' };
-      }
+      return result.rows.length === 0
+        ? { isSuccess: false, message: 'Failed to update user.', data: null }
+        : { isSuccess: true, message: 'User updated successfully.', data: result.rows[0] };
     } catch (error) {
       return {
         isSuccess: false,
         message: `Error updating user: ${(error as Error).message}`,
+        data: null,
       };
     }
   }
