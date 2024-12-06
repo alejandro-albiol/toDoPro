@@ -49,6 +49,7 @@ class TaskLoader {
       result.data.forEach((task: Task) => {
         const card = document.createElement('div');
         card.className = `task-card ${task.completed ? 'completed' : ''}`;
+        card.setAttribute('data-task-id', task.id.toString());
         card.innerHTML = this.createTaskCardHTML(task);
         
         card.addEventListener('click', (e) => {
@@ -78,22 +79,68 @@ class TaskLoader {
 
   private static createTaskCardHTML(task: Task): string {
     const creationDate = new Date(task.creation_date).toLocaleDateString();
-    const completionDate = task.completed_at
-      ? new Date(task.completed_at).toLocaleDateString()
-      : '';
+    const completionDate = task.completed_at 
+        ? new Date(task.completed_at).toLocaleDateString()
+        : '';
 
     return `
-            <h3>${this.escapeHtml(task.title)}</h3>
-            <p>${this.escapeHtml(task.description)}</p>
-            <p>Created: ${creationDate}</p>
-            <div class="task-actions">
-                <button class="complete-btn" data-task-id="${task.id}">
-                    ${task.completed ? 'Completed' : 'Complete'}
-                </button>
-                <button class="delete-btn" data-task-id="${task.id}">Delete</button>
-            </div>
-            ${task.completed ? `<p class="completion-date">Completed on: ${completionDate}</p>` : ''}
-        `;
+        <h3>${this.escapeHtml(task.title)}</h3>
+        <p>${this.escapeHtml(task.description)}</p>
+        <p>Created: ${creationDate}</p>
+        <div class="task-actions">
+            <button class="complete-btn" data-task-id="${task.id}">
+                ${task.completed ? 'Completed' : 'Complete'}
+            </button>
+            <button class="delete-btn" data-task-id="${task.id}">Delete</button>
+        </div>
+        ${task.completed && completionDate ? `<p class="completion-date">Completed on: ${completionDate}</p>` : ''}
+    `;
+  }
+
+  static async completeTask(taskId: number): Promise<void> {
+    const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
+    if (!taskCard) return;
+
+    const response = await fetch(`/api/v1/tasks/${taskId}/toggle-completion`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const task = result.data;
+      
+      if (task.completed) {
+        // Marcar como completada
+        taskCard.classList.add('completed');
+        const completeBtn = taskCard.querySelector('.complete-btn');
+        if (completeBtn) {
+          completeBtn.textContent = 'Completed';
+        }
+        
+        if (task.completed_at) {
+          const completionDate = new Date(task.completed_at).toLocaleDateString();
+          const dateElement = document.createElement('p');
+          dateElement.className = 'completion-date';
+          dateElement.textContent = `Completed on: ${completionDate}`;
+          taskCard.appendChild(dateElement);
+        }
+      } else {
+        // Desmarcar como completada
+        taskCard.classList.remove('completed');
+        const completeBtn = taskCard.querySelector('.complete-btn');
+        if (completeBtn) {
+          completeBtn.textContent = 'Complete';
+        }
+        // Eliminar la fecha de completado
+        const completionDate = taskCard.querySelector('.completion-date');
+        if (completionDate) {
+          completionDate.remove();
+        }
+      }
+    }
   }
 
   private static escapeHtml(unsafe: string): string {
@@ -108,4 +155,16 @@ class TaskLoader {
 
 window.addEventListener('load', () => {
   void TaskLoader.loadTasks();
+});
+
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement;
+  if (target.classList.contains('complete-btn')) {
+    const taskId = target.getAttribute('data-task-id');
+    if (taskId) {
+      void TaskLoader.completeTask(parseInt(taskId));
+    } else {
+      console.error('Task ID not found');
+    }
+  }
 });

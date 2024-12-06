@@ -103,7 +103,7 @@ export class TaskServices {
     try {
       const result = await pool.query(
         `SELECT id, title, description, completed, 
-                creation_date, user_id 
+                creation_date, completed_at, user_id 
          FROM tasks 
          WHERE user_id = $1 
          ORDER BY completed ASC, creation_date DESC`,

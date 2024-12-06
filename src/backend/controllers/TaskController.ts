@@ -83,7 +83,7 @@ export class TaskController {
     }
   }
 
-  static async completeTask(taskId: string): Promise<SingleTaskResult> {
+  static async toggleCompletion(taskId: string): Promise<SingleTaskResult> {
     try {
       if (!taskId) {
         return { 

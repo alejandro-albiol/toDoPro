@@ -95,11 +95,11 @@ tasksRouter.delete(
 );
 
 tasksRouter.patch(
-  '/:taskId/complete',
+  '/:taskId/toggle-completion',
   IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await TaskController.completeTask(req.params.taskId);
+      const result = await TaskController.toggleCompletion(req.params.taskId);
       if (result.isSuccess) {
         res.status(200).json(result);
       } else {
