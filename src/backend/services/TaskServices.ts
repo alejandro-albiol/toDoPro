@@ -29,8 +29,8 @@ export class TaskServices {
         taskId,
       ]);
 
-      if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Failed to delete task.' };
+      if (result.rowCount === 0) {
+        return { isSuccess: false, message: 'Task not found.' };
       } else {
         return { isSuccess: true, message: `Task with ID ${taskId} deleted.` };
       }

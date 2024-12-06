@@ -113,7 +113,6 @@ class TaskLoader {
       const task = result.data;
       
       if (task.completed) {
-        // Marcar como completada
         taskCard.classList.add('completed');
         const completeBtn = taskCard.querySelector('.complete-btn');
         if (completeBtn) {
@@ -128,18 +127,28 @@ class TaskLoader {
           taskCard.appendChild(dateElement);
         }
       } else {
-        // Desmarcar como completada
         taskCard.classList.remove('completed');
         const completeBtn = taskCard.querySelector('.complete-btn');
         if (completeBtn) {
           completeBtn.textContent = 'Complete';
         }
-        // Eliminar la fecha de completado
         const completionDate = taskCard.querySelector('.completion-date');
         if (completionDate) {
           completionDate.remove();
         }
       }
+    }
+  }
+
+  static async deleteTask(taskId: number): Promise<void> {
+    const response = await fetch(`/api/v1/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      await TaskLoader.loadTasks();
+    } else {
+      console.error('Error deleting task:', response.statusText);
     }
   }
 
@@ -165,6 +174,18 @@ document.addEventListener('click', (e) => {
       void TaskLoader.completeTask(parseInt(taskId));
     } else {
       console.error('Task ID not found');
+    }
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement;
+  if (target.classList.contains('delete-btn')) {
+    const taskId = target.getAttribute('data-task-id');
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      if (taskId) {
+        void TaskLoader.deleteTask(parseInt(taskId));
+      }
     }
   }
 });

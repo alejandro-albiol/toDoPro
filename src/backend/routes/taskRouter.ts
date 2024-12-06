@@ -41,10 +41,12 @@ tasksRouter.get(
 );
 
 tasksRouter.post(
-  '/new',
+  '/:userId/new',
+  IdValidator.validate('userId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userId, ...taskData } = req.body;
+      const userId = req.params.userId;
+      const { userId: _, ...taskData } = req.body;
       const result = await TaskController.newTask(taskData, userId);
       if (result.isSuccess) {
         res.status(201).json(result);
@@ -84,7 +86,7 @@ tasksRouter.delete(
       const taskId = req.params.taskId;
       const result = await TaskController.deleteTask(taskId);
       if (result.isSuccess) {
-        res.status(200).json(result);
+        res.status(204).json();
       } else {
         res.status(404).json(result);
       }
