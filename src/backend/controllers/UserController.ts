@@ -3,17 +3,17 @@ import { User } from '../models/User.js';
 import { UserService } from '../services/UserServices.js';
 
 export class UserController {
-
-  static async newUser(user:User): Promise<ProcessResult> {
+  static async newUser(user: User): Promise<ProcessResult> {
     try {
       const result = await UserService.createUser(user);
       return result;
     } catch (error) {
+      console.error('Error creating user', error);
       return { isSuccess: false, message: 'Error creating user.' };
     }
   }
 
-  static async checkUserAndPassword(user:User): Promise<ProcessResult> {
+  static async checkUserAndPassword(user: User): Promise<ProcessResult> {
     try {
       const result = await UserService.authenticateUser(user);
       return result;
@@ -47,7 +47,10 @@ export class UserController {
       return result;
     } catch (error) {
       console.error('Error deleting user:', error);
-      return { isSuccess: false, message: 'Error deleting user.' };
+      return {
+        isSuccess: false,
+        message: 'Error deleting user.',
+      };
     }
   }
 
@@ -57,7 +60,10 @@ export class UserController {
       return result;
     } catch (error) {
       console.error('Error updating user:', error);
-      return { isSuccess: false, message: 'Error updating user.' };
+      return {
+        isSuccess: false,
+        message: 'Error updating user.',
+      };
     }
   }
 }

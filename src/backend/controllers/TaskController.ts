@@ -1,15 +1,14 @@
 import { ProcessResult } from '../models/ProcessResult.js';
 import { Task } from '../models/Task.js';
-import { User } from '../models/User.js';
 import { TaskServices } from '../services/TaskServices.js';
 
 export class TaskController {
-
-  static async newTask(task:Task, userId:string): Promise<ProcessResult> {
+  static async newTask(task: Task, userId: string): Promise<ProcessResult> {
     try {
       const result = await TaskServices.createTask(task, userId);
       return result;
     } catch (error) {
+      console.error('Error creating task.', error);
       return { isSuccess: false, message: 'Error creating task.' };
     }
   }
@@ -65,7 +64,23 @@ export class TaskController {
       return result;
     } catch (error) {
       console.error('Error retrieving tasks by user ID:', error);
-      return { isSuccess: false, message: 'Error retrieving tasks by user ID.' };
+      return {
+        isSuccess: false,
+        message: 'Error retrieving tasks by user ID.',
+      };
+    }
+  }
+
+  static async completeTask(taskId: string): Promise<ProcessResult> {
+    try {
+      if (!taskId) {
+        return { isSuccess: false, message: 'Task ID is required.' };
+      }
+      const result = await TaskServices.toggleTaskComplete(taskId);
+      return result;
+    } catch (error) {
+      console.error('Error completing task:', error);
+      return { isSuccess: false, message: 'Error completing task.' };
     }
   }
 }
