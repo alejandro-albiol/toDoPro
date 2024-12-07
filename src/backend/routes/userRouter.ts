@@ -2,6 +2,7 @@ import Express, { Request, Response, NextFunction } from 'express';
 import { UserController } from '../controllers/UserController.js';
 import { IdValidator } from '../middlewares/IdValidator.js';
 import { UserValidator } from '../middlewares/userValidator.js';
+import { UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO.js';
 
 const userRouter = Express.Router();
 
@@ -72,13 +73,17 @@ userRouter.post(
 );
 
 userRouter.put(
-  '/:userId',
+  '/profile/:userId',
   IdValidator.validate('userId'),
-  UserValidator.validateRegistration(),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = req.body;
-      const result = await UserController.updateUser(user);
+      const updateData: UpdateUserDTO = {
+        id: req.params.userId,
+        username: req.body.username,
+        email: req.body.email
+      };
+      
+      const result = await UserController.updateUser(updateData);
       if (result.isSuccess) {
         res.status(200).json(result);
       } else {
@@ -87,7 +92,29 @@ userRouter.put(
     } catch (error) {
       next(error);
     }
-  },
+  }
+);
+
+userRouter.post(
+  '/change-password/:userId',
+  IdValidator.validate('userId'),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const passwordData: ChangePasswordDTO = {
+        currentPassword: req.body.currentPassword,
+        newPassword: req.body.newPassword
+      };
+      
+      const result = await UserController.changePassword(req.params.userId, passwordData);
+      if (result.isSuccess) {
+        res.status(200).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 userRouter.delete(

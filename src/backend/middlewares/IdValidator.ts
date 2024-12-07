@@ -4,9 +4,10 @@ import { RequestHandler } from 'express-serve-static-core';
 export class IdValidator {
     static validate(paramName: string): RequestHandler {
         return (req: Request, res: Response, next: NextFunction): void => {
-            const id = parseInt(req.params[paramName]);
+            const id = req.params[paramName];
             
-            if (!this.isValidId(id)) {
+            const numericId = parseInt(id);
+            if (!this.isValidId(numericId)) {
                 res.status(400).json({
                     isSuccess: false,
                     message: `Invalid ${paramName} format`,
@@ -15,7 +16,7 @@ export class IdValidator {
                 return;
             }
             
-            req.params[paramName] = id.toString();
+            req.params[paramName] = id;
             next();
         };
     }

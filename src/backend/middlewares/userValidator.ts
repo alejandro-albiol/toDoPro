@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
-import { NoDataResult } from '../models/ProcessResult.js';
+import { NoDataResult } from '../models/responses/ProcessResult.js';
 
 export class UserValidator {
     static validateRegistration(): RequestHandler {

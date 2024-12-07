@@ -1,11 +1,12 @@
-import { SingleUserResult, UserListResult, NoDataResult } from '../models/ProcessResult.js';
-import { User } from '../models/User.js';
+import { SingleUserResult, UserListResult, NoDataResult } from '../models/responses/ProcessResult.js';
+import { User } from '../models/entities/User.js';
+import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO.js';
 import { UserService } from '../services/UserServices.js';
 
 export class UserController {
-  static async newUser(user: User): Promise<NoDataResult> {
+  static async newUser(userData: CreateUserDTO): Promise<NoDataResult> {
     try {
-      return await UserService.createUser(user);
+      return await UserService.createUser(userData);
     } catch (error) {
       console.error('Error creating user', error);
       return { isSuccess: false, message: 'Error creating user.' };
@@ -60,15 +61,27 @@ export class UserController {
     }
   }
 
-  static async updateUser(user: User): Promise<SingleUserResult> {
+  static async updateUser(userData: UpdateUserDTO): Promise<SingleUserResult> {
     try {
-      return await UserService.updateUser(user);
+      return await UserService.updateUser(userData);
     } catch (error) {
       console.error('Error updating user:', error);
       return { 
         isSuccess: false, 
         message: 'Error updating user.',
         data: null
+      };
+    }
+  }
+
+  static async changePassword(userId: string, passwordData: ChangePasswordDTO): Promise<NoDataResult> {
+    try {
+      return await UserService.changePassword(userId, passwordData);
+    } catch (error) {
+      console.error('Error changing password:', error);
+      return { 
+        isSuccess: false, 
+        message: 'Error changing password.'
       };
     }
   }

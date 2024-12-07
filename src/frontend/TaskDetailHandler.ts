@@ -3,7 +3,6 @@ interface Task {
     title: string;
     description: string;
     completed: boolean;
-    creation_date: string;
     completed_at?: string;
     user_id: number;
 }
@@ -76,9 +75,6 @@ class TaskDetail {
         if (titleInput) titleInput.value = this.task.title || '';
         if (descriptionInput) descriptionInput.value = this.task.description || '';
         if (completedInput) completedInput.checked = this.task.completed || false;
-        if (creationDateSpan && this.task.creation_date) {
-            creationDateSpan.textContent = new Date(this.task.creation_date).toLocaleDateString();
-        }
     }
 
     private static setupEventListeners() {

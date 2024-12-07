@@ -1,10 +1,11 @@
 import pool from '../configuration/configDataBase.js';
-import { SingleUserResult, UserListResult, NoDataResult } from '../models/ProcessResult.js';
-import { User } from '../models/User.js';
+import { SingleUserResult, UserListResult, NoDataResult } from '../models/responses/ProcessResult.js';
+import { User } from '../models/entities/User.js';
 import { PasswordServices } from './PasswordServices.js';
+import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO';
 
 export class UserService {
-  static async createUser(data: User): Promise<NoDataResult> {
+  static async createUser(data: CreateUserDTO): Promise<NoDataResult> {
     try {
       const hashedPassword = await PasswordServices.hashPassword(data.password);
       const result = await pool.query(
@@ -101,7 +102,7 @@ export class UserService {
     }
   }
 
-  static async updateUser(data: User): Promise<SingleUserResult> {
+  static async updateUser(data: UpdateUserDTO): Promise<SingleUserResult> {
     try {
       const result = await pool.query(
         `UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING *`,
@@ -115,6 +116,46 @@ export class UserService {
         isSuccess: false,
         message: `Error updating user: ${(error as Error).message}`,
         data: null,
+      };
+    }
+  }
+
+  static async changePassword(userId: string, data: ChangePasswordDTO): Promise<NoDataResult> {
+    try {
+      const userResult = await pool.query(
+        `SELECT password FROM users WHERE id = $1`,
+        [userId]
+      );
+
+      if (userResult.rows.length === 0) {
+        return { isSuccess: false, message: 'User not found.' };
+      }
+
+      const isCurrentPasswordValid = await PasswordServices.verifyPassword(
+        data.currentPassword,
+        userResult.rows[0].password
+      );
+
+      if (!isCurrentPasswordValid) {
+        return { isSuccess: false, message: 'Current password is incorrect.' };
+      }
+
+      const newHashedPassword = await PasswordServices.hashPassword(data.newPassword);
+
+      const updateResult = await pool.query(
+        `UPDATE users SET password = $1 WHERE id = $2`,
+        [newHashedPassword, userId]
+      );
+
+      if (updateResult.rowCount === 0) {
+        return { isSuccess: false, message: 'Failed to update password.' };
+      }
+
+      return { isSuccess: true, message: 'Password updated successfully.' };
+    } catch (error) {
+      return { 
+        isSuccess: false, 
+        message: `Error changing password: ${(error as Error).message}` 
       };
     }
   }

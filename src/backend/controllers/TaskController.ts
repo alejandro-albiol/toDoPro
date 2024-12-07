@@ -1,11 +1,11 @@
-import { ProcessResult, SingleTaskResult, TaskListResult, NoDataResult } from '../models/ProcessResult.js';
-import { Task } from '../models/Task.js';
+import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult.js';
 import { TaskServices } from '../services/TaskServices.js';
+import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
 
 export class TaskController {
-  static async newTask(task: Task, userId: string): Promise<NoDataResult> {
+  static async newTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
     try {
-      return await TaskServices.createTask(task, userId);
+      return await TaskServices.createTask(taskData);
     } catch (error) {
       console.error('Error creating task.', error);
       return { isSuccess: false, message: 'Error creating task.' };
@@ -38,16 +38,16 @@ export class TaskController {
     }
   }
 
-  static async updateTask(taskId: number, task: Task): Promise<SingleTaskResult> {
+  static async updateTask(taskData: UpdateTaskDTO): Promise<SingleTaskResult> {
     try {
-      if (!taskId) {
+      if (!taskData.id) {
         return { 
           isSuccess: false, 
           message: 'Task ID is required.',
           data: null
         };
       }
-      return await TaskServices.updateTask(taskId, task);
+      return await TaskServices.updateTask(taskData);
     } catch (error) {
       console.error('Error updating task:', error);
       return { 

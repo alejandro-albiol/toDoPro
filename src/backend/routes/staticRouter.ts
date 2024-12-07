@@ -24,7 +24,7 @@ staticRouter.get('/tasks/:taskId', (req, res) => {
   res.sendFile(path.join(publicPath, 'taskDetail.html'));
 });
 
-staticRouter.get('/profile', (req, res) => {
+staticRouter.get('/profile/:userId', (req, res) => {
   res.sendFile(path.join(publicPath, 'profile.html'));
 });
 

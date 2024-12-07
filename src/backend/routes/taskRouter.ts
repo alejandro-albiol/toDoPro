@@ -1,6 +1,7 @@
 import Express, { Request, Response, NextFunction } from 'express';
 import { TaskController } from '../controllers/TaskController.js';
 import { IdValidator } from '../middlewares/IdValidator.js';
+import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
 
 const tasksRouter = Express.Router();
 
@@ -45,9 +46,13 @@ tasksRouter.post(
   IdValidator.validate('userId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.params.userId;
-      const { userId: _, ...taskData } = req.body;
-      const result = await TaskController.newTask(taskData, userId);
+      const taskData: CreateTaskDTO = {
+        title: req.body.title,
+        description: req.body.description,
+        user_id: req.params.userId
+      };
+      
+      const result = await TaskController.newTask(taskData);
       if (result.isSuccess) {
         res.status(201).json(result);
       } else {
@@ -64,9 +69,14 @@ tasksRouter.put(
   IdValidator.validate('taskId'),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const taskId = parseInt(req.params.taskId);
-      const taskData = req.body;
-      const result = await TaskController.updateTask(taskId, taskData);
+      const taskData: UpdateTaskDTO = {
+        id: req.params.taskId,
+        title: req.body.title,
+        description: req.body.description,
+        completed: req.body.completed
+      };
+      
+      const result = await TaskController.updateTask(taskData);
       if (result.isSuccess) {
         res.status(200).json(result);
       } else {

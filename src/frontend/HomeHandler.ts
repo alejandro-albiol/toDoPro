@@ -8,7 +8,7 @@ interface Task {
   user_id: number;
 }
 
-class TaskLoader {
+class HomeHandler {
   static async loadTasks() {
     try {
       const userStr = localStorage.getItem('user');
@@ -61,10 +61,16 @@ class TaskLoader {
         container.appendChild(card);
       });
 
-      const profileBtn = document.getElementById('profileBtn');
+      const profileBtn = document.getElementById('profile-button');
       if (profileBtn) {
         profileBtn.addEventListener('click', () => {
-          window.location.href = `/profile/${user.id}`;
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          if (user && user.id) {
+            window.location.href = `/profile/${user.id}`;
+          } else {
+            console.error('No user found in localStorage');
+            window.location.href = '/login';
+          }
         });
       }
     } catch (error) {
@@ -146,7 +152,7 @@ class TaskLoader {
     });
 
     if (response.ok) {
-      await TaskLoader.loadTasks();
+      await this.loadTasks();
     } else {
       console.error('Error deleting task:', response.statusText);
     }
@@ -160,10 +166,26 @@ class TaskLoader {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   }
+
+  static setupEventListeners(): void{
+    const profileButton = document.getElementById('profile-button');
+    
+    if (profileButton) {
+        profileButton.addEventListener('click', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user && user.id) {
+                window.location.href = `/profile/${user.id}`;
+            } else {
+                console.error('No user found in localStorage');
+                window.location.href = '/login';
+            }
+        });
+    }
+  }
 }
 
 window.addEventListener('load', () => {
-  void TaskLoader.loadTasks();
+  void HomeHandler.loadTasks();
 });
 
 document.addEventListener('click', (e) => {
@@ -171,7 +193,7 @@ document.addEventListener('click', (e) => {
   if (target.classList.contains('complete-btn')) {
     const taskId = target.getAttribute('data-task-id');
     if (taskId) {
-      void TaskLoader.completeTask(parseInt(taskId));
+      void HomeHandler.completeTask(parseInt(taskId));
     } else {
       console.error('Task ID not found');
     }
@@ -184,8 +206,12 @@ document.addEventListener('click', (e) => {
     const taskId = target.getAttribute('data-task-id');
     if (window.confirm('Are you sure you want to delete this task?')) {
       if (taskId) {
-        void TaskLoader.deleteTask(parseInt(taskId));
+        void HomeHandler.deleteTask(parseInt(taskId));
       }
     }
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    HomeHandler.setupEventListeners();
 });

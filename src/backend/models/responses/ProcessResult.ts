@@ -1,5 +1,5 @@
-import { Task } from './Task';
-import { User } from './User';
+import { Task } from '../entities/Task';
+import { User } from '../entities/User';
 
 interface BaseProcessResult {
     isSuccess: boolean;

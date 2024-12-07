@@ -1,25 +1,26 @@
-import { Task } from '../models/Task';
-import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/ProcessResult';
+import { Task } from '../models/entities/Task';
+import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO';
+import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult';
 import pool from '../configuration/configDataBase.js';
 
 export class TaskServices {
-  static async createTask(task: Task, userId: string): Promise<NoDataResult> {
+  static async createTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
     try {
       const result = await pool.query(
-        `INSERT INTO tasks (title, description, user_id) VALUES ($1, $2, $3) RETURNING *`,
-        [task.title, task.description, userId],
+        `INSERT INTO tasks (title, description, user_id) 
+         VALUES ($1, $2, $3) RETURNING *`,
+        [taskData.title, taskData.description, taskData.user_id]
       );
 
-      if (result.rows.length === 0) { 
+      if (result.rows.length === 0) {
         return { isSuccess: false, message: 'Failed to create task.' };
-      } else {
-        return { isSuccess: true, message: 'Task created successfully.' };
       }
+      return { isSuccess: true, message: 'Task created successfully.' };
     } catch (error) {
       return {
         isSuccess: false,
-        message: `Error creating task: ${(error as Error).message}`,
-      };
+        message: `Error creating task: ${(error as Error).message
+}`      };
     }
   }
 
@@ -42,16 +43,16 @@ export class TaskServices {
     }
   }
 
-  static async updateTask(taskId: number, task: Task): Promise<SingleTaskResult> {
+  static async updateTask(taskData: UpdateTaskDTO): Promise<SingleTaskResult> {
     try {
       const result = await pool.query(
         `UPDATE tasks 
-         SET title = $1, 
-             description = $2,
-             completed = $3
+         SET title = COALESCE($1, title),
+             description = COALESCE($2, description),
+             completed = COALESCE($3, completed)
          WHERE id = $4 
          RETURNING *`,
-        [task.title, task.description, task.completed, taskId],
+        [taskData.title, taskData.description, taskData.completed, taskData.id]
       );
 
       if (result.rows.length === 0) {
@@ -59,14 +60,14 @@ export class TaskServices {
       }
       return {
         isSuccess: true,
-        message: `Task updated successfully.`,
-        data: result.rows[0],
+        message: 'Task updated successfully.',
+        data: result.rows[0]
       };
     } catch (error) {
       return {
         isSuccess: false,
         message: `Error updating task: ${(error as Error).message}`,
-        data: null,
+        data: null
       };
     }
   }
