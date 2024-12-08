@@ -1,14 +1,8 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES2020",
     "outDir": "./public/scripts",
-    "rootDir": "./src/frontend",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node"
+    "rootDir": "./frontend/src"
   },
-  "include": ["src/frontend/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./frontend/src/**/*.ts"],
 }

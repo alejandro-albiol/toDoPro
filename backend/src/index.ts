@@ -1,7 +1,7 @@
 import Express from 'express';
-import { publicPath } from './backend/configuration/config.js';
-import apiRouter from './backend/routes/apiRouter.js';
-import staticRouter from './backend/routes/staticRouter.js';
+import { publicPath } from './configuration/config.js';
+import apiRouter from './routes/apiRouter.js';
+import staticRouter from './routes/staticRouter.js';
 
 const app = Express();
 const port = 3000;

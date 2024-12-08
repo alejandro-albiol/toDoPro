@@ -8,7 +8,7 @@
     "format": "prettier --write \"src/**/*.{js,ts,tsx,css,html}\"",
     "start": "node build/index.js",
     "dev": "nodemon --watch src -e ts,json --exec \"npm run build && node build/index.js\"",
-    "build:backend": "tsc --project tsconfig.json",
+    "build:backend": "tsc --project tsconfig.backend.json",
     "build:frontend": "tsc --project tsconfig.frontend.json",
     "build": "npm run prebuild && npm run build:backend && npm run build:frontend",
     "prebuild": "if not exist public\\scripts mkdir public\\scripts"

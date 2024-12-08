@@ -2,7 +2,7 @@ import pool from '../configuration/configDataBase.js';
 import { SingleUserResult, UserListResult, NoDataResult } from '../models/responses/ProcessResult.js';
 import { User } from '../models/entities/User.js';
 import { PasswordServices } from './PasswordServices.js';
-import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO';
+import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO.js';
 
 export class UserService {
   static async createUser(data: CreateUserDTO): Promise<NoDataResult> {
