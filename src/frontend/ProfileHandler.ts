@@ -9,10 +9,10 @@ interface UpdateUserRequest {
     email: string;
 }
 
-interface ChangePasswordRequest {
+
+interface ChangePasswordDTO {
     currentPassword: string;
     newPassword: string;
-    confirmPassword: string;
 }
 
 export default class ProfileHandler {
@@ -138,16 +138,19 @@ export default class ProfileHandler {
     private static async handlePasswordChange(e: Event): Promise<void> {
         e.preventDefault();
         
-        const passwordData: ChangePasswordRequest = {
-            currentPassword: (document.getElementById('currentPassword') as HTMLInputElement).value,
-            newPassword: (document.getElementById('newPassword') as HTMLInputElement).value,
-            confirmPassword: (document.getElementById('confirmPassword') as HTMLInputElement).value
-        };
+        const currentPassword = (document.getElementById('currentPassword') as HTMLInputElement).value;
+        const newPassword = (document.getElementById('newPassword') as HTMLInputElement).value;
+        const confirmPassword = (document.getElementById('confirmPassword') as HTMLInputElement).value;
 
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
+        if (newPassword !== confirmPassword) {
             this.showMessage('password-message', 'New passwords do not match', 'error');
             return;
         }
+
+        const passwordData: ChangePasswordDTO = {
+            currentPassword,
+            newPassword
+        };
 
         try {
             const response = await fetch(`/api/v1/users/change-password/${this.userId}`, {
@@ -168,7 +171,11 @@ export default class ProfileHandler {
             }
         } catch (error) {
             console.error('Error changing password:', error);
-            this.showMessage('password-message', error instanceof Error ? error.message : 'Error changing password', 'error');
+            this.showMessage(
+                'password-message', 
+                error instanceof Error ? error.message : 'Error changing password', 
+                'error'
+            );
         }
     }
 
