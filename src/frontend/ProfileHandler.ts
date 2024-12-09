@@ -52,7 +52,6 @@ export default class ProfileHandler {
 
     static initialize(): void {
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('Stored user:', storedUser);
         
         if (!storedUser || !storedUser.id) {
             console.error('No valid user found in localStorage');

@@ -5,23 +5,31 @@ import { PasswordServices } from './PasswordServices.js';
 import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO';
 
 export class UserService {
-  static async createUser(data: CreateUserDTO): Promise<NoDataResult> {
+  static async createUser(data: CreateUserDTO): Promise<SingleUserResult> {
     try {
+      const usernameCheck = await pool.query('SELECT id FROM users WHERE username = $1', [data.username]);
+      if (usernameCheck.rows.length > 0) {
+        return { isSuccess: false, message: 'Username is already taken', data: null };
+      }
+
+      const emailCheck = await pool.query('SELECT id FROM users WHERE email = $1', [data.email]);
+      if (emailCheck.rows.length > 0) {
+        return { isSuccess: false, message: 'Email is already registered', data: null };
+      }
+
       const hashedPassword = await PasswordServices.hashPassword(data.password);
       const result = await pool.query(
-        `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *`,
+        `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email`,
         [data.username, data.email, hashedPassword],
       );
 
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Failed to create user.' };
+        return { isSuccess: false, message: 'Failed to create user.', data: null };
       }
-      return { isSuccess: true, message: 'User created successfully.' };
+      return { isSuccess: true, message: 'User created successfully.', data: result.rows[0] };
     } catch (error) {
-      if (error instanceof Error && error.message.includes('duplicate key value')) {
-        return { isSuccess: false, message: `Error creating user: ${error.message}` };
-      }
-      return { isSuccess: false, message: `Error creating user: ${(error as Error).message}` };
+      console.error('Error in createUser:', error);
+      return { isSuccess: false, message: 'Error creating user. Please try again later.', data: null };
     }
   }
 
@@ -102,20 +110,68 @@ export class UserService {
     }
   }
 
-  static async updateUser(data: UpdateUserDTO): Promise<SingleUserResult> {
+  static async updateUser(userData: UpdateUserDTO): Promise<SingleUserResult> {
     try {
+      // Verificar si el username ya existe
+      if (userData.username) {
+        const usernameCheck = await pool.query(
+          'SELECT id FROM users WHERE username = $1 AND id != $2',
+          [userData.username, userData.id]
+        );
+        
+        if (usernameCheck.rows.length > 0) {
+          return {
+            isSuccess: false,
+            message: 'Username is already taken',
+            data: null
+          };
+        }
+      }
+
+      // Verificar si el email ya existe
+      if (userData.email) {
+        const emailCheck = await pool.query(
+          'SELECT id FROM users WHERE email = $1 AND id != $2',
+          [userData.email, userData.id]
+        );
+        
+        if (emailCheck.rows.length > 0) {
+          return {
+            isSuccess: false,
+            message: 'Email is already registered',
+            data: null
+          };
+        }
+      }
+
       const result = await pool.query(
-        `UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING *`,
-        [data.username, data.email, data.id],
+        `UPDATE users 
+         SET username = COALESCE($1, username),
+             email = COALESCE($2, email)
+         WHERE id = $3 
+         RETURNING id, username, email`,
+        [userData.username, userData.email, userData.id]
       );
-      return result.rows.length === 0
-        ? { isSuccess: false, message: 'Failed to update user.', data: null }
-        : { isSuccess: true, message: 'User updated successfully.', data: result.rows[0] };
+
+      if (result.rows.length === 0) {
+        return {
+          isSuccess: false,
+          message: 'User not found',
+          data: null
+        };
+      }
+
+      return {
+        isSuccess: true,
+        message: 'Profile updated successfully',
+        data: result.rows[0]
+      };
     } catch (error) {
+      console.error('Error in updateUser:', error);
       return {
         isSuccess: false,
-        message: `Error updating user: ${(error as Error).message}`,
-        data: null,
+        message: 'Error updating profile. Please try again later.',
+        data: null
       };
     }
   }

@@ -17,10 +17,8 @@ export class TaskServices {
       }
       return { isSuccess: true, message: 'Task created successfully.' };
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error creating task: ${(error as Error).message
-}`      };
+      console.error('Error in createTask:', error);
+      return { isSuccess: false, message: 'Error creating task. Please try again later.' };
     }
   }
 
@@ -64,11 +62,8 @@ export class TaskServices {
         data: result.rows[0]
       };
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error updating task: ${(error as Error).message}`,
-        data: null
-      };
+      console.error('Error in updateTask:', error);
+      return { isSuccess: false, message: 'Error updating task. Please try again later.', data: null };
     }
   }
 

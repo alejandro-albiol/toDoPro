@@ -4,12 +4,12 @@ import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/
 import { UserService } from '../services/UserServices.js';
 
 export class UserController {
-  static async newUser(userData: CreateUserDTO): Promise<NoDataResult> {
+  static async newUser(userData: CreateUserDTO): Promise<SingleUserResult> {
     try {
       return await UserService.createUser(userData);
     } catch (error) {
       console.error('Error creating user', error);
-      return { isSuccess: false, message: 'Error creating user.' };
+      return { isSuccess: false, message: 'Error creating user.', data: null };
     }
   }
 
