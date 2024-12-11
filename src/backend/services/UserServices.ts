@@ -176,11 +176,11 @@ export class UserService {
     }
   }
 
-  static async changePassword(userId: string, data: ChangePasswordDTO): Promise<NoDataResult> {
+  static async changePassword(data: ChangePasswordDTO): Promise<NoDataResult> {
     try {
       const userResult = await pool.query(
         `SELECT password FROM users WHERE id = $1`,
-        [userId]
+        [data.userId]
       );
 
       if (userResult.rows.length === 0) {
@@ -200,7 +200,7 @@ export class UserService {
 
       const updateResult = await pool.query(
         `UPDATE users SET password = $1 WHERE id = $2`,
-        [newHashedPassword, userId]
+        [newHashedPassword, data.userId]
       );
 
       if (updateResult.rowCount === 0) {

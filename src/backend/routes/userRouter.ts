@@ -95,17 +95,19 @@ userRouter.put(
   }
 );
 
-userRouter.post(
-  '/change-password/:userId',
+userRouter.put(
+  '/:userId/change-password',
   IdValidator.validate('userId'),
+  UserValidator.validatePasswordChange(),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const passwordData: ChangePasswordDTO = {
+        userId: req.params.userId,
         currentPassword: req.body.currentPassword,
         newPassword: req.body.newPassword
       };
       
-      const result = await UserController.changePassword(req.params.userId, passwordData);
+      const result = await UserController.changePassword(passwordData);
       if (result.isSuccess) {
         res.status(200).json(result);
       } else {

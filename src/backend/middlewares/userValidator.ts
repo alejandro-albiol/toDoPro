@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
-import { NoDataResult } from '../models/responses/ProcessResult.js';
 
 export class UserValidator {
     static validateRegistration(): RequestHandler {
@@ -51,6 +50,38 @@ export class UserValidator {
                 res.status(400).json({
                     isSuccess: false,
                     message: 'Invalid password format',
+                });
+                return;
+            }
+
+            next();
+        };
+    }
+
+    static validatePasswordChange(): (req: Request, res: Response, next: NextFunction) => void {
+        return (req: Request, res: Response, next: NextFunction): void => {
+            const { currentPassword, newPassword } = req.body;
+
+            if (!currentPassword || !newPassword) {
+                res.status(400).json({
+                    isSuccess: false,
+                    message: 'Current password and new password are required'
+                });
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                res.status(400).json({
+                    isSuccess: false,
+                    message: 'New password must be at least 6 characters long'
+                });
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                res.status(400).json({
+                    isSuccess: false,
+                    message: 'New password must be different from current password'
                 });
                 return;
             }

@@ -74,9 +74,9 @@ export class UserController {
     }
   }
 
-  static async changePassword(userId: string, passwordData: ChangePasswordDTO): Promise<NoDataResult> {
+  static async changePassword(passwordData: ChangePasswordDTO): Promise<NoDataResult> {
     try {
-      return await UserService.changePassword(userId, passwordData);
+      return await UserService.changePassword(passwordData);
     } catch (error) {
       console.error('Error changing password:', error);
       return { 
