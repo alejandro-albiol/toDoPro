@@ -60,6 +60,8 @@ class HomeHandler {
         
         container.appendChild(card);
       });
+
+      await this.loadRecommendation();
     } catch (error) {
       const container = document.getElementById('taskContainer');
       if (container) {
@@ -162,6 +164,7 @@ class HomeHandler {
     this.setupLogoutButton();
     this.setupPopStateEvent();
     this.setupSearchInput();
+    this.loadRecommendation();
   }
 
   private static setupAddTaskButton(): void {
@@ -288,6 +291,31 @@ class HomeHandler {
         noResults.className = 'no-tasks';
         noResults.textContent = `No tasks found matching "${searchTerm}"`;
         container.appendChild(noResults);
+    }
+  }
+
+  private static async loadRecommendation(): Promise<void> {
+    try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user?.id) return;
+
+        const response = await fetch(`/api/v1/ai/recommendation/${user.id}`);
+        if (!response.ok) throw new Error('Failed to fetch recommendation');
+
+        const result = await response.json();
+        
+        if (result.isSuccess) {
+            const recommendationText = document.querySelector('.recommendation-text');
+            if (recommendationText) {
+                recommendationText.textContent = result.data;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading recommendation:', error);
+        const recommendationText = document.querySelector('.recommendation-text');
+        if (recommendationText) {
+            recommendationText.textContent = 'Focus on your most important tasks first!';
+        }
     }
   }
 }

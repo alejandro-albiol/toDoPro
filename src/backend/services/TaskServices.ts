@@ -216,4 +216,16 @@ export class TaskServices {
       };
     }
   }
+
+  static async getPendingTasks(userId: string) {
+    const query = `
+      SELECT id, title, description
+      FROM tasks
+      WHERE user_id = $1 AND completed = false
+      ORDER BY creation_date ASC
+    `;
+    
+    const result = await pool.query(query, [userId]);
+    return result.rows;
+  }
 }

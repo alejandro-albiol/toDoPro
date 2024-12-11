@@ -26,9 +26,14 @@ export interface NoDataResult extends BaseProcessResult {
     data?: null;
 }
 
+export interface SingleRecommendationResult extends BaseProcessResult {
+    data: string | null;
+}
+
 export type ProcessResult = 
     | SingleTaskResult 
     | TaskListResult 
     | SingleUserResult 
     | UserListResult 
-    | NoDataResult;
+    | NoDataResult
+    | SingleRecommendationResult;
