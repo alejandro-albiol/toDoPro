@@ -5,43 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/taskDetail.css">
     <script src="/scripts/TaskDetailHandler.js" type="module"></script>
-    <title>Task Details</title>
+    <title>TodoPro - Task Details</title>
 </head>
 <body>
     <div class="container">
-        <header>
-            <button id="backBtn" class="back-btn">← Back</button>
-            <h1>Task Details</h1>
+        <header class="main-header">
+            <div class="header-content">
+                <h1>Task Details</h1>
+                <button id="backBtn" class="btn-outline">← Back</button>
+            </div>
         </header>
         
-        <form id="taskForm" class="task-form">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" name="title" required>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" rows="4"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Status</label>
-                <div class="status-group">
-                    <span class="status-label">Created: </span>
-                    <span id="creationDate"></span>
+        <main class="main-content">
+            <form id="taskForm" class="task-form">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        maxlength="100" 
+                        required
+                        autocomplete="off"
+                    >
+                    <small class="char-count">0/100</small>
                 </div>
-                <div class="status-group">
-                    <input type="checkbox" id="completed" name="completed">
-                    <label for="completed">Mark as completed</label>
-                </div>
-            </div>
 
-            <div class="button-group">
-                <button type="submit" class="save-btn">Save Changes</button>
-                <button type="button" class="delete-btn">Delete Task</button>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        maxlength="500" 
+                        rows="4"
+                    ></textarea>
+                    <small class="char-count">0/500</small>
+                </div>
+
+                <div class="form-group status-section">
+                    <div class="status-info">
+                        <span class="status-label">Created:</span>
+                        <span id="creationDate" class="status-value"></span>
+                    </div>
+                    <div class="status-toggle">
+                        <input type="checkbox" id="completed" name="completed">
+                        <label for="completed">Mark as completed</label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="primary-button">Save Changes</button>
+                    <button type="button" class="delete-btn">Delete Task</button>
+                </div>
+            </form>
+            <div id="form-message" class="message"></div>
+        </main>
     </div>
 </body>
 </html>

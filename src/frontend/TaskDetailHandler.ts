@@ -24,7 +24,6 @@ class TaskDetail {
                 throw new Error('No task ID found');
             }
 
-            console.log('Loading task with ID:', taskId);
             await this.loadTask(taskId);
             this.setupEventListeners();
         } catch (error) {
@@ -37,15 +36,11 @@ class TaskDetail {
     private static async loadTask(taskId: string) {
         try {
             const response = await fetch(`/api/v1/tasks/detail/${taskId}`);
-            console.log('API Response status:', response.status);
-
             if (!response.ok) {
                 throw new Error('Task not found');
             }
 
             const result = await response.json();
-            console.log('API Response data:', result);
-
             if (!result.isSuccess || !result.data) {
                 throw new Error(result.message || 'Task not found');
             }
@@ -70,11 +65,13 @@ class TaskDetail {
             return;
         }
 
-        console.log('Populating form with:', this.task);
-
         if (titleInput) titleInput.value = this.task.title || '';
         if (descriptionInput) descriptionInput.value = this.task.description || '';
         if (completedInput) completedInput.checked = this.task.completed || false;
+        if (creationDateSpan && this.task.creation_date) {
+            const date = new Date(this.task.creation_date).toLocaleDateString();
+            creationDateSpan.textContent = date;
+        }
     }
 
     private static setupEventListeners() {

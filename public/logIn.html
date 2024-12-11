@@ -5,17 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/logIn.css">
     <script src="/scripts/LoginHandler.js" type="module"></script>
-    <title>Login</title>
+    <title>Login - TodoPro</title>
 </head>
 <body>
-    <form id="loginForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        
-        <button type="submit">Login</button>
-    </form>
+    <div class="container">
+        <div class="login-card">
+            <header>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Log in to continue with TodoPro</p>
+            </header>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Log In</button>
+            </form>
+
+            <div class="form-footer">
+                <p>Don't have an account? <a href="/signin">Sign Up</a></p>
+                <a href="/" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

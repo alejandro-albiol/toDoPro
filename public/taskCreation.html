@@ -5,36 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/scripts/TaskCreationHandler.js" type="module"></script>
     <link rel="stylesheet" href="/styles/taskCreation.css">
-    <title>Create New Task</title>
+    <title>TodoPro - Create Task</title>
 </head>
 <body>
     <div class="container">
-            <h1>Create New Task</h1>
+        <header class="main-header">
+            <div class="header-content">
+                <h1>Create New Task</h1>
+            </div>
+        </header>
 
         <main class="main-content">
             <form id="createTaskForm" class="task-form">
                 <div class="form-group">
-                    <label for="title">Title:</label>
+                    <label for="title">Title</label>
                     <input 
                         type="text" 
                         id="title" 
                         name="title" 
                         maxlength="100" 
                         required 
-                        placeholder="Enter task title"
+                        placeholder="What needs to be done?"
+                        autocomplete="off"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description:</label>
+                    <label for="description">Description</label>
                     <textarea 
                         id="description" 
                         name="description" 
                         maxlength="500" 
                         required 
-                        placeholder="Enter task description"
+                        placeholder="Add more details about this task..."
                         rows="4"
                     ></textarea>
+                    <small class="char-count">0/500</small>
                 </div>
 
                 <div class="button-group">
@@ -42,8 +48,8 @@
                     <button type="button" id="cancel-button" class="secondary-button">Cancel</button>
                 </div>
             </form>
+            <div id="form-message" class="message"></div>
         </main>
     </div>
-
 </body>
 </html>
