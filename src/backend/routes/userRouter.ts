@@ -26,7 +26,7 @@ userRouter.get(
       const id = req.params.userId;
       const result = await UserController.getUserById(id);
       if (result.isSuccess) {
-        res.status(200).json(result.data);
+        res.status(200).json(result);
       } else {
         res.status(404).json(result);
       }

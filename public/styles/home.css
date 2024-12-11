@@ -93,16 +93,21 @@ input[type="search"] {
 }
 
 .task-card h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
     margin-bottom: 0.5rem;
-    color: var(--text-color);
 }
 
 .task-card p {
-    color: var(--secondary-color);
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.5rem;
 }
 
 .task-card .creation-date {

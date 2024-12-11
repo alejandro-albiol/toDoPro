@@ -188,4 +188,8 @@ body {
     .stats-container {
         grid-template-columns: 1fr;
     }
+}
+
+#back-button {
+    cursor: pointer;
 } 

@@ -60,24 +60,10 @@ class HomeHandler {
         
         container.appendChild(card);
       });
-
-      const profileBtn = document.getElementById('profile-button');
-      if (profileBtn) {
-        profileBtn.addEventListener('click', () => {
-          const user = JSON.parse(localStorage.getItem('user') || '{}');
-          if (user && user.id) {
-            window.location.href = `/profile/${user.id}`;
-          } else {
-            console.error('No user found in localStorage');
-            window.location.href = '/login';
-          }
-        });
-      }
     } catch (error) {
       const container = document.getElementById('taskContainer');
       if (container) {
-        container.innerHTML =
-          '<p class="error-message">Error loading tasks. Please try again later.</p>';
+        container.innerHTML = '<p class="error-message">Error loading tasks. Please try again later.</p>';
       }
       console.error('Error loading tasks:', error);
     }
@@ -174,6 +160,8 @@ class HomeHandler {
     this.setupTaskDeletionEvent();
     this.setupAddTaskButton();
     this.setupLogoutButton();
+    this.setupPopStateEvent();
+    this.setupSearchInput();
   }
 
   private static setupAddTaskButton(): void {
@@ -188,17 +176,20 @@ class HomeHandler {
   private static setupProfileButton(): void {
     const profileButton = document.getElementById('profile-button');
     if (profileButton) {
-      profileButton.addEventListener('click', () => {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (user && user.id) {
-          window.location.href = `/profile/${user.id}`;
-        } else {
-          console.error('No user found in localStorage');
-          window.location.href = '/login';
-        }
-      });
+      profileButton.removeEventListener('click', this.handleProfileClick);
+      profileButton.addEventListener('click', this.handleProfileClick);
     }
   }
+
+  private static handleProfileClick = () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user && user.id) {
+      window.location.href = `/profile/${user.id}`;
+    } else {
+      console.error('No user found in localStorage');
+      window.location.href = '/login';
+    }
+  };
 
   private static setupTaskLoadingEvent(): void {
     window.addEventListener('load', () => {
@@ -241,6 +232,62 @@ class HomeHandler {
         localStorage.clear();
         window.location.href = '/login';
       });
+    }
+  }
+
+  private static setupPopStateEvent(): void {
+    window.addEventListener('popstate', () => {
+        const path = window.location.pathname;
+        if (path.startsWith('/home/')) {
+            const userId = path.split('/').pop();
+            if (userId) {
+                void this.loadTasks();
+            }
+        }
+    });
+  }
+
+  private static setupSearchInput(): void {
+    const searchInput = document.getElementById('searchTasks') as HTMLInputElement;
+    if (searchInput) {
+        let debounceTimeout: NodeJS.Timeout;
+        
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                void this.filterTasks(searchTerm);
+            }, 300);
+        });
+    }
+  }
+
+  private static async filterTasks(searchTerm: string): Promise<void> {
+    const taskCards = document.querySelectorAll('.task-card');
+    const container = document.getElementById('taskContainer');
+    
+    const existingNoResults = container?.querySelectorAll('.no-tasks');
+    existingNoResults?.forEach(element => element.remove());
+    
+    let hasVisibleCards = false;
+    
+    taskCards.forEach(card => {
+        const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+        const description = card.querySelector('p')?.textContent?.toLowerCase() || '';
+        
+        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            (card as HTMLElement).style.display = 'block';
+            hasVisibleCards = true;
+        } else {
+            (card as HTMLElement).style.display = 'none';
+        }
+    });
+
+    if (container && !hasVisibleCards && searchTerm !== '') {
+        const noResults = document.createElement('p');
+        noResults.className = 'no-tasks';
+        noResults.textContent = `No tasks found matching "${searchTerm}"`;
+        container.appendChild(noResults);
     }
   }
 }

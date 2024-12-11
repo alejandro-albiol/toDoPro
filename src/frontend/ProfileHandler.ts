@@ -18,28 +18,60 @@ interface ChangePasswordDTO {
 export default class ProfileHandler {
     private static userId: string;
 
+    static initialize(): void {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!storedUser || !storedUser.id) {
+            console.error('No valid user found in localStorage');
+            window.location.href = '/login';
+            return;
+        }
+
+        this.userId = storedUser.id;
+        void this.loadProfile(this.userId);
+        this.setupEventListeners();
+    }
+
+    private static setupEventListeners(): void {
+        this.setupBackButton();
+        this.setupProfileForm();
+        this.setupPasswordForm();
+        this.setupPopStateEvent();
+    }
+
+    private static setupBackButton(): void {
+        const backButton = document.getElementById('back-button');
+        if (backButton) {
+            backButton.removeEventListener('click', this.handleBackClick);
+            backButton.addEventListener('click', this.handleBackClick);
+        }
+    }
+
+    private static handleBackClick = (e: Event) => {
+        e.preventDefault();
+        const userId = this.userId;
+        if (userId) {
+            window.location.href = `/home/${userId}`;
+        } else {
+            console.error('No user ID found');
+        }
+    };
+
     static async loadProfile(userId: string | number): Promise<void> {
         try {
-            if (!userId) {
-                throw new Error('Invalid user ID');
-            }
-
             this.userId = userId.toString();
             
             const response = await fetch(`/api/v1/users/${this.userId}`);
-            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to load profile');
+                throw new Error('Failed to load profile');
             }
 
             const result = await response.json();
-            
-            if (!result) {
+            if (!result.isSuccess || !result.data) {
                 throw new Error('Invalid response format');
             }
 
-            this.updateProfileView(result);
+            this.updateProfileView(result.data);
             this.setupEventListeners();
         } catch (error) {
             console.error('Error loading profile:', error);
@@ -50,47 +82,25 @@ export default class ProfileHandler {
         }
     }
 
-    static initialize(): void {
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        
-        if (!storedUser || !storedUser.id) {
-            console.error('No valid user found in localStorage');
-            window.location.href = '/login';
-            return;
-        }
+    private static updateProfileView(user: any): void {
+        const usernameInput = document.getElementById('username') as HTMLInputElement;
+        const emailInput = document.getElementById('email') as HTMLInputElement;
 
-        void this.loadProfile(storedUser.id);
-    }
-
-    private static updateProfileView(user: User): void {
-        const usernameDisplay = document.getElementById('display-username');
-        const emailDisplay = document.getElementById('display-email');
-        const usernameInput = document.getElementById('edit-username') as HTMLInputElement;
-        const emailInput = document.getElementById('edit-email') as HTMLInputElement;
-
-        if (usernameDisplay) usernameDisplay.textContent = user.username;
-        if (emailDisplay) emailDisplay.textContent = user.email;
         if (usernameInput) usernameInput.value = user.username;
         if (emailInput) emailInput.value = user.email;
     }
 
-    private static setupEventListeners(): void {
+    private static setupProfileForm(): void {
         const profileForm = document.getElementById('profile-edit-form') as HTMLFormElement;
-        const passwordForm = document.getElementById('password-form') as HTMLFormElement;
-        const editButton = document.querySelector('.edit-button') as HTMLButtonElement;
-        const cancelButton = document.querySelector('.cancel-button') as HTMLButtonElement;
-
         if (profileForm) {
             profileForm.addEventListener('submit', (e) => void this.handleProfileUpdate(e));
         }
+    }
+
+    private static setupPasswordForm(): void {
+        const passwordForm = document.getElementById('password-form') as HTMLFormElement;
         if (passwordForm) {
             passwordForm.addEventListener('submit', (e) => void this.handlePasswordChange(e));
-        }
-        if (editButton) {
-            editButton.addEventListener('click', () => this.toggleEditMode());
-        }
-        if (cancelButton) {
-            cancelButton.addEventListener('click', () => this.toggleEditMode());
         }
     }
 
@@ -200,8 +210,18 @@ export default class ProfileHandler {
             element.className = `message ${type}`;
         }
     }
+
+    private static setupPopStateEvent(): void {
+        window.addEventListener('popstate', () => {
+            const path = window.location.pathname;
+            if (path.startsWith('/profile/')) {
+                const userId = path.split('/').pop();
+                if (userId) {
+                    void this.loadProfile(userId);
+                }
+            }
+        });
+    }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    ProfileHandler.initialize();
-});
+document.addEventListener('DOMContentLoaded', () => ProfileHandler.initialize());
