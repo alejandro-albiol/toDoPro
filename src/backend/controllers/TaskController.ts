@@ -1,4 +1,8 @@
-import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult.js';
+import {
+  SingleTaskResult,
+  TaskListResult,
+  NoDataResult,
+} from '../models/responses/ProcessResult.js';
 import { TaskServices } from '../services/TaskServices.js';
 import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
 import { TaskStatsResult } from '../models/responses/TaskStatsResult.js';
@@ -20,8 +24,8 @@ export class TaskController {
       console.error('Error in getTaskById:', error);
       return {
         isSuccess: false,
-        message: "Error retrieving task",
-        data: null
+        message: 'Error retrieving task',
+        data: null,
       };
     }
   }
@@ -31,10 +35,10 @@ export class TaskController {
       return await TaskServices.getAllTasks();
     } catch (error) {
       console.error('Error retrieving all tasks:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error retrieving all tasks.',
-        data: null
+        data: null,
       };
     }
   }
@@ -42,19 +46,19 @@ export class TaskController {
   static async updateTask(taskData: UpdateTaskDTO): Promise<SingleTaskResult> {
     try {
       if (!taskData.id) {
-        return { 
-          isSuccess: false, 
+        return {
+          isSuccess: false,
           message: 'Task ID is required.',
-          data: null
+          data: null,
         };
       }
       return await TaskServices.updateTask(taskData);
     } catch (error) {
       console.error('Error updating task:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error updating task.',
-        data: null
+        data: null,
       };
     }
   }
@@ -79,7 +83,7 @@ export class TaskController {
       return {
         isSuccess: false,
         message: 'Error retrieving tasks by user ID.',
-        data: null
+        data: null,
       };
     }
   }
@@ -87,19 +91,19 @@ export class TaskController {
   static async toggleCompletion(taskId: string): Promise<SingleTaskResult> {
     try {
       if (!taskId) {
-        return { 
-          isSuccess: false, 
+        return {
+          isSuccess: false,
           message: 'Task ID is required.',
-          data: null
+          data: null,
         };
       }
       return await TaskServices.toggleTaskComplete(taskId);
     } catch (error) {
       console.error('Error completing task:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error completing task.',
-        data: null
+        data: null,
       };
     }
   }
@@ -110,7 +114,7 @@ export class TaskController {
         return {
           isSuccess: false,
           message: 'User ID is required.',
-          data: null
+          data: null,
         };
       }
       return await TaskServices.getUserTaskStats(userId);
@@ -119,7 +123,7 @@ export class TaskController {
       return {
         isSuccess: false,
         message: 'Error retrieving task statistics.',
-        data: null
+        data: null,
       };
     }
   }

@@ -1,192 +1,130 @@
-interface CreateTaskDTO {
-    title: string;
-    description: string;
-    user_id: number;
+interface TaskCreationDTO {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+  user_id: number;
+  creation_date: string;
+}
+
+interface ApiResponse<T> {
+  isSuccess: boolean;
+  data?: T;
+  message?: string;
 }
 
 class TaskCreationHandler {
-    private static readonly MAX_TITLE_LENGTH = 100;
-    private static readonly MAX_DESCRIPTION_LENGTH = 500;
+  static setupCharacterCounter(): void {
+    const inputs = document.querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement
+    >('input[maxlength], textarea[maxlength]');
 
-    static init(): void {
-        this.setupEventListeners();
+    inputs.forEach((input) => {
+      const counter = document.querySelector<HTMLElement>(
+        `.char-count[data-for="${input.id}"]`,
+      );
+      if (!counter) return;
+
+      const updateCount = () => {
+        const maxLength = input.maxLength;
+        const currentLength = input.value.length;
+        counter.textContent = `${currentLength}/${maxLength}`;
+      };
+
+      input.addEventListener('input', updateCount);
+      updateCount();
+    });
+  }
+
+  static initialize(): void {
+    this.setupEventListeners();
+    this.setupCharacterCounter();
+  }
+
+  static setupEventListeners(): void {
+    const form = document.getElementById('createTaskForm') as HTMLFormElement;
+    const cancelButton = document.getElementById('cancel-button');
+
+    if (form) {
+      form.addEventListener('submit', (e: Event) => {
+        e.preventDefault();
+        void TaskCreationHandler.handleSubmit(e);
+      });
     }
 
-    private static setupEventListeners(): void {
-        this.setupFormSubmit();
-        this.setupInputValidations();
-        this.setupCharacterCounters();
-        this.setupCancelButton();
+    if (cancelButton) {
+      cancelButton.addEventListener('click', () => {
+        const user = this.getUserFromStorage();
+        window.location.href = `/home/${user.id}`;
+      });
     }
+  }
 
-    private static setupFormSubmit(): void {
-        const form = document.getElementById('createTaskForm');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (this.validateForm()) {
-                    await this.handleSubmit(e);
-                }
-            });
-        }
+  private static getUserFromStorage(): User {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      throw new Error('No user found');
     }
-
-    private static setupInputValidations(): void {
-        const titleInput = document.getElementById('title') as HTMLInputElement;
-        const descriptionInput = document.getElementById('description') as HTMLTextAreaElement;
-
-        if (titleInput) {
-            titleInput.addEventListener('input', () => {
-                this.validateField(titleInput, this.MAX_TITLE_LENGTH);
-            });
-        }
-
-        if (descriptionInput) {
-            descriptionInput.addEventListener('input', () => {
-                this.validateField(descriptionInput, this.MAX_DESCRIPTION_LENGTH);
-            });
-        }
+    const user = JSON.parse(userStr) as User;
+    if (!user.id) {
+      throw new Error('Invalid user data');
     }
+    return user;
+  }
 
-    private static setupCharacterCounters(): void {
-        const titleInput = document.getElementById('title') as HTMLInputElement;
-        const descriptionInput = document.getElementById('description') as HTMLTextAreaElement;
-        const titleCount = document.querySelector('.char-count[data-for="title"]');
-        const descriptionCount = document.querySelector('.char-count[data-for="description"]');
+  private static getFormData(
+    form: HTMLFormElement,
+  ): Omit<TaskCreationDTO, 'id'> {
+    const formData = new FormData(form);
+    const user = this.getUserFromStorage();
 
-        if (titleInput && titleCount) {
-            this.updateCharCount(titleInput, titleCount, this.MAX_TITLE_LENGTH);
-            titleInput.addEventListener('input', () => {
-                this.updateCharCount(titleInput, titleCount, this.MAX_TITLE_LENGTH);
-            });
-        }
+    return {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      completed: false,
+      user_id: Number(user.id),
+      creation_date: new Date().toISOString(),
+    };
+  }
 
-        if (descriptionInput && descriptionCount) {
-            this.updateCharCount(descriptionInput, descriptionCount, this.MAX_DESCRIPTION_LENGTH);
-            descriptionInput.addEventListener('input', () => {
-                this.updateCharCount(descriptionInput, descriptionCount, this.MAX_DESCRIPTION_LENGTH);
-            });
-        }
+  private static async handleSubmit(e: Event): Promise<void> {
+    try {
+      const form = e.target as HTMLFormElement;
+      const taskData = this.getFormData(form);
+      const user = this.getUserFromStorage();
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/tasks/${user.id}/new`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(taskData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+
+      const result = (await response.json()) as ApiResponse<TaskCreationDTO>;
+
+      if (!result.isSuccess) {
+        throw new Error(result.message || 'Failed to create task');
+      }
+
+      window.location.href = `/home/${user.id}`;
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('An unexpected error occurred');
+      }
     }
-
-    private static setupCancelButton(): void {
-        const cancelButton = document.getElementById('cancel-button');
-        if (cancelButton) {
-            cancelButton.addEventListener('click', () => {
-                const user = JSON.parse(localStorage.getItem('user') || '{}');
-                window.location.href = `/home/${user.id}`;
-            });
-        }
-    }
-
-    // Métodos de validación
-    private static validateField(input: HTMLInputElement | HTMLTextAreaElement, maxLength: number): boolean {
-        const value = input.value.trim();
-        const isValid = value.length > 0 && value.length <= maxLength;
-
-        if (!isValid) {
-            input.classList.add('invalid');
-            this.showError(input, value.length === 0 ? 'This field is required' : `Maximum length is ${maxLength} characters`);
-        } else {
-            input.classList.remove('invalid');
-            this.clearError(input);
-        }
-
-        return isValid;
-    }
-
-    private static validateForm(): boolean {
-        const titleInput = document.getElementById('title') as HTMLInputElement;
-        const descriptionInput = document.getElementById('description') as HTMLTextAreaElement;
-
-        const isTitleValid = this.validateField(titleInput, this.MAX_TITLE_LENGTH);
-        const isDescriptionValid = this.validateField(descriptionInput, this.MAX_DESCRIPTION_LENGTH);
-
-        return isTitleValid && isDescriptionValid;
-    }
-
-    // Métodos de UI
-    private static updateCharCount(input: HTMLInputElement | HTMLTextAreaElement, counter: Element, maxLength: number): void {
-        const remaining = maxLength - input.value.length;
-        counter.textContent = `${input.value.length}/${maxLength}`;
-        
-        if (remaining <= 20) {
-            counter.classList.add('warning');
-        } else {
-            counter.classList.remove('warning');
-        }
-    }
-
-    private static showError(input: HTMLElement, message: string): void {
-        let errorDiv = input.nextElementSibling?.classList.contains('error-message') 
-            ? input.nextElementSibling 
-            : document.createElement('div');
-        
-        if (!errorDiv.classList.contains('error-message')) {
-            errorDiv.className = 'error-message';
-            input.parentNode?.insertBefore(errorDiv, input.nextSibling);
-        }
-        
-        errorDiv.textContent = message;
-    }
-
-    private static clearError(input: HTMLElement): void {
-        const errorDiv = input.nextElementSibling;
-        if (errorDiv?.classList.contains('error-message')) {
-            errorDiv.remove();
-        }
-    }
-
-    // Métodos de datos y envío
-    private static getFormData(form: HTMLFormElement): CreateTaskDTO | null {
-        try {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (!user.id) {
-                window.location.href = '/login';
-                return null;
-            }
-
-            const formData = new FormData(form);
-            return {
-                title: (formData.get('title') as string).trim(),
-                description: (formData.get('description') as string).trim(),
-                user_id: user.id
-            };
-        } catch (error) {
-            console.error('Error getting form data:', error);
-            return null;
-        }
-    }
-
-    private static async handleSubmit(e: Event): Promise<void> {
-        const form = e.target as HTMLFormElement;
-        const taskData = this.getFormData(form);
-        if (!taskData) {
-            alert('Error getting form data');
-            return;
-        }
-
-        try {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const response = await fetch(`/api/v1/tasks/${user.id}/new`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(taskData),
-            });
-
-            const result = await response.json();
-            
-            if (response.ok && result.isSuccess) {
-                window.location.href = `/home/${user.id}`;
-                return;
-            }
-
-            alert(result.message || 'Error creating task');
-        } catch (error) {
-            console.error('Error creating task:', error);
-            alert('Error creating task. Please try again.');
-        }
-    }
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => TaskCreationHandler.init()); 
+document.addEventListener('DOMContentLoaded', () => {
+  TaskCreationHandler.initialize();
+});

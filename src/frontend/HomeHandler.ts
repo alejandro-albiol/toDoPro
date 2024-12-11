@@ -1,3 +1,9 @@
+interface TaskUser {
+  id: number;
+  username: string;
+  email: string;
+}
+
 interface Task {
   id: number;
   title: string;
@@ -6,6 +12,12 @@ interface Task {
   creation_date: string;
   completed_at?: string;
   user_id: number;
+}
+
+interface ApiResponse<T> {
+  isSuccess: boolean;
+  data?: T;
+  message?: string;
 }
 
 class HomeHandler {
@@ -17,18 +29,14 @@ class HomeHandler {
         return;
       }
 
-      const user = JSON.parse(userStr);
+      const user = JSON.parse(userStr) as TaskUser;
       if (!user?.id) {
         window.location.href = '/login';
         return;
       }
 
       const response = await fetch(`/api/v1/tasks/user/${user.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
-      }
-
-      const result = await response.json();
+      const result = (await response.json()) as ApiResponse<Task[]>;
       const container = document.getElementById('taskContainer');
       if (!container) {
         throw new Error('Task container not found');
@@ -36,8 +44,13 @@ class HomeHandler {
 
       container.innerHTML = '';
 
-      if (result.isSuccess && Array.isArray(result.data) && result.data.length === 0) {
-        container.innerHTML = '<p class="no-tasks">No tasks yet. Create your first task!</p>';
+      if (
+        result.isSuccess &&
+        Array.isArray(result.data) &&
+        result.data.length === 0
+      ) {
+        container.innerHTML =
+          '<p class="no-tasks">No tasks yet. Create your first task!</p>';
         return;
       }
 
@@ -46,26 +59,29 @@ class HomeHandler {
         return;
       }
 
-      result.data.forEach((task: Task) => {
-        const card = document.createElement('div');
-        card.className = `task-card ${task.completed ? 'completed' : ''}`;
-        card.setAttribute('data-task-id', task.id.toString());
-        card.innerHTML = this.createTaskCardHTML(task);
-        
-        card.addEventListener('click', (e) => {
-          if (!(e.target as HTMLElement).closest('.task-actions')) {
-            window.location.href = `/tasks/${task.id}`;
-          }
+      if (result.isSuccess && result.data) {
+        result.data.forEach((task: Task) => {
+          const card = document.createElement('div');
+          card.className = `task-card ${task.completed ? 'completed' : ''}`;
+          card.setAttribute('data-task-id', task.id.toString());
+          card.innerHTML = this.createTaskCardHTML(task);
+
+          card.addEventListener('click', (e) => {
+            if (!(e.target as HTMLElement).closest('.task-actions')) {
+              window.location.href = `/tasks/${task.id}`;
+            }
+          });
+
+          container.appendChild(card);
         });
-        
-        container.appendChild(card);
-      });
+      }
 
       await this.loadRecommendation();
     } catch (error) {
       const container = document.getElementById('taskContainer');
       if (container) {
-        container.innerHTML = '<p class="error-message">Error loading tasks. Please try again later.</p>';
+        container.innerHTML =
+          '<p class="error-message">Error loading tasks. Please try again later.</p>';
       }
       console.error('Error loading tasks:', error);
     }
@@ -73,9 +89,9 @@ class HomeHandler {
 
   private static createTaskCardHTML(task: Task): string {
     const creationDate = new Date(task.creation_date).toLocaleDateString();
-    const completionDate = task.completed_at 
-        ? new Date(task.completed_at).toLocaleDateString()
-        : '';
+    const completionDate = task.completed_at
+      ? new Date(task.completed_at).toLocaleDateString()
+      : '';
 
     return `
         <h3>${this.escapeHtml(task.title)}</h3>
@@ -92,45 +108,54 @@ class HomeHandler {
   }
 
   static async completeTask(taskId: number): Promise<void> {
-    const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
-    if (!taskCard) return;
+    try {
+      const response = await fetch(
+        `/api/v1/tasks/${taskId}/toggle-completion`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
 
-    const response = await fetch(`/api/v1/tasks/${taskId}/toggle-completion`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      const task = result.data;
-      
-      if (task.completed) {
-        taskCard.classList.add('completed');
-        const completeBtn = taskCard.querySelector('.complete-btn');
-        if (completeBtn) {
-          completeBtn.textContent = 'Completed';
+      const result = (await response.json()) as ApiResponse<Task>;
+
+      if (result.isSuccess && result.data) {
+        const taskCard = document.querySelector(
+          `.task-card[data-task-id="${taskId}"]`,
+        );
+        if (!taskCard) return;
+
+        const existingDate = taskCard.querySelector('.completion-date');
+        if (existingDate) {
+          existingDate.remove();
         }
-        
-        if (task.completed_at) {
-          const completionDate = new Date(task.completed_at).toLocaleDateString();
-          const dateElement = document.createElement('p');
-          dateElement.className = 'completion-date';
-          dateElement.textContent = `Completed on: ${completionDate}`;
-          taskCard.appendChild(dateElement);
-        }
-      } else {
-        taskCard.classList.remove('completed');
-        const completeBtn = taskCard.querySelector('.complete-btn');
-        if (completeBtn) {
-          completeBtn.textContent = 'Complete';
-        }
-        const completionDate = taskCard.querySelector('.completion-date');
-        if (completionDate) {
-          completionDate.remove();
+
+        if (result.data.completed) {
+          taskCard.classList.add('completed');
+          const completeBtn = taskCard.querySelector('.complete-btn');
+          if (completeBtn) {
+            completeBtn.textContent = 'Completed';
+          }
+
+          if (result.data.completed_at) {
+            const completionDate = new Date(
+              result.data.completed_at,
+            ).toLocaleDateString();
+            const dateElement = document.createElement('p');
+            dateElement.className = 'completion-date';
+            dateElement.textContent = `Completed on: ${completionDate}`;
+            taskCard.appendChild(dateElement);
+          }
+        } else {
+          taskCard.classList.remove('completed');
+          const completeBtn = taskCard.querySelector('.complete-btn');
+          if (completeBtn) {
+            completeBtn.textContent = 'Complete';
+          }
         }
       }
+    } catch (error: unknown) {
+      console.error('Error completing task:', error);
     }
   }
 
@@ -164,7 +189,7 @@ class HomeHandler {
     this.setupLogoutButton();
     this.setupPopStateEvent();
     this.setupSearchInput();
-    this.loadRecommendation();
+    void this.loadRecommendation();
   }
 
   private static setupAddTaskButton(): void {
@@ -184,13 +209,10 @@ class HomeHandler {
     }
   }
 
-  private static handleProfileClick = () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user && user.id) {
+  private static handleProfileClick = (): void => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}') as TaskUser;
+    if (user?.id) {
       window.location.href = `/profile/${user.id}`;
-    } else {
-      console.error('No user found in localStorage');
-      window.location.href = '/login';
     }
   };
 
@@ -240,82 +262,81 @@ class HomeHandler {
 
   private static setupPopStateEvent(): void {
     window.addEventListener('popstate', () => {
-        const path = window.location.pathname;
-        if (path.startsWith('/home/')) {
-            const userId = path.split('/').pop();
-            if (userId) {
-                void this.loadTasks();
-            }
+      const path = window.location.pathname;
+      if (path.startsWith('/home/')) {
+        const userId = path.split('/').pop();
+        if (userId) {
+          void this.loadTasks();
         }
+      }
     });
   }
 
   private static setupSearchInput(): void {
-    const searchInput = document.getElementById('searchTasks') as HTMLInputElement;
+    const searchInput = document.getElementById(
+      'searchTasks',
+    ) as HTMLInputElement;
     if (searchInput) {
-        let debounceTimeout: NodeJS.Timeout;
-        
-        searchInput.addEventListener('input', () => {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                void this.filterTasks(searchTerm);
-            }, 300);
-        });
+      let debounceTimeout: NodeJS.Timeout;
+
+      searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          void this.filterTasks(searchTerm);
+        }, 300);
+      });
     }
   }
 
-  private static async filterTasks(searchTerm: string): Promise<void> {
+  private static filterTasks(searchTerm: string): void {
     const taskCards = document.querySelectorAll('.task-card');
     const container = document.getElementById('taskContainer');
-    
+
     const existingNoResults = container?.querySelectorAll('.no-tasks');
-    existingNoResults?.forEach(element => element.remove());
-    
+    existingNoResults?.forEach((element) => element.remove());
+
     let hasVisibleCards = false;
-    
-    taskCards.forEach(card => {
-        const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
-        const description = card.querySelector('p')?.textContent?.toLowerCase() || '';
-        
-        if (title.includes(searchTerm) || description.includes(searchTerm)) {
-            (card as HTMLElement).style.display = 'block';
-            hasVisibleCards = true;
-        } else {
-            (card as HTMLElement).style.display = 'none';
-        }
+
+    taskCards.forEach((card) => {
+      const title = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+      const description =
+        card.querySelector('p')?.textContent?.toLowerCase() || '';
+
+      if (title.includes(searchTerm) || description.includes(searchTerm)) {
+        (card as HTMLElement).style.display = 'block';
+        hasVisibleCards = true;
+      } else {
+        (card as HTMLElement).style.display = 'none';
+      }
     });
 
     if (container && !hasVisibleCards && searchTerm !== '') {
-        const noResults = document.createElement('p');
-        noResults.className = 'no-tasks';
-        noResults.textContent = `No tasks found matching "${searchTerm}"`;
-        container.appendChild(noResults);
+      const noResults = document.createElement('p');
+      noResults.className = 'no-tasks';
+      noResults.textContent = `No tasks found matching "${searchTerm}"`;
+      container.appendChild(noResults);
     }
   }
 
   private static async loadRecommendation(): Promise<void> {
     try {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (!user?.id) return;
+      const user = JSON.parse(localStorage.getItem('user') || '{}') as TaskUser;
+      if (!user?.id) return;
 
-        const response = await fetch(`/api/v1/ai/recommendation/${user.id}`);
-        if (!response.ok) throw new Error('Failed to fetch recommendation');
+      const response = await fetch(`/api/v1/ai/recommendation/${user.id}`);
+      const result = (await response.json()) as ApiResponse<string>;
 
-        const result = await response.json();
-        
-        if (result.isSuccess) {
-            const recommendationText = document.querySelector('.recommendation-text');
-            if (recommendationText) {
-                recommendationText.textContent = result.data;
-            }
-        }
-    } catch (error) {
-        console.error('Error loading recommendation:', error);
-        const recommendationText = document.querySelector('.recommendation-text');
+      if (result.isSuccess && result.data) {
+        const recommendationText = document.querySelector(
+          '.recommendation-text',
+        );
         if (recommendationText) {
-            recommendationText.textContent = 'Focus on your most important tasks first!';
+          recommendationText.textContent = result.data;
         }
+      }
+    } catch (error: unknown) {
+      console.error('Error loading recommendation:', error);
     }
   }
 }

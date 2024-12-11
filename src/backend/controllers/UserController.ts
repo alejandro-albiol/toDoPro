@@ -1,6 +1,14 @@
-import { SingleUserResult, UserListResult, NoDataResult } from '../models/responses/ProcessResult.js';
-import { User } from '../models/entities/User.js';
-import { CreateUserDTO, UpdateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO.js';
+import {
+  SingleUserResult,
+  UserListResult,
+  NoDataResult,
+} from '../models/responses/ProcessResult.js';
+import {
+  CreateUserDTO,
+  UpdateUserDTO,
+  ChangePasswordDTO,
+  LoginDTO,
+} from '../models/dtos/UserDTO.js';
 import { UserService } from '../services/UserServices.js';
 
 export class UserController {
@@ -13,15 +21,18 @@ export class UserController {
     }
   }
 
-  static async checkUserAndPassword(user: User): Promise<SingleUserResult> {
+  static async checkUserAndPassword(
+    loginData: LoginDTO,
+  ): Promise<SingleUserResult> {
     try {
-      return await UserService.authenticateUser(user);
+      const result = await UserService.authenticateUser(loginData);
+      return result;
     } catch (error) {
-      console.error('Error authenticating user:', error);
-      return { 
-        isSuccess: false, 
-        message: 'Error authenticating user.',
-        data: null
+      console.error('Error in checkUserAndPassword:', error);
+      return {
+        isSuccess: false,
+        message: 'Error during authentication',
+        data: null,
       };
     }
   }
@@ -31,10 +42,10 @@ export class UserController {
       return await UserService.getUserById(id);
     } catch (error) {
       console.error('Error retrieving user by ID:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error retrieving user by ID.',
-        data: null
+        data: null,
       };
     }
   }
@@ -44,10 +55,10 @@ export class UserController {
       return await UserService.getAllUsers();
     } catch (error) {
       console.error('Error retrieving all users:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error retrieving all users.',
-        data: null
+        data: null,
       };
     }
   }
@@ -66,22 +77,24 @@ export class UserController {
       return await UserService.updateUser(userData);
     } catch (error) {
       console.error('Error updating user:', error);
-      return { 
-        isSuccess: false, 
+      return {
+        isSuccess: false,
         message: 'Error updating user.',
-        data: null
+        data: null,
       };
     }
   }
 
-  static async changePassword(passwordData: ChangePasswordDTO): Promise<NoDataResult> {
+  static async changePassword(
+    passwordData: ChangePasswordDTO,
+  ): Promise<NoDataResult> {
     try {
       return await UserService.changePassword(passwordData);
     } catch (error) {
       console.error('Error changing password:', error);
-      return { 
-        isSuccess: false, 
-        message: 'Error changing password.'
+      return {
+        isSuccess: false,
+        message: 'Error changing password.',
       };
     }
   }

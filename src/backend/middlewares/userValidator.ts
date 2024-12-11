@@ -1,100 +1,77 @@
 import { Request, Response, NextFunction } from 'express';
-import { RequestHandler } from 'express-serve-static-core';
+import { CreateUserDTO, ChangePasswordDTO } from '../models/dtos/UserDTO.js';
 
 export class UserValidator {
-    static validateRegistration(): RequestHandler {
-        return (req: Request, res: Response, next: NextFunction): void => {
-            const { email, password, username } = req.body;
+  static validateRegistration() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const data = req.body as CreateUserDTO;
 
-            if (!email || !password || !username) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Email, username and password are required',
-                });
-                return;
-            }
+      if (!data.username?.trim() || data.username.length < 3) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Username must be at least 3 characters long',
+        });
+      }
 
-            if (!this.isValidEmail(email)) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Invalid email format',
-                });
-                return;
-            }
+      if (!data.email?.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Invalid email format',
+        });
+      }
 
-            if (!this.isValidPassword(password)) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Password must be at least 6 characters long',
-                });
-                return;
-            }
+      if (!data.password || data.password.length < 6) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Password must be at least 6 characters long',
+        });
+      }
 
-            next();
-        };
-    }
+      next();
+    };
+  }
 
-    static validateLogin(): RequestHandler {
-        return (req: Request, res: Response, next: NextFunction): void => {
-            const { username, password } = req.body;
+  static validateLogin() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const data = req.body as LoginDTO;
 
-            if (!username || !password) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Username and password are required',
-                });
-                return;
-            }
+      if (!data.username?.trim()) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Username is required',
+        });
+      }
 
-            if (!this.isValidPassword(password)) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Invalid password format',
-                });
-                return;
-            }
+      if (!data.password) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Password is required',
+        });
+      }
 
-            next();
-        };
-    }
+      next();
+    };
+  }
 
-    static validatePasswordChange(): (req: Request, res: Response, next: NextFunction) => void {
-        return (req: Request, res: Response, next: NextFunction): void => {
-            const { currentPassword, newPassword } = req.body;
+  static validatePasswordChange() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const data = req.body as ChangePasswordDTO;
 
-            if (!currentPassword || !newPassword) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'Current password and new password are required'
-                });
-                return;
-            }
+      if (!data.currentPassword) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'Current password is required',
+        });
+      }
 
-            if (newPassword.length < 6) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'New password must be at least 6 characters long'
-                });
-                return;
-            }
+      if (!data.newPassword || data.newPassword.length < 6) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: 'New password must be at least 6 characters long',
+        });
+      }
 
-            if (currentPassword === newPassword) {
-                res.status(400).json({
-                    isSuccess: false,
-                    message: 'New password must be different from current password'
-                });
-                return;
-            }
-
-            next();
-        };
-    }
-
-    private static isValidEmail(email: string): boolean {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    private static isValidPassword(password: string): boolean {
-        return password.length >= 6;
-    }
+      next();
+    };
+  }
 }

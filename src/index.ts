@@ -15,13 +15,12 @@ app.use('/api/v1', apiRouter);
 
 app.use((req, res) => {
   res.status(404).json({
-      isSuccess: false,
-      message: 'Route not found',
-      data: null
+    isSuccess: false,
+    message: 'Route not found',
+    data: null,
   });
 });
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-  

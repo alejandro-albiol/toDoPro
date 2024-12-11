@@ -1,6 +1,10 @@
 import { Task } from '../models/entities/Task';
 import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO';
-import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult';
+import {
+  SingleTaskResult,
+  TaskListResult,
+  NoDataResult,
+} from '../models/responses/ProcessResult';
 import pool from '../configuration/configDataBase.js';
 import { TaskStatsResult } from '../models/responses/TaskStatsResult';
 import { TaskStatsDTO } from '../models/dtos/TaskStatsDTO';
@@ -11,7 +15,7 @@ export class TaskServices {
       const result = await pool.query(
         `INSERT INTO tasks (title, description, user_id) 
          VALUES ($1, $2, $3) RETURNING *`,
-        [taskData.title, taskData.description, taskData.user_id]
+        [taskData.title, taskData.description, taskData.user_id],
       );
 
       if (result.rows.length === 0) {
@@ -20,7 +24,10 @@ export class TaskServices {
       return { isSuccess: true, message: 'Task created successfully.' };
     } catch (error) {
       console.error('Error in createTask:', error);
-      return { isSuccess: false, message: 'Error creating task. Please try again later.' };
+      return {
+        isSuccess: false,
+        message: 'Error creating task. Please try again later.',
+      };
     }
   }
 
@@ -52,7 +59,7 @@ export class TaskServices {
              completed = COALESCE($3, completed)
          WHERE id = $4 
          RETURNING *`,
-        [taskData.title, taskData.description, taskData.completed, taskData.id]
+        [taskData.title, taskData.description, taskData.completed, taskData.id],
       );
 
       if (result.rows.length === 0) {
@@ -61,11 +68,15 @@ export class TaskServices {
       return {
         isSuccess: true,
         message: 'Task updated successfully.',
-        data: result.rows[0]
+        data: result.rows[0] as Task,
       };
     } catch (error) {
       console.error('Error in updateTask:', error);
-      return { isSuccess: false, message: 'Error updating task. Please try again later.', data: null };
+      return {
+        isSuccess: false,
+        message: 'Error updating task. Please try again later.',
+        data: null,
+      };
     }
   }
 
@@ -73,26 +84,26 @@ export class TaskServices {
     try {
       const query = 'SELECT * FROM tasks WHERE id = $1';
       const result = await pool.query(query, [taskId]);
-      
+
       if (result.rows.length === 0) {
         return {
           isSuccess: false,
-          message: "Task not found",
-          data: null
+          message: 'Task not found',
+          data: null,
         };
       }
 
       return {
         isSuccess: true,
-        message: "Task retrieved successfully",
-        data: result.rows[0]
+        message: 'Task retrieved successfully',
+        data: result.rows[0] as Task,
       };
     } catch (error) {
       console.error('Error in getTaskById:', error);
       return {
         isSuccess: false,
-        message: "Error retrieving task",
-        data: null
+        message: 'Error retrieving task',
+        data: null,
       };
     }
   }
@@ -110,17 +121,18 @@ export class TaskServices {
 
       return {
         isSuccess: true,
-        message: result.rows.length > 0 
-          ? 'Tasks retrieved successfully.' 
-          : 'No tasks yet.',
-        data: result.rows.length > 0 ? result.rows : []
+        message:
+          result.rows.length > 0
+            ? 'Tasks retrieved successfully.'
+            : 'No tasks yet.',
+        data: result.rows.length > 0 ? result.rows : [],
       };
     } catch (error) {
       console.error('Error in getTasksByUserId:', error);
       return {
         isSuccess: false,
         message: `Error getting tasks: ${(error as Error).message}`,
-        data: null
+        data: null,
       };
     }
   }
@@ -178,54 +190,48 @@ export class TaskServices {
 
   static async getUserTaskStats(userId: string): Promise<TaskStatsResult> {
     try {
-      const result = await pool.query(
+      const result = await pool.query<TaskStatsDTO>(
         `SELECT 
-          COUNT(*) as total,
-          COUNT(CASE WHEN completed = true THEN 1 END) as completed,
-          COUNT(CASE WHEN completed = false THEN 1 END) as pending
+          COUNT(*)::integer as total,
+          COUNT(CASE WHEN completed = true THEN 1 END)::integer as completed,
+          COUNT(CASE WHEN completed = false THEN 1 END)::integer as pending
          FROM tasks 
          WHERE user_id = $1`,
-        [userId]
+        [userId],
       );
 
       if (result.rows.length === 0) {
         return {
           isSuccess: false,
           message: 'No statistics found.',
-          data: null
+          data: null,
         };
       }
-
-      const stats: TaskStatsDTO = {
-        total: parseInt(result.rows[0].total),
-        completed: parseInt(result.rows[0].completed),
-        pending: parseInt(result.rows[0].pending)
-      };
 
       return {
         isSuccess: true,
         message: 'Statistics retrieved successfully.',
-        data: stats
+        data: result.rows[0],
       };
     } catch (error) {
       console.error('Error in getUserTaskStats:', error);
       return {
         isSuccess: false,
         message: 'Error retrieving statistics.',
-        data: null
+        data: null,
       };
     }
   }
 
-  static async getPendingTasks(userId: string) {
+  static async getPendingTasks(userId: string): Promise<Task[]> {
     const query = `
       SELECT id, title, description
       FROM tasks
       WHERE user_id = $1 AND completed = false
       ORDER BY creation_date ASC
     `;
-    
+
     const result = await pool.query(query, [userId]);
-    return result.rows;
+    return result.rows as Task[];
   }
 }
