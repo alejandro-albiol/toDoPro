@@ -1,6 +1,7 @@
 import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult.js';
 import { TaskServices } from '../services/TaskServices.js';
 import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
+import { TaskStatsResult } from '../models/responses/TaskStatsResult.js';
 
 export class TaskController {
   static async newTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
@@ -98,6 +99,26 @@ export class TaskController {
       return { 
         isSuccess: false, 
         message: 'Error completing task.',
+        data: null
+      };
+    }
+  }
+
+  static async getUserTaskStats(userId: string): Promise<TaskStatsResult> {
+    try {
+      if (!userId) {
+        return {
+          isSuccess: false,
+          message: 'User ID is required.',
+          data: null
+        };
+      }
+      return await TaskServices.getUserTaskStats(userId);
+    } catch (error) {
+      console.error('Error retrieving user task stats:', error);
+      return {
+        isSuccess: false,
+        message: 'Error retrieving task statistics.',
         data: null
       };
     }

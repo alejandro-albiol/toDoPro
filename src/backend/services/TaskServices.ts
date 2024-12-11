@@ -2,6 +2,8 @@ import { Task } from '../models/entities/Task';
 import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO';
 import { SingleTaskResult, TaskListResult, NoDataResult } from '../models/responses/ProcessResult';
 import pool from '../configuration/configDataBase.js';
+import { TaskStatsResult } from '../models/responses/TaskStatsResult';
+import { TaskStatsDTO } from '../models/dtos/TaskStatsDTO';
 
 export class TaskServices {
   static async createTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
@@ -170,6 +172,47 @@ export class TaskServices {
         isSuccess: false,
         message: `Error toggling task: ${(error as Error).message}`,
         data: null,
+      };
+    }
+  }
+
+  static async getUserTaskStats(userId: string): Promise<TaskStatsResult> {
+    try {
+      const result = await pool.query(
+        `SELECT 
+          COUNT(*) as total,
+          COUNT(CASE WHEN completed = true THEN 1 END) as completed,
+          COUNT(CASE WHEN completed = false THEN 1 END) as pending
+         FROM tasks 
+         WHERE user_id = $1`,
+        [userId]
+      );
+
+      if (result.rows.length === 0) {
+        return {
+          isSuccess: false,
+          message: 'No statistics found.',
+          data: null
+        };
+      }
+
+      const stats: TaskStatsDTO = {
+        total: parseInt(result.rows[0].total),
+        completed: parseInt(result.rows[0].completed),
+        pending: parseInt(result.rows[0].pending)
+      };
+
+      return {
+        isSuccess: true,
+        message: 'Statistics retrieved successfully.',
+        data: stats
+      };
+    } catch (error) {
+      console.error('Error in getUserTaskStats:', error);
+      return {
+        isSuccess: false,
+        message: 'Error retrieving statistics.',
+        data: null
       };
     }
   }

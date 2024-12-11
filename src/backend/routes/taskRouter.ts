@@ -123,4 +123,22 @@ tasksRouter.patch(
   },
 );
 
+tasksRouter.get(
+  '/stats/:userId',
+  IdValidator.validate('userId'),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.userId;
+      const result = await TaskController.getUserTaskStats(userId);
+      if (result.isSuccess) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json(result);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default tasksRouter;

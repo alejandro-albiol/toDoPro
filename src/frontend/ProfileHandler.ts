@@ -72,6 +72,7 @@ export default class ProfileHandler {
             }
 
             this.updateProfileView(result.data);
+            await this.loadTaskStats();
             this.setupEventListeners();
         } catch (error) {
             console.error('Error loading profile:', error);
@@ -221,6 +222,31 @@ export default class ProfileHandler {
                 }
             }
         });
+    }
+
+    private static async loadTaskStats(): Promise<void> {
+        try {
+            const response = await fetch(`/api/v1/tasks/stats/${this.userId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load statistics');
+            }
+
+            const result = await response.json();
+            if (!result.isSuccess || !result.data) {
+                throw new Error('Invalid response format');
+            }
+
+            const stats = result.data;
+            document.getElementById('total-tasks')!.textContent = stats.total.toString();
+            document.getElementById('completed-tasks')!.textContent = stats.completed.toString();
+            document.getElementById('pending-tasks')!.textContent = stats.pending.toString();
+        } catch (error) {
+            console.error('Error loading task statistics:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Error loading statistics';
+            ['total-tasks', 'completed-tasks', 'pending-tasks'].forEach(id => {
+                document.getElementById(id)!.textContent = '-';
+            });
+        }
     }
 }
 
