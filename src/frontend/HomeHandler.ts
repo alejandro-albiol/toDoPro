@@ -173,6 +173,7 @@ class HomeHandler {
     this.setupTaskCompletionEvent();
     this.setupTaskDeletionEvent();
     this.setupAddTaskButton();
+    this.setupLogoutButton();
   }
 
   private static setupAddTaskButton(): void {
@@ -231,6 +232,16 @@ class HomeHandler {
         }
       }
     });
+  }
+
+  private static setupLogoutButton(): void {
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = '/login';
+      });
+    }
   }
 }
 
