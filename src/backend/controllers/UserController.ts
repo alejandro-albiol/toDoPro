@@ -17,7 +17,11 @@ export class UserController {
       return await UserService.createUser(userData);
     } catch (error) {
       console.error('Error creating user', error);
-      return { isSuccess: false, message: 'Error creating user.', data: null };
+      return {
+        isSuccess: false,
+        message: 'Error creating user.',
+        data: null,
+      };
     }
   }
 
@@ -68,7 +72,10 @@ export class UserController {
       return await UserService.deleteUser(userId);
     } catch (error) {
       console.error('Error deleting user:', error);
-      return { isSuccess: false, message: 'Error deleting user.' };
+      return {
+        isSuccess: false,
+        message: 'Error deleting user.',
+      };
     }
   }
 

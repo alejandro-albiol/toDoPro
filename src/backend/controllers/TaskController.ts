@@ -13,7 +13,10 @@ export class TaskController {
       return await TaskServices.createTask(taskData);
     } catch (error) {
       console.error('Error creating task.', error);
-      return { isSuccess: false, message: 'Error creating task.' };
+      return {
+        isSuccess: false,
+        message: 'Error creating task.',
+      };
     }
   }
 
@@ -66,12 +69,18 @@ export class TaskController {
   static async deleteTask(taskId: string): Promise<NoDataResult> {
     try {
       if (!taskId) {
-        return { isSuccess: false, message: 'Task ID is required.' };
+        return {
+          isSuccess: false,
+          message: 'Task ID is required.',
+        };
       }
       return await TaskServices.deleteTask(taskId);
     } catch (error) {
       console.error('Error deleting task:', error);
-      return { isSuccess: false, message: 'Error deleting task.' };
+      return {
+        isSuccess: false,
+        message: 'Error deleting task.',
+      };
     }
   }
 
