@@ -1,201 +1,237 @@
 interface User {
-    id: string;
-    username: string;
-    email: string;
+  id: string;
+  username: string;
+  email: string;
 }
 
-interface UpdateUserRequest {
-    username: string;
-    email: string;
+interface Profile {
+  username: string;
+  email: string;
 }
 
-interface ChangePasswordRequest {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
+interface TaskStats {
+  total: number;
+  completed: number;
+  pending: number;
+}
+
+interface ApiResponse<T> {
+  isSuccess: boolean;
+  data?: T;
+  message?: string;
 }
 
 export default class ProfileHandler {
-    private static userId: string;
+  private static userId: string;
 
-    static async loadProfile(userId: string | number): Promise<void> {
-        try {
-            if (!userId) {
-                throw new Error('Invalid user ID');
-            }
+  static initialize(): void {
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}') as User;
 
-            this.userId = userId.toString();
-            
-            const response = await fetch(`/api/v1/users/${this.userId}`);
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to load profile');
-            }
-
-            const result = await response.json();
-            
-            if (!result) {
-                throw new Error('Invalid response format');
-            }
-
-            this.updateProfileView(result);
-            this.setupEventListeners();
-        } catch (error) {
-            console.error('Error loading profile:', error);
-            this.showMessage('profile-message', 
-                error instanceof Error ? error.message : 'Error loading profile', 
-                'error'
-            );
-        }
+    if (!storedUser || !storedUser.id) {
+      console.error('No valid user found in localStorage');
+      window.location.href = '/login';
+      return;
     }
 
-    static initialize(): void {
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('Stored user:', storedUser);
-        
-        if (!storedUser || !storedUser.id) {
-            console.error('No valid user found in localStorage');
-            window.location.href = '/login';
-            return;
-        }
+    this.userId = storedUser.id;
+    this.setupEventListeners();
+    void this.loadProfile();
+    void this.loadStats();
+  }
 
-        void this.loadProfile(storedUser.id);
+  private static async loadProfile(): Promise<void> {
+    try {
+      const response = await fetch(`/api/v1/users/${this.userId}`);
+      const result = (await response.json()) as ApiResponse<Profile>;
+
+      if (result.isSuccess && result.data) {
+        this.updateProfileView(result.data);
+      }
+    } catch (error: unknown) {
+      console.error('Error loading profile:', error);
+    }
+  }
+
+  private static async loadStats(): Promise<void> {
+    try {
+      const response = await fetch(`/api/v1/tasks/stats/${this.userId}`);
+      const result = (await response.json()) as ApiResponse<TaskStats>;
+
+      if (result.isSuccess && result.data) {
+        this.updateStatsView(result.data);
+      } else {
+        console.error('Failed to load stats:', result.message);
+      }
+    } catch (error: unknown) {
+      console.error('Error loading stats:', error);
+    }
+  }
+
+  private static setupEventListeners(): void {
+    const editButton = document.getElementById('edit-profile-button');
+    const profileForm = document.getElementById('profile-edit-form');
+    const passwordForm = document.getElementById('password-form');
+    const backButton = document.getElementById('back-button');
+
+    editButton?.addEventListener('click', () => this.toggleEditMode());
+
+    profileForm?.addEventListener('submit', (e: Event) => {
+      e.preventDefault();
+      void this.handleProfileUpdate(e);
+    });
+
+    passwordForm?.addEventListener('submit', (e: Event) => {
+      e.preventDefault();
+      void this.handlePasswordUpdate(e);
+    });
+
+    backButton?.addEventListener('click', () => {
+      window.location.href = `/home/${this.userId}`;
+    });
+  }
+
+  private static toggleEditMode(): void {
+    const viewMode = document.querySelector('.view-mode');
+    const editForm = document.getElementById('profile-edit-form');
+    const editButton = document.getElementById('edit-profile-button');
+
+    if (!viewMode || !editForm || !editButton) {
+      console.error('Required elements not found');
+      return;
     }
 
-    private static updateProfileView(user: User): void {
-        const usernameDisplay = document.getElementById('display-username');
-        const emailDisplay = document.getElementById('display-email');
-        const usernameInput = document.getElementById('edit-username') as HTMLInputElement;
-        const emailInput = document.getElementById('edit-email') as HTMLInputElement;
+    const isEditing = viewMode.classList.contains('hidden');
 
-        if (usernameDisplay) usernameDisplay.textContent = user.username;
-        if (emailDisplay) emailDisplay.textContent = user.email;
-        if (usernameInput) usernameInput.value = user.username;
-        if (emailInput) emailInput.value = user.email;
+    if (isEditing) {
+      viewMode.classList.remove('hidden');
+      editForm.classList.add('hidden');
+      editButton.textContent = 'Edit Profile';
+    } else {
+      viewMode.classList.add('hidden');
+      editForm.classList.remove('hidden');
+      editButton.textContent = 'Cancel';
     }
+  }
 
-    private static setupEventListeners(): void {
-        const profileForm = document.getElementById('profile-edit-form') as HTMLFormElement;
-        const passwordForm = document.getElementById('password-form') as HTMLFormElement;
-        const editButton = document.querySelector('.edit-button') as HTMLButtonElement;
-        const cancelButton = document.querySelector('.cancel-button') as HTMLButtonElement;
+  private static async handleProfileUpdate(e: Event): Promise<void> {
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
 
-        if (profileForm) {
-            profileForm.addEventListener('submit', (e) => void this.handleProfileUpdate(e));
-        }
-        if (passwordForm) {
-            passwordForm.addEventListener('submit', (e) => void this.handlePasswordChange(e));
-        }
-        if (editButton) {
-            editButton.addEventListener('click', () => this.toggleEditMode());
-        }
-        if (cancelButton) {
-            cancelButton.addEventListener('click', () => this.toggleEditMode());
-        }
+    try {
+      const response = await fetch(`/api/v1/users/profile/${this.userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.get('username'),
+          email: formData.get('email'),
+        }),
+      });
+
+      const result = (await response.json()) as ApiResponse<Profile>;
+
+      if (result.isSuccess && result.data) {
+        this.showMessage(
+          'profile-message',
+          'Profile updated successfully',
+          'success',
+        );
+        this.updateProfileView(result.data);
+        this.toggleEditMode();
+      } else {
+        this.showMessage(
+          'profile-message',
+          result.message || 'Update failed',
+          'error',
+        );
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error updating profile:', error.message);
+      }
+      this.showMessage('profile-message', 'Error updating profile', 'error');
     }
+  }
 
-    private static async handleProfileUpdate(e: Event): Promise<void> {
-        e.preventDefault();
-        
-        const formData = new FormData(e.target as HTMLFormElement);
-        const userData: UpdateUserRequest = {
-            username: formData.get('username') as string,
-            email: formData.get('email') as string
-        };
+  private static async handlePasswordUpdate(e: Event): Promise<void> {
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
 
-        try {
-            const response = await fetch(`/api/v1/users/profile/${this.userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(userData)
-            });
+    try {
+      const response = await fetch(
+        `/api/v1/users/${this.userId}/change-password`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            currentPassword: formData.get('currentPassword'),
+            newPassword: formData.get('newPassword'),
+          }),
+        },
+      );
 
-            const result = await response.json();
+      const result = (await response.json()) as ApiResponse<void>;
 
-            if (response.ok && result.isSuccess) {
-                this.showMessage('profile-message', 'Profile updated successfully', 'success');
-                this.updateProfileView(result.data);
-                this.toggleEditMode();
-
-                const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-                localStorage.setItem('user', JSON.stringify({
-                    ...storedUser,
-                    username: userData.username,
-                    email: userData.email
-                }));
-            } else {
-                throw new Error(result.message || 'Failed to update profile');
-            }
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            this.showMessage('profile-message', error instanceof Error ? error.message : 'Error updating profile', 'error');
-        }
+      if (result.isSuccess) {
+        this.showMessage(
+          'password-message',
+          'Password updated successfully',
+          'success',
+        );
+        form.reset();
+      } else {
+        this.showMessage(
+          'password-message',
+          result.message || 'Update failed',
+          'error',
+        );
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Error updating password:', error.message);
+      }
+      this.showMessage('password-message', 'Error updating password', 'error');
     }
+  }
 
-    private static async handlePasswordChange(e: Event): Promise<void> {
-        e.preventDefault();
-        
-        const passwordData: ChangePasswordRequest = {
-            currentPassword: (document.getElementById('currentPassword') as HTMLInputElement).value,
-            newPassword: (document.getElementById('newPassword') as HTMLInputElement).value,
-            confirmPassword: (document.getElementById('confirmPassword') as HTMLInputElement).value
-        };
+  private static updateProfileView(profile: Profile): void {
+    const usernameSpan = document.querySelector('.view-mode .username');
+    const emailSpan = document.querySelector('.view-mode .email');
 
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
-            this.showMessage('password-message', 'New passwords do not match', 'error');
-            return;
-        }
+    if (usernameSpan) usernameSpan.textContent = profile.username;
+    if (emailSpan) emailSpan.textContent = profile.email;
 
-        try {
-            const response = await fetch(`/api/v1/users/change-password/${this.userId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(passwordData)
-            });
+    const usernameInput = document.getElementById(
+      'username',
+    ) as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
 
-            const result = await response.json();
+    if (usernameInput) usernameInput.value = profile.username;
+    if (emailInput) emailInput.value = profile.email;
+  }
 
-            if (response.ok && result.isSuccess) {
-                (e.target as HTMLFormElement).reset();
-                this.showMessage('password-message', 'Password changed successfully', 'success');
-            } else {
-                throw new Error(result.message || 'Failed to change password');
-            }
-        } catch (error) {
-            console.error('Error changing password:', error);
-            this.showMessage('password-message', error instanceof Error ? error.message : 'Error changing password', 'error');
-        }
+  private static updateStatsView(stats: TaskStats): void {
+    const totalTasks = document.getElementById('total-tasks');
+    const completedTasks = document.getElementById('completed-tasks');
+    const pendingTasks = document.getElementById('pending-tasks');
+
+    if (totalTasks) totalTasks.textContent = stats.total.toString();
+    if (completedTasks) completedTasks.textContent = stats.completed.toString();
+    if (pendingTasks) pendingTasks.textContent = stats.pending.toString();
+  }
+
+  private static showMessage(
+    elementId: string,
+    message: string,
+    type: 'error' | 'success' | 'info' | 'warning',
+  ): void {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.textContent = message;
+      element.className = `message ${type}`;
     }
-
-    private static toggleEditMode(): void {
-        const viewMode = document.querySelector('.view-mode');
-        const editForm = document.getElementById('profile-edit-form');
-        
-        if (viewMode && editForm) {
-            const isEditing = editForm.classList.contains('hidden');
-            viewMode.classList.toggle('hidden');
-            editForm.classList.toggle('hidden');
-            
-            if (!isEditing) {
-                document.getElementById('profile-message')!.textContent = '';
-            }
-        }
-    }
-
-    private static showMessage(elementId: string, message: string, type: 'error' | 'success'): void {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.textContent = message;
-            element.className = `message ${type}`;
-        }
-    }
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    ProfileHandler.initialize();
-});
+document.addEventListener('DOMContentLoaded', () =>
+  ProfileHandler.initialize(),
+);

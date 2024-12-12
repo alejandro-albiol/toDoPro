@@ -3,17 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
+    <link rel="stylesheet" href="/styles/signIn.css">
+    <script src="/scripts/RegisterHandler.js" type="module"></script>
+    <title>Sign Up - TodoPro</title>
 </head>
 <body>
-<form id="signInForm" action="/api/v1/users/register" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br>
-    <input type="submit" value="Submit">
-</form>
+    <div class="container">
+        <div class="signin-card">
+            <header>
+                <h1>Create Account</h1>
+                <p class="subtitle">Join TodoPro and start organizing your tasks</p>
+            </header>
+
+            <form id="signInForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <small class="password-hint">At least 8 characters long</small>
+                </div>
+
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+
+            <div class="form-footer">
+                <p>Already have an account? <a href="/login">Log In</a></p>
+                <a href="/" class="back-link">← Back to Home</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

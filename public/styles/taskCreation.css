@@ -25,36 +25,14 @@ body {
 }
 
 /* Header */
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.header-content h1 {
+h1 {
     color: var(--primary-color);
     font-size: 2rem;
-    margin: 0;
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
-.btn-outline {
-    padding: 0.75rem 1.5rem;
-    border: 1px solid var(--secondary-color);
-    border-radius: 5px;
-    background: none;
-    color: var(--secondary-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.btn-outline:hover {
-    background-color: var(--secondary-color);
-    color: var(--white);
-}
-
-/* Form */
+/* Formulario */
 .task-form {
     background-color: var(--white);
     padding: 2rem;
@@ -64,7 +42,6 @@ body {
 
 .form-group {
     margin-bottom: 1.5rem;
-    position: relative;
 }
 
 .form-group label {
@@ -74,7 +51,7 @@ body {
     font-weight: 500;
 }
 
-.form-group input[type="text"],
+.form-group input,
 .form-group textarea {
     box-sizing: border-box;
     width: 100%;
@@ -91,47 +68,7 @@ body {
     min-height: 120px;
 }
 
-.char-count {
-    position: absolute;
-    bottom: -20px;
-    right: 0;
-    font-size: 0.8rem;
-    color: var(--secondary-color);
-}
-
-/* Status Section */
-.status-section {
-    background-color: var(--background-color);
-    padding: 1rem;
-    border-radius: 5px;
-    margin: 2rem 0;
-}
-
-.status-info {
-    margin-bottom: 1rem;
-}
-
-.status-label {
-    color: var(--secondary-color);
-    margin-right: 0.5rem;
-}
-
-.status-value {
-    font-weight: 500;
-}
-
-.status-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.status-toggle input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-}
-
-/* Buttons */
+/* Botones */
 .button-group {
     display: flex;
     gap: 1rem;
@@ -139,7 +76,7 @@ body {
 }
 
 .primary-button,
-.delete-btn {
+.secondary-button {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 5px;
@@ -157,29 +94,27 @@ body {
 
 .primary-button:hover {
     background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.delete-btn {
-    background-color: var(--danger-color);
+.secondary-button {
+    background-color: var(--secondary-color);
     color: var(--white);
 }
 
-.delete-btn:hover {
-    background-color: #c82333;
+.secondary-button:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Messages */
+/* Mensajes de error/éxito */
 .message {
     padding: 1rem;
     margin-top: 1rem;
     border-radius: 5px;
     font-size: 0.9rem;
-}
-
-.message.success {
-    background-color: rgba(40, 167, 69, 0.1);
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
 }
 
 .message.error {
@@ -188,13 +123,26 @@ body {
     border: 1px solid var(--danger-color);
 }
 
+.message.success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
     }
 
+    .header-content,
     .task-form {
         padding: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.875rem;
     }
 
     .button-group {
@@ -202,7 +150,7 @@ body {
     }
 
     .primary-button,
-    .delete-btn {
+    .secondary-button {
         width: 100%;
     }
 }

@@ -5,15 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/home.css">
     <script src="/scripts/HomeHandler.js" type="module"></script>
-    <title>My ToDo list</title>
+    <title>TodoPro - My Tasks</title>
 </head>
 <body>
-    <header>
-        <h1>To Do</h1>
-        <nav>
-            <button id="profile-button" class="nav-button">Profile</button>
-        </nav>
-    </header>
-    <div id="taskContainer"></div>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>My Tasks</h1>
+                <nav>
+                    <button id="profile-button" class="btn-secondary">Profile</button>
+                    <button id="logout-button" class="btn-outline">Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="tasks-header">
+                <div class="search-container">
+                    <input type="search" id="searchTasks" placeholder="Search tasks...">
+                </div>
+                <button id="addTaskButton" class="btn-primary">
+                    <span class="icon">+</span> Add Task
+                </button>
+            </div>
+
+            <div id="taskContainer" class="task-grid"></div>
+        </main>
+    </div>
+
+    <div class="ai-recommendation-widget">
+        <div class="recommendation-content">
+            <img alt="Grog" class="grog-icon">
+            <p class="recommendation-text">Loading Grog's advice...</p>
+        </div>
+    </div>
 </body>
 </html>

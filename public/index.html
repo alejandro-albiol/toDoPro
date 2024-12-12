@@ -3,11 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <link rel="stylesheet" href="/styles/index.css">
+    <title>TodoPro - Get Organized</title>
 </head>
 <body>
-    <h1>Welcome to TodoPro</h1>
-    <a href="/SignIn"><button>Register</button></a>
-    <a href="/LogIn"><button>Log In</button></a>
+    <div class="container">
+        <header>
+            <h1>TodoPro</h1>
+            <p class="tagline">Organize your life, one task at a time</p>
+        </header>
+
+        <main>
+            <div class="cta-container">
+                <div class="cta-text">
+                    <h2>Start Managing Your Tasks</h2>
+                    <p>Join thousands of users who trust TodoPro for their daily task management</p>
+                </div>
+                
+                <div class="button-group">
+                    <a href="/login" class="btn btn-primary">Log In</a>
+                    <a href="/signin" class="btn btn-secondary">Sign Up</a>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <span class="icon">📝</span>
+                    <h3>Create Tasks</h3>
+                    <p>Easily create and organize your tasks</p>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">✅</span>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your completion status</p>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">🔄</span>
+                    <h3>Stay Updated</h3>
+                    <p>Keep your tasks current and organized</p>
+                </div>
+            </div>
+        </main>
+    </div>
 </body>
 </html>

@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/taskDetail.css">
-    <script src="/scripts/TaskDetailHandler.js" type="module"></script>
-    <title>TodoPro - Task Details</title>
+    <script src="/scripts/TaskCreationHandler.js" type="module"></script>
+    <link rel="stylesheet" href="/styles/taskCreation.css">
+    <title>TodoPro - Create Task</title>
 </head>
 <body>
     <div class="container">
         <header class="main-header">
             <div class="header-content">
-                <h1>Task Details</h1>
-                <button id="backBtn" class="btn-outline">← Back</button>
+                <h1>Create New Task</h1>
             </div>
         </header>
-        
+
         <main class="main-content">
-            <form id="taskForm" class="task-form">
+            <form id="createTaskForm" class="task-form">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input 
@@ -25,10 +24,11 @@
                         id="title" 
                         name="title" 
                         maxlength="100" 
-                        required
+                        required 
+                        placeholder="What needs to be done?"
                         autocomplete="off"
                     >
-                    <small class="char-count">0/100</small>
+                    <small class="char-count" data-for="title">0/100</small>
                 </div>
 
                 <div class="form-group">
@@ -37,25 +37,16 @@
                         id="description" 
                         name="description" 
                         maxlength="500" 
+                        required 
+                        placeholder="Add more details about this task..."
                         rows="4"
                     ></textarea>
-                    <small class="char-count">0/500</small>
-                </div>
-
-                <div class="form-group status-section">
-                    <div class="status-info">
-                        <span class="status-label">Created:</span>
-                        <span id="creationDate" class="status-value"></span>
-                    </div>
-                    <div class="status-toggle">
-                        <input type="checkbox" id="completed" name="completed">
-                        <label for="completed">Mark as completed</label>
-                    </div>
+                    <small class="char-count" data-for="description">0/500</small>
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" class="primary-button">Save Changes</button>
-                    <button type="button" class="delete-btn">Delete Task</button>
+                    <button type="submit" class="primary-button">Create Task</button>
+                    <button type="button" id="cancel-button" class="secondary-button">Cancel</button>
                 </div>
             </form>
             <div id="form-message" class="message"></div>

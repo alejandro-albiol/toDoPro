@@ -5,54 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/profile.css">
     <script src="/scripts/ProfileHandler.js" type="module"></script>
-    <title>Profile</title>
+    <title>TodoPro - Profile</title>
 </head>
 <body>
-    <div id="profile-container">
-        <div class="profile-section">
-            <div class="view-mode">
-                <div class="profile-header">
-                    <h1 id="display-username">Loading...</h1>
-                    <p id="display-email">Loading...</p>
-                </div>
-                <button class="edit-button">Edit Profile</button>
+    <div class="container">
+        <header class="main-header">
+            <div class="header-content">
+                <h1>Profile</h1>
+                <a href="#" id="back-button" class="btn-outline">← Back to Tasks</a>
             </div>
-            <form id="profile-edit-form" class="hidden">
-                <div class="form-group">
-                    <label for="edit-username">Username:</label>
-                    <input type="text" id="edit-username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-email">Email:</label>
-                    <input type="email" id="edit-email" name="email" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="save-button">Save Changes</button>
-                    <button type="button" class="cancel-button">Cancel</button>
-                </div>
-            </form>
-            <p id="profile-message" class="message"></p>
-        </div>
+        </header>
 
-        <div id="password-change-section">
-            <h2>Change Password</h2>
-            <form id="password-form">
-                <div class="form-group">
-                    <label for="currentPassword">Current Password:</label>
-                    <input type="password" id="currentPassword" name="currentPassword" required>
+        <main id="profile-container">
+            <section class="profile-section">
+                <div class="section-header">
+                    <h2>Account Information</h2>
                 </div>
-                <div class="form-group">
-                    <label for="newPassword">New Password:</label>
-                    <input type="password" id="newPassword" name="newPassword" required>
+
+                <div class="profile-section">
+                    <div class="view-mode">
+                        <p>Username: <span class="username"></span></p>
+                        <p>Email: <span class="email"></span></p>
+                        <button id="edit-profile-button">Edit Profile</button>
+                    </div>
+
+                    <form id="profile-edit-form" class="hidden">
+                        <div>
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div>
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                    <div id="profile-message" class="message"></div>
                 </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </section>
+
+            <section class="profile-section">
+                <div class="section-header">
+                    <h2>Change Password</h2>
                 </div>
-                <button type="submit">Change Password</button>
-            </form>
-            <p id="password-message" class="message"></p>
-        </div>
+
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </form>
+                <div id="password-message" class="message"></div>
+            </section>
+
+            <section class="profile-section">
+                <div class="section-header">
+                    <h2>Statistics</h2>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-tasks">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="completed-tasks">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="pending-tasks">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 </body>
 </html>
