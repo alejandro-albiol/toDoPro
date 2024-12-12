@@ -1,7 +1,7 @@
 import Groq from 'groq-sdk';
 import { Task } from '../models/entities/Task';
 import { SingleRecommendationResult } from '../models/responses/ProcessResult';
-import { GroqCompletion } from '../models/responses/GrogResponses';
+import { GroqCompletion } from '../models/responses/GroqResponses';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -51,7 +51,7 @@ export class AIRecommendationService {
       messages: [
         {
           role: 'user',
-          content: `You are Grog, a friendly task advisor. Based on these tasks: ${JSON.stringify(formattedTasks)}, 
+          content: `You are Groq, a friendly task advisor. Based on these tasks: ${JSON.stringify(formattedTasks)}, 
                              provide ONE short motivational tip about task prioritization.
                              Keep your response under 100 characters.
                              Be encouraging but concise.
