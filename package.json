@@ -1,55 +1,15 @@
 {
   "name": "todopro",
-  "version": "0.0.1",
-  "description": "To do list generator.",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint \"src/**/*.{js,ts,tsx}\" --fix",
-    "format": "prettier --write \"src/**/*.{js,ts,tsx,css,html}\"",
-    "start": "node build/index.js",
-    "dev": "nodemon --watch src -e ts,json --exec \"npm run build && node build/index.js\"",
-    "build:backend": "tsc --project tsconfig.json",
-    "build:frontend": "tsc --project tsconfig.frontend.json",
-    "build": "npm run prebuild && npm run build:backend && npm run build:frontend",
-    "prebuild": "if not exist public\\scripts mkdir public\\scripts"
-  },
-  "keywords": [
-    "nodejs",
-    "express",
-    "typescript",
-    "javascript",
-    "html",
-    "css",
-    "authentication",
-    "todo-list",
-    "task-manager",
-    "web-development",
-    "backend",
+  "private": true,
+  "workspaces": [
     "frontend",
-    "fullstack"
+    "backend"
   ],
-  "author": "base",
-  "license": "MIT",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "groq-sdk": "^0.9.0",
-    "pg": "^8.13.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.8.4",
-    "@types/pg": "^8.11.10",
-    "eslint": "^9.15.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "nodemon": "^3.1.7",
-    "prettier": "^3.3.3",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
-  },
-  "type": "module"
+  "scripts": {
+    "start": "npm run start --workspace=backend & npm run dev --workspace=frontend",
+    "dev": "npm run dev --workspace=backend & npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=frontend",
+    "clean": "npm run clean --workspaces"
+  }
 }
