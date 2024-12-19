@@ -1,7 +1,10 @@
-import { CreateTaskDTO, UpdateTaskDTO } from "../models/dtos/TaskDTO.js";
-import { TaskStatsDTO } from "../models/dtos/TaskStatsDTO.js";
-import { Task } from "../models/entities/Task.js";
-import { TaskServices } from "../services/TaskServices.js";
+import {
+  CreateTaskDTO,
+  UpdateTaskDTO,
+} from '../interfaces/dtos/task/UpdateTaskDto.js';
+import { TaskStatsDTO } from '../interfaces/dtos/task/TaskStatsDto.js';
+import { Task } from '../models/entities/Task.js';
+import { TaskServices } from '../services/TaskServices.js';
 
 export class TaskController {
   static async newTask(taskData: CreateTaskDTO): Promise<Task> {

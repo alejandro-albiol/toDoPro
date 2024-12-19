@@ -1,6 +1,6 @@
 import { UserServices } from '../../src/services/UserServices.js';
 import { UserRepository } from '../../src/repositories/UserRepository.js';
-import { CreateUserDTO } from '../../src/models/dtos/UserDTO.js';
+import { CreateUserDto } from '../../src/interfaces/dtos/user/CreateUserDto.js';
 import { EmailConflictException } from '../../src/models/exceptions/conflict/user/EmailConflictException.js';
 
 jest.mock('../../src/repositories/UserRepository.js');
@@ -16,7 +16,7 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should create a new user successfully', async () => {
-      const userData: CreateUserDTO = {
+      const userData: CreateUserDto = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
@@ -37,12 +37,12 @@ describe('UserService', () => {
     });
 
     it('should throw when creating user with duplicate email', async () => {
-      const createUserDto: CreateUserDTO = {
+      const createUserDto: CreateUserDto = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
       };
-      
+
       mockRepository.findByEmail.mockResolvedValueOnce({
         id: '1',
         ...createUserDto

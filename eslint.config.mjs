@@ -1,48 +1,53 @@
 // @ts-check
-
 import eslint from '@eslint/js'
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import tseslint from 'typescript-eslint';
+import prettier from 'eslint-plugin-prettier';
+import * as tseslint from '@typescript-eslint/eslint-plugin';
 import globals from 'globals';
 
-export default tseslint.config(
-  {
-    plugins: {
-      ['@typescript-eslint']: tseslint.plugin,
-    }
-  },
+export default [
   {
     ignores: [
       '**/node_modules/',
-      '*.js',
+      'dist/',
       'build/',
+      'coverage/',
+      '**/*.js',
       'eslint.config.mjs'
     ]
   },
-  eslint.configs.recommended,
-  tseslint.configs.recommendedTypeChecked,
   {
+    plugins: {
+      '@typescript-eslint': tseslint,
+      prettier: prettier
+    },
+    extends: [
+      eslint.configs.recommended,
+      tseslint.configs.recommended
+    ],
     languageOptions: {
       globals: {
-        ...globals.es2020,
+        ...globals.es2015,
         ...globals.node
       },
-
-      parserOptions: {
-        allowAutomaticSingleRunInference: true,
-        project: true,
-        tsconfigRootDir: import.meta.dirname
-      }
-    }
-  },
-  {
-    languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        ecmaVersion: 2022,
+        sourceType: 'module'
+      }
+    },
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/explicit-member-accessibility': 'warn',
+      'no-console': 'warn',
+      'no-debugger': 'error',
+      'no-duplicate-imports': 'error',
+      'no-unused-expressions': 'error',
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'prettier/prettier': 'error'
     }
-  },
-  eslintPluginPrettierRecommended
-)
+  }
+];

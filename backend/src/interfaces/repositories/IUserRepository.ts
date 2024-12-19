@@ -1,10 +1,10 @@
-import { User } from "../../models/entities/User.js";
+import { User } from '../../models/entities/User.js';
+import { IBaseRepository } from './base/IBaseRepository.js';
+import { IEmailSearchable } from './base/IEmailSearchable.js';
+import { IUsernameSearchable } from './base/IUsernameSearchable.js';
+import { CreateUserDto } from '../../interfaces/dtos/user/CreateUserDto.js';
 
-export interface IUserRepository {
-  findById(id: string): Promise<User | undefined>;
-  findByEmail(email: string): Promise<User | undefined>;
-  findByUsername(username: string): Promise<User | undefined>;
-  create(user: User): Promise<User>;
-  update(id: string, userData: Partial<User>): Promise<User>;
-  delete(id: string): Promise<boolean>;
-} 
+export interface IUserRepository
+  extends IBaseRepository<User, CreateUserDto>,
+    IEmailSearchable<User>,
+    IUsernameSearchable<User> {}

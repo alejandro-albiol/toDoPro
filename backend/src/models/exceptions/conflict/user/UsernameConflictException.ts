@@ -1,7 +1,7 @@
-import { UserConflictException } from "./UserConflictException";
+import { UserConflictException } from './UserConflictException';
 
 export class UsernameConflictException extends UserConflictException {
-    constructor(username: string) {
-        super(username);
-    }
+  constructor(username: string) {
+    super(username);
+  }
 }

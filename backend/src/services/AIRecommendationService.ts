@@ -5,9 +5,7 @@ import { GroqCompletion } from '../models/responses/GroqResponses.js';
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export class AIRecommendationService {
-  static async getTaskRecommendation(
-    pendingTasks: Task[],
-  ): Promise<string> {
+  static async getTaskRecommendation(pendingTasks: Task[]): Promise<string> {
     if (!pendingTasks || pendingTasks.length === 0) {
       throw new Error('No tasks to analyze');
     }

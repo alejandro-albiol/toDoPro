@@ -7,7 +7,10 @@ import Express, {
 import { ParamsDictionary } from 'express-serve-static-core';
 import { TaskController } from '../controllers/TaskController.js';
 import { IdValidator } from '../middlewares/IdValidator.js';
-import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
+import {
+  CreateTaskDTO,
+  UpdateTaskDTO,
+} from '../interfaces/dtos/task/UpdateTaskDto.js';
 
 interface TypedRequestBody<T> extends Request {
   body: T;

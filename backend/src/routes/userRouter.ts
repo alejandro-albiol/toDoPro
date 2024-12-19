@@ -19,4 +19,4 @@ router.get('/email/:email', userController.findByEmail.bind(userController));
 router.put('/:id', userController.update.bind(userController));
 router.delete('/:id', userController.delete.bind(userController));
 
-export default router; 
+export default router;

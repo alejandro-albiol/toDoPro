@@ -4,8 +4,7 @@ import { BaseException } from '../models/exceptions/base/BaseException.js';
 import { IUserController } from '../interfaces/controllers/IUserController.js';
 
 export class UserController implements IUserController {
-  constructor(private userService: IUserService) {
-  }
+  constructor(private userService: IUserService) {}
 
   async findById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -15,7 +14,7 @@ export class UserController implements IUserController {
       if (error instanceof BaseException) {
         res.status(error.statusCode).json({
           code: error.errorCode,
-          message: error.message
+          message: error.message,
         });
       } else {
         next(error);
@@ -31,7 +30,7 @@ export class UserController implements IUserController {
       if (error instanceof BaseException) {
         res.status(error.statusCode).json({
           code: error.errorCode,
-          message: error.message
+          message: error.message,
         });
       } else {
         next(error);
@@ -56,7 +55,7 @@ export class UserController implements IUserController {
       if (error instanceof BaseException) {
         res.status(error.statusCode).json({
           code: error.errorCode,
-          message: error.message
+          message: error.message,
         });
       } else {
         next(error);
@@ -72,7 +71,7 @@ export class UserController implements IUserController {
       if (error instanceof BaseException) {
         res.status(error.statusCode).json({
           code: error.errorCode,
-          message: error.message
+          message: error.message,
         });
       } else {
         next(error);
@@ -88,7 +87,7 @@ export class UserController implements IUserController {
       if (error instanceof BaseException) {
         res.status(error.statusCode).json({
           code: error.errorCode,
-          message: error.message
+          message: error.message,
         });
       } else {
         next(error);
