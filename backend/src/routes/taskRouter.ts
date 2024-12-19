@@ -22,11 +22,7 @@ tasksRouter.get(
     try {
       const userId = req.params.userId;
       const result = await TaskController.getTasksByUserId(userId);
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).json(result);
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
@@ -40,11 +36,7 @@ tasksRouter.get(
     try {
       const taskId = req.params.taskId;
       const result = await TaskController.getTaskById(taskId);
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).json(result);
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
@@ -71,7 +63,7 @@ tasksRouter.post(
       };
 
       const result = await TaskController.newTask(taskData);
-      res.status(result.isSuccess ? 201 : 400).json(result);
+      res.status(201).json(result);
     } catch (error) {
       next(error);
     }
@@ -99,7 +91,7 @@ tasksRouter.put(
       };
 
       const result = await TaskController.updateTask(taskData);
-      res.status(result.isSuccess ? 200 : 400).json(result);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
@@ -113,11 +105,7 @@ tasksRouter.delete(
     try {
       const taskId = req.params.taskId;
       const result = await TaskController.deleteTask(taskId);
-      if (result.isSuccess) {
-        res.status(204).json();
-      } else {
-        res.status(404).json(result);
-      }
+      res.status(204).json(result);
     } catch (error) {
       next(error);
     }
@@ -130,11 +118,7 @@ tasksRouter.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await TaskController.toggleCompletion(req.params.taskId);
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(400).json(result);
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
@@ -148,11 +132,7 @@ tasksRouter.get(
     try {
       const userId = req.params.userId;
       const result = await TaskController.getUserTaskStats(userId);
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(404).json(result);
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }

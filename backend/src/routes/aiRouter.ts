@@ -12,11 +12,7 @@ aiRouter.get(
       const result = await AIRecommendationController.getRecommendation(
         req.params.userId,
       );
-      if (result.isSuccess) {
-        res.status(200).json(result);
-      } else {
-        res.status(400).json(result);
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }

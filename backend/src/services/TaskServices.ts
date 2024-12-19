@@ -1,56 +1,43 @@
-import { Task } from '../models/entities/Task.js';
-import { CreateTaskDTO, UpdateTaskDTO } from '../models/dtos/TaskDTO.js';
-import {
-  SingleTaskResult,
-  TaskListResult,
-  NoDataResult,
-} from '../models/responses/ProcessResult.js';
-import { pool } from '../configuration/configDataBase.js';
-import { TaskStatsResult } from '../models/responses/TaskStatsResult.js';
-import { TaskStatsDTO } from '../models/dtos/TaskStatsDTO.js';
+import { pool } from "../configuration/configDataBase";
+import { CreateTaskDTO, UpdateTaskDTO } from "../models/dtos/TaskDTO";
+import { TaskStatsDTO } from "../models/dtos/TaskStatsDTO";
+import { Task } from "../models/entities/Task";
 
 export class TaskServices {
-  static async createTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
+  static async createTask(taskData: CreateTaskDTO): Promise<Task> {
     try {
       const result = await pool.query(
         `INSERT INTO tasks (title, description, user_id) 
          VALUES ($1, $2, $3) RETURNING *`,
         [taskData.title, taskData.description, taskData.user_id],
       );
-
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Failed to create task.' };
+        throw new Error('Failed to create task.');
       }
-      return { isSuccess: true, message: 'Task created successfully.' };
+      return result.rows[0] as Task;
     } catch (error) {
       console.error('Error in createTask:', error);
-      return {
-        isSuccess: false,
-        message: 'Error creating task. Please try again later.',
-      };
+      throw error;
     }
   }
 
-  static async deleteTask(taskId: string): Promise<NoDataResult> {
+  static async deleteTask(taskId: string): Promise<Task> {
     try {
       const result = await pool.query(`DELETE FROM tasks WHERE id = $1`, [
         taskId,
       ]);
 
       if (result.rowCount === 0) {
-        return { isSuccess: false, message: 'Task not found.' };
+        throw new Error('Task not found.');
       } else {
-        return { isSuccess: true, message: `Task with ID ${taskId} deleted.` };
+        return result.rows[0] as Task;
       }
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error deleting task: ${(error as Error).message}`,
-      };
+      throw error;
     }
   }
 
-  static async updateTask(taskData: UpdateTaskDTO): Promise<SingleTaskResult> {
+  static async updateTask(taskData: UpdateTaskDTO): Promise<Task> {
     try {
       const result = await pool.query(
         `UPDATE tasks 
@@ -63,52 +50,32 @@ export class TaskServices {
       );
 
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Task not found.', data: null };
+        throw new Error('Task not found.');
       }
-      return {
-        isSuccess: true,
-        message: 'Task updated successfully.',
-        data: result.rows[0] as Task,
-      };
+      return result.rows[0] as Task;
     } catch (error) {
       console.error('Error in updateTask:', error);
-      return {
-        isSuccess: false,
-        message: 'Error updating task. Please try again later.',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async getTaskById(taskId: string): Promise<SingleTaskResult> {
+  static async getTaskById(taskId: string): Promise<Task> {
     try {
       const query = 'SELECT * FROM tasks WHERE id = $1';
       const result = await pool.query(query, [taskId]);
 
       if (result.rows.length === 0) {
-        return {
-          isSuccess: false,
-          message: 'Task not found',
-          data: null,
-        };
+        throw new Error('Task not found');
       }
 
-      return {
-        isSuccess: true,
-        message: 'Task retrieved successfully',
-        data: result.rows[0] as Task,
-      };
+      return result.rows[0] as Task;
     } catch (error) {
       console.error('Error in getTaskById:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving task',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async getTasksByUserId(userId: string): Promise<TaskListResult> {
+  static async getTasksByUserId(userId: string): Promise<Task[]> {
     try {
       const result = await pool.query(
         `SELECT id, title, description, completed, 
@@ -119,46 +86,27 @@ export class TaskServices {
         [userId],
       );
 
-      return {
-        isSuccess: true,
-        message:
-          result.rows.length > 0
-            ? 'Tasks retrieved successfully.'
-            : 'No tasks yet.',
-        data: result.rows.length > 0 ? result.rows : [],
-      };
+      return result.rows as Task[];
     } catch (error) {
-      console.error('Error in getTasksByUserId:', error);
-      return {
-        isSuccess: false,
-        message: `Error getting tasks: ${(error as Error).message}`,
-        data: null,
-      };
+      throw error;
     }
   }
-  static async getAllTasks(): Promise<TaskListResult> {
+
+  static async getAllTasks(): Promise<Task[]> {
     try {
       const result = await pool.query(`SELECT * FROM tasks`);
 
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'No tasks found.', data: null };
+        throw new Error('No tasks found.');
       } else {
-        return {
-          isSuccess: true,
-          message: 'All tasks retrieved successfully.',
-          data: result.rows,
-        };
+        return result.rows as Task[];
       }
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error getting all tasks: ${(error as Error).message}`,
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async toggleTaskComplete(taskId: string): Promise<SingleTaskResult> {
+  static async toggleTaskComplete(taskId: string): Promise<Task> {
     try {
       const result = await pool.query(
         `UPDATE tasks 
@@ -169,26 +117,18 @@ export class TaskServices {
       );
 
       if (result.rows.length === 0) {
-        return { isSuccess: false, message: 'Task not found.', data: null };
+        throw new Error('Task not found.');
       }
 
       const task: Task = result.rows[0] as Task;
       const status = task.completed ? 'completed' : 'uncompleted';
-      return {
-        isSuccess: true,
-        message: `Task marked as ${status}.`,
-        data: task,
-      };
+      return task;
     } catch (error) {
-      return {
-        isSuccess: false,
-        message: `Error toggling task: ${(error as Error).message}`,
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async getUserTaskStats(userId: string): Promise<TaskStatsResult> {
+  static async getUserTaskStats(userId: string): Promise<TaskStatsDTO> {
     try {
       const result = await pool.query<TaskStatsDTO>(
         `SELECT 
@@ -201,25 +141,12 @@ export class TaskServices {
       );
 
       if (result.rows.length === 0) {
-        return {
-          isSuccess: false,
-          message: 'No statistics found.',
-          data: null,
-        };
+        throw new Error('No statistics found.');
       }
 
-      return {
-        isSuccess: true,
-        message: 'Statistics retrieved successfully.',
-        data: result.rows[0],
-      };
+      return result.rows[0] as TaskStatsDTO;
     } catch (error) {
-      console.error('Error in getUserTaskStats:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving statistics.',
-        data: null,
-      };
+      throw error;
     }
   }
 

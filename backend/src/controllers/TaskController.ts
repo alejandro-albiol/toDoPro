@@ -1,136 +1,90 @@
 import { CreateTaskDTO, UpdateTaskDTO } from "../models/dtos/TaskDTO.js";
-import { SingleTaskResult, TaskListResult } from "../models/responses/ProcessResult.js";
-import { NoDataResult } from "../models/responses/ProcessResult.js";
-import { TaskStatsResult } from "../models/responses/TaskStatsResult.js";
+import { TaskStatsDTO } from "../models/dtos/TaskStatsDTO.js";
+import { Task } from "../models/entities/Task.js";
 import { TaskServices } from "../services/TaskServices.js";
 
 export class TaskController {
-  static async newTask(taskData: CreateTaskDTO): Promise<NoDataResult> {
+  static async newTask(taskData: CreateTaskDTO): Promise<Task> {
     try {
       return await TaskServices.createTask(taskData);
     } catch (error) {
       console.error('Error creating task.', error);
-      return {
-        isSuccess: false,
-        message: 'Error creating task.',
-      };
+      throw error;
     }
   }
 
-  static async getTaskById(taskId: string): Promise<SingleTaskResult> {
+  static async getTaskById(taskId: string): Promise<Task> {
     try {
       return await TaskServices.getTaskById(taskId);
     } catch (error) {
       console.error('Error in getTaskById:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving task',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async getAllTasks(): Promise<TaskListResult> {
+  static async getAllTasks(): Promise<Task[]> {
     try {
       return await TaskServices.getAllTasks();
     } catch (error) {
       console.error('Error retrieving all tasks:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving all tasks.',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async updateTask(taskData: UpdateTaskDTO): Promise<SingleTaskResult> {
+  static async updateTask(taskData: UpdateTaskDTO): Promise<Task> {
     try {
       if (!taskData.id) {
-        return {
-          isSuccess: false,
-          message: 'Task ID is required.',
-          data: null,
-        };
+        throw new Error('Task ID is required.');
       }
       return await TaskServices.updateTask(taskData);
     } catch (error) {
       console.error('Error updating task:', error);
-      return {
-        isSuccess: false,
-        message: 'Error updating task.',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async deleteTask(taskId: string): Promise<NoDataResult> {
+  static async deleteTask(taskId: string): Promise<Task> {
     try {
       if (!taskId) {
-        return {
-          isSuccess: false,
-          message: 'Task ID is required.',
-        };
+        throw new Error('Task ID is required.');
       }
       return await TaskServices.deleteTask(taskId);
     } catch (error) {
       console.error('Error deleting task:', error);
-      return {
-        isSuccess: false,
-        message: 'Error deleting task.',
-      };
+      throw error;
     }
   }
 
-  static async getTasksByUserId(userId: string): Promise<TaskListResult> {
+  static async getTasksByUserId(userId: string): Promise<Task[]> {
     try {
       return await TaskServices.getTasksByUserId(userId);
     } catch (error) {
       console.error('Error retrieving tasks by user ID:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving tasks by user ID.',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async toggleCompletion(taskId: string): Promise<SingleTaskResult> {
+  static async toggleCompletion(taskId: string): Promise<Task> {
     try {
       if (!taskId) {
-        return {
-          isSuccess: false,
-          message: 'Task ID is required.',
-          data: null,
-        };
+        throw new Error('Task ID is required.');
       }
       return await TaskServices.toggleTaskComplete(taskId);
     } catch (error) {
       console.error('Error completing task:', error);
-      return {
-        isSuccess: false,
-        message: 'Error completing task.',
-        data: null,
-      };
+      throw error;
     }
   }
 
-  static async getUserTaskStats(userId: string): Promise<TaskStatsResult> {
+  static async getUserTaskStats(userId: string): Promise<TaskStatsDTO> {
     try {
       if (!userId) {
-        return {
-          isSuccess: false,
-          message: 'User ID is required.',
-          data: null,
-        };
+        throw new Error('User ID is required.');
       }
       return await TaskServices.getUserTaskStats(userId);
     } catch (error) {
       console.error('Error retrieving user task stats:', error);
-      return {
-        isSuccess: false,
-        message: 'Error retrieving task statistics.',
-        data: null,
-      };
+      throw error;
     }
   }
 }

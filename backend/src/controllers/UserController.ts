@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { IUserService } from '../interfaces/user/IUserService.js';
+import { IUserService } from '../interfaces/services/IUserService.js';
 import { BaseException } from '../models/exceptions/base/BaseException.js';
+import { IUserController } from '../interfaces/controllers/IUserController.js';
 
-export class UserController {
-  constructor(private userService: IUserService) {}
+export class UserController implements IUserController {
+  constructor(private userService: IUserService) {
+  }
 
   async findById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -34,6 +36,15 @@ export class UserController {
       } else {
         next(error);
       }
+    }
+  }
+
+  async findByUsername(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await this.userService.findByUsername(req.params.username);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
     }
   }
 

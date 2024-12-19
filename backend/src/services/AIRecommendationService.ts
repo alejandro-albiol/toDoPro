@@ -1,6 +1,5 @@
 import Groq from 'groq-sdk';
 import { Task } from '../models/entities/Task.js';
-import { SingleRecommendationResult } from '../models/responses/ProcessResult.js';
 import { GroqCompletion } from '../models/responses/GroqResponses.js';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -8,13 +7,9 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export class AIRecommendationService {
   static async getTaskRecommendation(
     pendingTasks: Task[],
-  ): Promise<SingleRecommendationResult> {
+  ): Promise<string> {
     if (!pendingTasks || pendingTasks.length === 0) {
-      return {
-        isSuccess: true,
-        message: 'No tasks to analyze',
-        data: 'Great job! You have no pending tasks. Time to set new goals!',
-      };
+      throw new Error('No tasks to analyze');
     }
 
     if (pendingTasks.length > 10) {
@@ -25,18 +20,10 @@ export class AIRecommendationService {
     const recommendation = chatCompletion.choices[0]?.message?.content || '';
 
     if (!recommendation || recommendation.length > 150) {
-      return {
-        isSuccess: true,
-        message: 'Default recommendation provided',
-        data: 'Focus on completing your highest priority tasks first.',
-      };
+      throw new Error('Default recommendation provided');
     }
 
-    return {
-      isSuccess: true,
-      message: 'Recommendation generated successfully',
-      data: recommendation,
-    };
+    return recommendation;
   }
 
   private static async getGroqCompletion(

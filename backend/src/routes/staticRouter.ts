@@ -1,35 +1,34 @@
 import path from 'path';
 import Express from 'express';
-import { publicPath } from '../configuration/config.js';
 
 const staticRouter = Express.Router();
 
 staticRouter.get('/tasks/new', (req, res) => {
-  res.sendFile(path.join(publicPath, 'taskCreation.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'taskCreation.html'));
 });
 
 staticRouter.get('/tasks/:taskId', (req, res) => {
-  res.sendFile(path.join(publicPath, 'taskDetail.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'taskDetail.html'));
 });
 
 staticRouter.get('/home/:userId', (req, res) => {
-  res.sendFile(path.join(publicPath, 'home.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'home.html'));
 });
 
 staticRouter.get('/profile/:userId', (req, res) => {
-  res.sendFile(path.join(publicPath, 'profile.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'profile.html'));
 });
 
 staticRouter.get('/login', (req, res) => {
-  res.sendFile(path.join(publicPath, 'logIn.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'logIn.html'));
 });
 
 staticRouter.get('/signin', (req, res) => {
-  res.sendFile(path.join(publicPath, 'signIn.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'signIn.html'));
 });
 
 staticRouter.get('/', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+  res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
 });
 
 export default staticRouter;

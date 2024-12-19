@@ -11,5 +11,14 @@
     "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
     "test": "npm run test --workspace=backend && npm run test --workspace=frontend",
     "clean": "npm run clean --workspaces"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "groq-sdk": "^0.9.1"
   }
 }
