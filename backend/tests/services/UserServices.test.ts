@@ -1,6 +1,6 @@
-import { UserServices } from '../../src/services/UserServices.js';
-import { UserRepository } from '../../src/repositories/UserRepository.js';
-import { CreateUserDTO } from '../../src/models/dtos/UserDTO.js';
+import { UserServices } from '../../src/users/services/UserServices.js';
+import { UserRepository } from '../../src/users/repositories/UserRepository.js';
+import { CreateUserDTO } from '../../src/users/models/dtos/UserDTO.js';
 import { EmailConflictException } from '../../src/models/exceptions/conflict/user/EmailConflictException.js';
 
 jest.mock('../../src/repositories/UserRepository.js');

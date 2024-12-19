@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserDTO, ChangePasswordDTO, LoginDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO, ChangePasswordDTO, LoginDTO } from '../users/models/dtos/UserDTO.js';
 
 export class UserValidator {
   static validateRegistration() {

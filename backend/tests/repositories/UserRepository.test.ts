@@ -1,7 +1,7 @@
-import { UserRepository } from '../../src/repositories/UserRepository';
+import { UserRepository } from '../../src/users/repositories/UserRepository';
 import { pool } from '../../src/configuration/configDataBase';
 import { UserNotFoundException } from '../../src/models/exceptions/notFound/user/UserNotFoundException';
-import { CreateUserDto } from '../../src/models/dtos/CreateUserDto';
+import { CreateUserDto } from '../../src/users/models/dtos/CreateUserDto';
 
 describe('UserRepository', () => {
   let repository: UserRepository;

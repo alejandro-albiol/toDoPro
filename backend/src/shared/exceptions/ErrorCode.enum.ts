@@ -1,0 +1,5 @@
+export enum ErrorCode {
+  USER_NOT_FOUND = 'U1',
+  EMAIL_ALREADY_EXISTS = 'U2',
+  USERNAME_ALREADY_EXISTS = 'U3',
+}

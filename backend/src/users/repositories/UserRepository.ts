@@ -1,7 +1,7 @@
-import { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
+import { IUserRepository } from "./IUserRepository.js";
 import { User } from "../models/entities/User.js";
-import { DatabaseException } from "../models/exceptions/dataBase/DataBaseException.js";
-import { pool } from "../configuration/configDataBase.js";
+import { DatabaseException } from "../../models/exceptions/dataBase/DataBaseException.js";
+import { pool } from "../../configuration/configDataBase.js";
 
 export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<User | undefined> {
