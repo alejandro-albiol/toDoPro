@@ -1,8 +1,8 @@
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-} from '../interfaces/dtos/task/UpdateTaskDto.js';
-import { TaskStatsDTO } from '../interfaces/dtos/task/TaskStatsDto.js';
+} from '../shared/interfaces/dtos/task/UpdateTaskDto.js';
+import { TaskStatsDTO } from '../shared/interfaces/dtos/task/TaskStatsDto.js';
 import { Task } from '../models/entities/Task.js';
 import { TaskServices } from '../services/TaskServices.js';
 

@@ -10,7 +10,7 @@ import { IdValidator } from '../middlewares/IdValidator.js';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-} from '../interfaces/dtos/task/UpdateTaskDto.js';
+} from '../shared/interfaces/dtos/task/UpdateTaskDto.js';
 
 interface TypedRequestBody<T> extends Request {
   body: T;

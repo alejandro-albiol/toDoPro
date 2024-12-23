@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateTaskDto } from '../interfaces/dtos/task/CreateTaskDto';
-import { IValidator } from '../interfaces/middlewares/IValidator.js';
-import { UpdateTaskDto } from '../interfaces/dtos/task/UpdateTaskDto';
-import { IApiError } from '../interfaces/responses/IApiError.js';
+import { CreateTaskDto } from '../shared/interfaces/dtos/task/CreateTaskDto';
+import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
+import { UpdateTaskDto } from '../shared/interfaces/dtos/task/UpdateTaskDto';
+import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 import { ApiResponse } from '../models/responses/ApiResponse';
 
 export class TaskValidator implements IValidator {

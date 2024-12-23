@@ -1,7 +1,7 @@
-import { UserServices } from '../../src/services/UserServices.js';
-import { UserRepository } from '../../src/repositories/UserRepository.js';
-import { CreateUserDto } from '../../src/interfaces/dtos/user/CreateUserDto.js';
-import { EmailConflictException } from '../../src/models/exceptions/conflict/user/EmailConflictException.js';
+import { UserServices } from '../../src/users/services/UserServices.js';
+import { UserRepository } from '../../src/users/repository/UserRepository.js';
+import { CreateUserDTO } from '../../src/users/models/dtos/UserDTO.js';
+import { EmailAlreadyExistsException } from '../../src/users/exceptions/EmailAlreadyExists.exception.js';
 
 jest.mock('../../src/repositories/UserRepository.js');
 
@@ -16,7 +16,7 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should create a new user successfully', async () => {
-      const userData: CreateUserDto = {
+      const userData: CreateUserDTO = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
@@ -37,7 +37,7 @@ describe('UserService', () => {
     });
 
     it('should throw when creating user with duplicate email', async () => {
-      const createUserDto: CreateUserDto = {
+      const createUserDto: CreateUserDTO = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
@@ -50,7 +50,7 @@ describe('UserService', () => {
 
       await expect(service.create(createUserDto))
         .rejects
-        .toThrow(EmailConflictException);
+        .toThrow(EmailAlreadyExistsException);
     });
   });
 });

@@ -1,17 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserDto } from '../interfaces/dtos/user/CreateUserDto.js';
-import { UpdatePasswordDto } from '../interfaces/dtos/user/UpdatePasswordDto.js';
-import { UserLoginDto } from '../interfaces/dtos/user/UserLoginDto.js';
-import { IValidator } from '../interfaces/middlewares/IValidator.js';
-import { IAuthValidator } from '../interfaces/middlewares/IAuthValidator.js';
-import { UpdateUserDto } from '../interfaces/dtos/user/UpdateUserDto.js';
+import { CreateUserDTO, ChangePasswordDTO, LoginDTO } from '../users/models/dtos/UserDTO.js';
+import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
+import { IAuthValidator } from '../shared/interfaces/middlewares/IAuthValidator.js';
+import { UpdateUserDTO } from '../users/models/dtos/UserDTO.js';
 import { ApiResponse } from '../models/responses/ApiResponse.js';
-import { IApiError } from '../interfaces/responses/IApiError.js';
+import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 
 export class UserValidator implements IAuthValidator, IValidator {
   validateCreate() {
     return (req: Request, res: Response, next: NextFunction) => {
-      const data = req.body as CreateUserDto;
+      const data = req.body as CreateUserDTO;
       const errors: IApiError[] = [];
 
       if (!data.username?.trim()) {
@@ -56,7 +54,7 @@ export class UserValidator implements IAuthValidator, IValidator {
 
   validateLogin() {
     return (req: Request, res: Response, next: NextFunction) => {
-      const data = req.body as UserLoginDto;
+      const data = req.body as LoginDTO;
       const errors: IApiError[] = [];
 
       if (!data.username?.trim()) {
@@ -89,7 +87,7 @@ export class UserValidator implements IAuthValidator, IValidator {
 
   validatePasswordUpdate() {
     return (req: Request, res: Response, next: NextFunction) => {
-      const data = req.body as UpdatePasswordDto;
+      const data = req.body as ChangePasswordDTO;
       const errors: IApiError[] = [];
 
       if (!data.currentPassword) {
@@ -122,7 +120,7 @@ export class UserValidator implements IAuthValidator, IValidator {
 
   validateUpdate() {
     return (req: Request, res: Response, next: NextFunction) => {
-      const data = req.body as UpdateUserDto;
+      const data = req.body as UpdateUserDTO;
       const errors: IApiError[] = [];
 
       if (!data.username && !data.email) {

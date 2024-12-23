@@ -1,7 +1,7 @@
-import { UserRepository } from '../../src/repositories/UserRepository';
-import { pool } from '../../src/configuration/configDataBase';
-import { UserNotFoundException } from '../../src/models/exceptions/notFound/user/UserNotFoundException';
-import { CreateUserDto } from '../../src/interfaces/dtos/user/CreateUserDto';
+import { UserRepository } from '../../src/users/repository/UserRepository.js';
+import { pool } from '../../src/configuration/configDataBase.js';
+import { UserNotFoundException } from '../../src/users/exceptions/UserNotFound.exception.js';
+import { CreateUserDTO } from '../../src/users/models/dtos/UserDTO.js';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
@@ -33,7 +33,7 @@ describe('UserRepository', () => {
 
   describe('create', () => {
     it('should create a new user successfully', async () => {
-      const createUserDto: CreateUserDto = {
+      const createUserDto: CreateUserDTO = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
@@ -51,7 +51,7 @@ describe('UserRepository', () => {
 
   describe('findById', () => {
     it('should find user by id successfully', async () => {
-      const createUserDto: CreateUserDto = {
+      const createUserDto: CreateUserDTO = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'
@@ -75,7 +75,7 @@ describe('UserRepository', () => {
 
   describe('findByEmail', () => {
     it('should find user by email successfully', async () => {
-      const createUserDto: CreateUserDto = {
+      const createUserDto: CreateUserDTO = {
         username: 'testuser',
         email: 'test@test.com',
         password: 'password123'

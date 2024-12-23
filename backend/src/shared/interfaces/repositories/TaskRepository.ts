@@ -1,8 +1,8 @@
 import { pool } from '../configuration/configDataBase.js';
-import { ITaskRepository } from '../interfaces/repositories/ITaskRepository.js';
+import { ITaskRepository } from './ITaskRepository.js';
 import { Task } from '../models/entities/Task.js';
-import { DatabaseException } from '../models/exceptions/dataBase/DataBaseException.js';
-import { CreateTaskDto } from '../interfaces/dtos/task/CreateTaskDto.js';
+import { DatabaseException } from '../exceptions/dataBase/DataBaseException.js';
+import { CreateTaskDto } from '../dtos/task/CreateTaskDto.js';
 
 export class TaskRepository implements ITaskRepository {
   async findById(id: string): Promise<Task | undefined> {

@@ -1,11 +1,11 @@
-import { IUserService } from '../interfaces/services/IUserService.js';
+import { IUserService } from '../shared/interfaces/services/IUserService.js';
 import { User } from '../models/entities/User.js';
 import { EmailConflictException } from '../models/exceptions/conflict/user/EmailConflictException.js';
 import { UsernameConflictException } from '../models/exceptions/conflict/user/UsernameConflictException.js';
 import { UserNotFoundException } from '../models/exceptions/notFound/user/UserNotFoundException.js';
 import { UserRepository } from '../repositories/UserRepository.js';
-import { CreateUserDto } from '../interfaces/dtos/user/CreateUserDto.js';
-import { UpdateUserDto } from '../interfaces/dtos/user/UpdateUserDto.js';
+import { CreateUserDto } from '../shared/interfaces/dtos/user/CreateUserDto.js';
+import { UpdateUserDto } from '../shared/interfaces/dtos/user/UpdateUserDto.js';
 
 export class UserServices implements IUserService {
   private userRepository: UserRepository;

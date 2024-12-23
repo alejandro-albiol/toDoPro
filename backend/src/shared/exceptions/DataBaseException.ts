@@ -1,4 +1,4 @@
-import { BaseException } from '../base/BaseException.js';
+import { BaseException } from '../../models/exceptions/base/BaseException.js';
 
 export class DatabaseException extends BaseException {
   constructor(operation: string, entity: string) {
