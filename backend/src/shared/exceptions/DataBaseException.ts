@@ -1,7 +1,18 @@
-import { BaseException } from '../../models/exceptions/base/BaseException.js';
+import { DataBaseErrorCode } from './enums/DataBaseErrorCode.enum';
 
-export class DatabaseException extends BaseException {
-  constructor(operation: string, entity: string) {
-    super(`Database ${operation} failed for ${entity}`, 500, 'DATABASE_ERROR');
+export class DataBaseException extends Error {
+  constructor(
+    message: string,
+    public readonly code: DataBaseErrorCode,
+    public readonly metadata?: {
+      detail?: string;
+      constraint?: string;
+      column?: string;
+      table?: string;
+    }
+  ) {
+    super(message);
+    this.name = 'DatabaseException';
   }
 }
+

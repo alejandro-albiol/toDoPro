@@ -1,105 +1,209 @@
 import { IUserRepository } from './IUserRepository.js';
 import { User } from '../models/entities/User.js';
-import { BaseException } from '../../shared/exceptions/BaseException.js';
-import { pool } from '../../configuration/configDataBase.js';
-import { ErrorCode } from '../../shared/exceptions/ErrorCode.enum.js';
-import { DatabaseException } from '../../shared/exceptions/DataBaseException.js';
+import { pool } from '../../config/configDataBase.js';
+import { CreateUserDTO, UpdateUserDTO } from '../models/dtos/UserDTO.js';
+import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
+import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
+import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';
 
 export class UserRepository implements IUserRepository {
-  async findById(id: string): Promise<User | undefined> {
-    try {
-      const result = await pool.query('SELECT * FROM users WHERE id = $1', [
-        id,
-      ]);
 
+  async create(newUser: CreateUserDTO): Promise<User> {
+    try {
+      const result = await pool.query(
+        'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
+        [newUser.username, newUser.email, newUser.password],
+      );
       return result.rows[0];
     } catch (error) {
-      throw new DatabaseException('find', 'User');
+      const dbError = error as IDatabaseError;
+      
+      if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+        throw new DataBaseException(
+          'Unique constraint violation',
+          DataBaseErrorCode.UNIQUE_VIOLATION
+        );
+      }
+      
+      if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
+        throw new DataBaseException(
+          'Not null constraint violation',
+          DataBaseErrorCode.NOT_NULL_VIOLATION
+        );
+      }
+      
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
     }
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
+  async findById(id: string): Promise<User | null> {
     try {
-      const result = await pool.query('SELECT * FROM users WHERE email = $1', [
-        email,
-      ]);
-
-      return result.rows[0];
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      return result.rows[0] || null;
     } catch (error) {
-      throw new DatabaseException('find', 'User');
+      const dbError = error as IDatabaseError;
+      
+      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
+        throw new DataBaseException(
+          'Invalid column reference',
+          DataBaseErrorCode.UNDEFINED_COLUMN
+        );
+      }
+
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
     }
   }
 
-  async findByUsername(username: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<User | null> {
+    try {
+      const result = await pool.query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+      );
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+    
+      return result.rows[0];
+    } catch (error) {
+      const dbError = error as IDatabaseError;
+      
+      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
+        throw new DataBaseException(
+          'Invalid column reference',
+          DataBaseErrorCode.UNDEFINED_COLUMN
+        );
+      }
+
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
+    }
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
     try {
       const result = await pool.query(
         'SELECT * FROM users WHERE username = $1',
         [username],
       );
+      if (result.rows.length === 0) {
+        return null;
+      }
       return result.rows[0];
     } catch (error) {
-      throw new DatabaseException('find', 'User');
-    }
-  }
+      const dbError = error as IDatabaseError;
 
-  async create(user: User): Promise<User> {
-    try {
-      const result = await pool.query(
-        'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-        [user.username, user.email, user.password],
+      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
+        throw new DataBaseException(
+          'Invalid column reference',
+          DataBaseErrorCode.UNDEFINED_COLUMN
+        );
+      }
+
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
       );
-
-      return result.rows[0];
-    } catch (error) {
-      throw new DatabaseException('create', 'User');
     }
   }
 
-  async update(id: string, userData: Partial<User>): Promise<User> {
+  async update(updatedUser: UpdateUserDTO): Promise<User> {
     try {
       const setClause: string[] = [];
       const values: any[] = [];
       let paramCount = 1;
 
-      if (userData.username) {
+      if (updatedUser.username) {
         setClause.push(`username = $${paramCount}`);
-        values.push(userData.username);
+        values.push(updatedUser.username);
         paramCount++;
       }
-      if (userData.email) {
+      if (updatedUser.email) {
         setClause.push(`email = $${paramCount}`);
-        values.push(userData.email);
-        paramCount++;
-      }
-      if (userData.password) {
-        setClause.push(`password = $${paramCount}`);
-        values.push(userData.password);
+        values.push(updatedUser.email);
         paramCount++;
       }
 
-      values.push(id);
+      const USER_ID_INDEX = paramCount;
+      values.push(updatedUser.id);
 
       const query = `
         UPDATE users 
         SET ${setClause.join(', ')} 
-        WHERE id = $${paramCount} 
+        WHERE id = $${USER_ID_INDEX} 
         RETURNING *
       `;
 
       const result = await pool.query(query, values);
       return result.rows[0];
     } catch (error) {
-      throw new DatabaseException('update', 'User');
+      const dbError = error as IDatabaseError;
+      
+      if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+        throw new DataBaseException(
+          'Unique constraint violation',
+          DataBaseErrorCode.UNIQUE_VIOLATION
+        );
+      }
+
+      if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
+        throw new DataBaseException(
+          'Not null constraint violation',
+          DataBaseErrorCode.NOT_NULL_VIOLATION
+        );
+      }
+
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
     }
   }
 
-  async delete(id: string): Promise<boolean> {
+  async updatePassword(userId: string, newHashedPassword: string): Promise<void> {
     try {
-      const result = await pool.query('DELETE FROM users WHERE id = $1', [id]);
-
-      return (result.rowCount ?? 0) > 0;
+      await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHashedPassword, userId]);
     } catch (error) {
-      throw new DatabaseException('delete', 'User');
+      const dbError = error as IDatabaseError;
+      if (dbError.code === DataBaseErrorCode.UNKNOWN_ERROR) {
+        throw new DataBaseException(
+          'Database error',
+          DataBaseErrorCode.UNKNOWN_ERROR
+        );
+      }
+      throw error;
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      await pool.query(
+        'DELETE FROM users WHERE id = $1',
+        [id],
+      );
+    } catch (error) {
+      const dbError = error as IDatabaseError;
+      
+      if (dbError.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
+        throw new DataBaseException(
+          'Cannot delete due to existing references',
+          DataBaseErrorCode.FOREIGN_KEY_VIOLATION
+        );
+      }
+
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
     }
   }
 }

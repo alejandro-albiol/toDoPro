@@ -1,8 +1,13 @@
 import { BaseException } from '../../shared/exceptions/BaseException.js';
-import { ErrorCode } from '../../shared/exceptions/ErrorCode.enum.js';
+import { ErrorCode } from '../../shared/exceptions/enums/ErrorCode.enum.js';
+import { UserException } from './UserException.js';
 
-export class UserNotFoundException extends BaseException {
+export class UserNotFoundException extends UserException {
   constructor(userId: string) {
-    super(`User with id ${userId} not found`, ErrorCode.USER_NOT_FOUND);
+    super(
+      `User with id ${userId} not found`,
+      404,
+      ErrorCode.USER_NOT_FOUND,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { pool } from '../configuration/configDataBase';
+import { pool } from '../config/configDataBase';
 import { TaskStatsDto } from '../shared/interfaces/dtos/task/TaskStatsDto';
 import { Task } from '../models/entities/Task';
 import { CreateTaskDto } from '../shared/interfaces/dtos/task/CreateTaskDto';
@@ -6,7 +6,7 @@ import { UpdateTaskDto } from '../shared/interfaces/dtos/task/UpdateTaskDto';
 import { ITaskRepository } from '../shared/interfaces/repositories/ITaskRepository';
 import { TaskValidationException } from '../models/exceptions/validation/task/TaskValidationException';
 import { TaskNotFoundException } from '../models/exceptions/notFound/task/TaskNotFoundException';
-import { DatabaseException } from '../shared/exceptions/DataBaseException';
+import { DataBaseException } from '../shared/exceptions/DataBaseException';
 
 export class TaskServices {
   private taskRepository: ITaskRepository;

@@ -1,9 +1,8 @@
-import { ErrorCode } from './ErrorCode.enum';
-
-export class BaseException extends Error {
+export abstract class BaseException extends Error {
   constructor(
-    public message: string,
-    public errorCode: ErrorCode,
+    message: string,
+    public readonly statusCode: number,
+    public readonly errorCode: string
   ) {
     super(message);
     this.name = this.constructor.name;

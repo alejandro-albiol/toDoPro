@@ -14,5 +14,6 @@ export default {
         tsconfig: 'tsconfig.json'
       }
     ]
-  }
+  },
+  setupFiles: ['<rootDir>/tests/__mocks__/databaseMock.ts']
 }; 

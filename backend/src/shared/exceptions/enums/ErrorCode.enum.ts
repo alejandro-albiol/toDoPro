@@ -1,0 +1,12 @@
+export enum ErrorCode {
+
+  USER_NOT_FOUND = 'U1',
+  EMAIL_ALREADY_EXISTS = 'U2',
+  USERNAME_ALREADY_EXISTS = 'U3',
+  
+  INVALID_PASSWORD = 'A1',
+  INVALID_TOKEN = 'A2',
+  
+  TASK_NOT_FOUND = 'T1',
+  TASK_ALREADY_EXISTS = 'T2'
+}

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './configuration/config.js';
+import { config } from './config/config.js';
 import ApiRouter from './routes/apiRouter.js';
 
 const app = express();
