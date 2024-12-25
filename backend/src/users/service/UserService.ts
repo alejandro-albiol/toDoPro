@@ -1,5 +1,5 @@
 import { IUserService } from './IUserService.js';
-import { CreateUserDTO, UpdateUserDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from '../models/dtos/UserDTO.js';
 import { User } from '../models/entities/User.js';
 import { UserRepository } from '../repository/UserRepository.js';
 import { UserNotFoundException } from '../exceptions/UserNotFound.exception.js';
@@ -7,8 +7,9 @@ import { EmailAlreadyExistsException } from '../exceptions/EmailAlreadyExists.ex
 import { UsernameAlreadyExistsException } from '../exceptions/UsernameAlreadyExists.exception.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
+import { HashServices } from '../../shared/services/HashServices.js';
 
-export class UserServices implements IUserService {
+export class UserService implements IUserService {
   private userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
@@ -17,7 +18,12 @@ export class UserServices implements IUserService {
 
   async create(userData: CreateUserDTO): Promise<User> {
     try {
-      return await this.userRepository.create(userData);
+      const hashedPassword = await HashServices.hashPassword(userData.password);
+      const userWithHashedPassword = {
+        ...userData,
+        password: hashedPassword,
+      };
+      return await this.userRepository.create(userWithHashedPassword);
     } catch (error) {
       if (error instanceof DataBaseException) {
         if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
@@ -41,7 +47,7 @@ export class UserServices implements IUserService {
     return user;
   }
 
-  async update(userData: UpdateUserDTO): Promise<User> {
+  async update(userData: UpdateUserDTO): Promise<UserUpdatedDTO> {
     const user = await this.userRepository.update(userData);
     if (!user) {
       throw new UserNotFoundException(userData.id);

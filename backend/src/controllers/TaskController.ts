@@ -4,7 +4,7 @@ import {
 } from '../shared/interfaces/dtos/task/UpdateTaskDto.js';
 import { TaskStatsDTO } from '../shared/interfaces/dtos/task/TaskStatsDto.js';
 import { Task } from '../models/entities/Task.js';
-import { TaskServices } from '../services/TaskServices.js';
+import { TaskServices } from '../shared/services/TaskServices.js';
 
 export class TaskController {
   static async newTask(taskData: CreateTaskDTO): Promise<Task> {

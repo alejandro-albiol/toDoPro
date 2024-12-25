@@ -1,6 +1,6 @@
 import Groq from 'groq-sdk';
-import { Task } from '../models/entities/Task.js';
-import { GroqCompletion } from '../models/responses/GroqResponses.js';
+import { Task } from '../../models/entities/Task.js';
+import { GroqCompletion } from '../../models/responses/GroqResponses.js';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 

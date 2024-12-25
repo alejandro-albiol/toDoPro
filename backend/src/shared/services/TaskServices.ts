@@ -1,12 +1,12 @@
-import { pool } from '../config/configDataBase';
-import { TaskStatsDto } from '../shared/interfaces/dtos/task/TaskStatsDto';
-import { Task } from '../models/entities/Task';
-import { CreateTaskDto } from '../shared/interfaces/dtos/task/CreateTaskDto';
-import { UpdateTaskDto } from '../shared/interfaces/dtos/task/UpdateTaskDto';
-import { ITaskRepository } from '../shared/interfaces/repositories/ITaskRepository';
-import { TaskValidationException } from '../models/exceptions/validation/task/TaskValidationException';
-import { TaskNotFoundException } from '../models/exceptions/notFound/task/TaskNotFoundException';
-import { DataBaseException } from '../shared/exceptions/DataBaseException';
+import { pool } from '../../config/configDataBase';
+import { TaskStatsDto } from '../interfaces/dtos/task/TaskStatsDto';
+import { Task } from '../../models/entities/Task';
+import { CreateTaskDto } from '../interfaces/dtos/task/CreateTaskDto';
+import { UpdateTaskDto } from '../interfaces/dtos/task/UpdateTaskDto';
+import { ITaskRepository } from '../interfaces/repositories/ITaskRepository';
+import { TaskValidationException } from '../../models/exceptions/validation/task/TaskValidationException';
+import { TaskNotFoundException } from '../../models/exceptions/notFound/task/TaskNotFoundException';
+import { DataBaseException } from '../exceptions/DataBaseException';
 
 export class TaskServices {
   private taskRepository: ITaskRepository;

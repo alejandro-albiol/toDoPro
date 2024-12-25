@@ -1,10 +1,10 @@
 import express from 'express';
-import { UserController } from '../users/controllers/UserController.js';
-import { UserServices } from '../users/services/UserServices.js';
+import { UserController } from '../users/controller/UserController.js';
+import { UserService } from '../users/service/UserService.js';
 import { UserRepository } from '../users/repository/UserRepository.js';
 
 const userRepository = new UserRepository();
-const userService = new UserServices(userRepository);
+const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
 const router = express.Router();

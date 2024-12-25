@@ -1,7 +1,7 @@
 import { IUserRepository } from './IUserRepository.js';
 import { User } from '../models/entities/User.js';
 import { pool } from '../../config/configDataBase.js';
-import { CreateUserDTO, UpdateUserDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from '../models/dtos/UserDTO.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';
@@ -116,8 +116,17 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async update(updatedUser: UpdateUserDTO): Promise<User> {
+  async update(updatedUser: UpdateUserDTO): Promise<UserUpdatedDTO> {
     try {
+
+      const existingUser = await this.findById(updatedUser.id);
+      if (!existingUser) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
+        );
+      }
+
       const setClause: string[] = [];
       const values: any[] = [];
       let paramCount = 1;

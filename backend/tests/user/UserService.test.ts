@@ -1,13 +1,14 @@
-import { UserServices } from '../../src/users/services/UserServices';
+import { UserService } from '../../src/users/service/UserService';
 import { UserRepository } from '../../src/users/repository/UserRepository';
 import { DataBaseException } from '../../src/shared/exceptions/DataBaseException';
 import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum';
 import { EmailAlreadyExistsException } from '../../src/users/exceptions/EmailAlreadyExists.exception';
 import { UsernameAlreadyExistsException } from '../../src/users/exceptions/UsernameAlreadyExists.exception';
 import { UserNotFoundException } from '../../src/users/exceptions/UserNotFound.exception';
+import { HashServices } from '../../src/shared/services/HashServices';
 
 describe('UserService', () => {
-  let service: UserServices;
+  let service: UserService;
   let repository: jest.Mocked<UserRepository>;
   const newUser = {
     email: 'test@test.com',
@@ -23,15 +24,29 @@ describe('UserService', () => {
       delete: jest.fn()
     } as any;
 
-    service = new UserServices(repository);
+    service = new UserService(repository);
   });
 
   describe('create', () => {
     it('should create user successfully', async () => {
-      repository.create.mockResolvedValueOnce({ id: '1', ...newUser });
+      const hashedPassword = 'hashed_password_123';
+      jest.spyOn(HashServices, 'hashPassword').mockResolvedValue(hashedPassword);
+
+      repository.create.mockResolvedValueOnce({ 
+        id: '1',
+        email: newUser.email,
+        username: newUser.username,
+        password: hashedPassword
+      });
 
       const result = await service.create(newUser);
-      expect(result).toEqual(expect.objectContaining(newUser));
+      expect(HashServices.hashPassword).toHaveBeenCalledWith(newUser.password);
+      expect(result).toMatchObject({
+        id: '1',
+        email: newUser.email,
+        username: newUser.username,
+        password: hashedPassword
+      });
     });
 
     it('should throw EmailAlreadyExistsException when email exists', async () => {
@@ -88,26 +103,83 @@ describe('UserService', () => {
     it('should return user when found', async () => {
       repository.findById.mockResolvedValueOnce({ id: '1', ...newUser });
     });
+
+    it('should throw UserNotFoundException when user not found', async () => {
+      repository.findById.mockResolvedValueOnce(null);
+
+      await expect(service.findById('999'))
+        .rejects
+        .toThrow(UserNotFoundException);
+    });
+
+    it('should handle unknown errors', async () => {
+      repository.findById.mockRejectedValueOnce(
+        new DataBaseException(
+          'Unknown error',
+          DataBaseErrorCode.UNKNOWN_ERROR
+        )
+      );
+
+      await expect(service.findById('a'))
+        .rejects
+        .toThrow(DataBaseException);
+    });
   });
 
-  it('should throw UserNotFoundException when user not found', async () => {
-    repository.findById.mockResolvedValueOnce(null);
+  describe('update', () => {
+    it('should update user successfully', async () => {
+      const updateData = {
+        id: '1',
+        email: 'updated@test.com',
+        username: 'updateduser'
+      };
 
-    await expect(service.findById('999'))
-      .rejects
-      .toThrow(UserNotFoundException);
+      repository.update.mockResolvedValueOnce({
+        id: '1',
+        email: 'updated@test.com',
+        username: 'updateduser',
+      });
+
+      const result = await service.update(updateData);
+
+      expect(repository.update).toHaveBeenCalledWith(updateData);
+      
+      expect(result).toEqual({
+        id: '1',
+        email: 'updated@test.com',
+        username: 'updateduser'
+      });
+    });
+
+    it('should throw when user not found', async () => {
+      repository.update.mockRejectedValueOnce(
+        new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
+        )
+      );
+
+      await expect(service.update({ id: '999', email: 'test@test.com', username: 'test' }))
+        .rejects
+        .toThrow(DataBaseException);
+    });
   });
 
-  it('should handle unknown errors', async () => {
-    repository.findById.mockRejectedValueOnce(
-      new DataBaseException(
-        'Unknown error',
-        DataBaseErrorCode.UNKNOWN_ERROR
-      )
-    );
+  describe('delete', () => {
+    it('should delete user successfully', async () => {
+      repository.delete.mockResolvedValueOnce(undefined);
+      await service.delete('1');
+      expect(repository.delete).toHaveBeenCalledWith('1');
+    });
 
-    await expect(service.findById('a'))
-      .rejects
-      .toThrow(DataBaseException);
+    it('should throw UserNotFoundException when user not found', async () => {
+      repository.delete.mockRejectedValueOnce(
+        new DataBaseException('User not found', DataBaseErrorCode.NOT_FOUND)
+      );
+
+      await expect(service.delete('999'))
+        .rejects
+        .toThrow(UserNotFoundException);
+    });
   });
 }); 

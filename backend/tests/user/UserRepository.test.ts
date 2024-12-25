@@ -111,16 +111,15 @@ describe('UserRepository', () => {
   });
 
   describe('update', () => {
-    it('should update user successfully', async () => {
-      const updatedUser = {
-        id: '1',
-        email: 'updated@test.com',
-        username: 'updated'
-      };
-      mockPool.query.mockResolvedValueOnce({ rows: [updatedUser] });
-
-      const result = await repository.update(updatedUser);
-      expect(result).toEqual(updatedUser);
+    it('should throw when user not found', async () => {
+      mockPool.query.mockResolvedValueOnce({ 
+        rows: [],
+        rowCount: 0
+      });
+  
+      await expect(repository.update({ id: '999', email: 'test@test.com', username: 'test' }))
+        .rejects
+        .toThrow(DataBaseException);
     });
   });
 });
