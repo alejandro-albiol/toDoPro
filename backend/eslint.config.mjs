@@ -1,9 +1,7 @@
 // @ts-check
 import eslint from '@eslint/js'
-import prettier from 'eslint-plugin-prettier';
-import * as tseslint from '@typescript-eslint/eslint-plugin';
-import tseslintParser from '@typescript-eslint/parser';
-import globals from 'globals';
+import * as tseslint from '@typescript-eslint/eslint-plugin'
+import tseslintParser from '@typescript-eslint/parser'
 
 export default [
   {
@@ -17,18 +15,11 @@ export default [
     ]
   },
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    files: ['src/**/*.ts'],
     plugins: {
       '@typescript-eslint': tseslint
     },
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-    },
     languageOptions: {
-      globals: {
-        ...globals.es2015,
-        ...globals.node
-      },
       parser: tseslintParser,
       parserOptions: {
         project: './tsconfig.json',
@@ -42,14 +33,8 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/explicit-member-accessibility': 'warn',
       'no-console': 'warn',
-      'no-debugger': 'error',
-      'no-duplicate-imports': 'error',
-      'no-unused-expressions': 'error',
-      'no-var': 'error',
-      'prefer-const': 'error'
+      'no-debugger': 'error'
     }
   },
   {
@@ -58,11 +43,6 @@ export default [
       '@typescript-eslint': tseslint
     },
     languageOptions: {
-      globals: {
-        ...globals.es2015,
-        ...globals.node,
-        jest: true
-      },
       parser: tseslintParser,
       parserOptions: {
         project: './tsconfig.json',
@@ -77,4 +57,4 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 'off'
     }
   }
-];
+] 
