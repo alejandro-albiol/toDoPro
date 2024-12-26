@@ -1,18 +1,19 @@
-import { IUserRepository } from './IUserRepository.js';
-import { User } from '../models/entities/User.js';
+import { ITaskRepository } from './ITaskRepository.js';
 import { pool } from '../../config/configDataBase.js';
-import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from '../models/dtos/UserDTO.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';
+import { CreateTaskDto } from '../models/dtos/CreateTaskDto.js';
+import { Task } from '../models/entities/Task.js';
+import { UpdateTaskDto } from '../models/dtos/UpdateTaskDto.js';
 
-export class UserRepository implements IUserRepository {
+export class TaskRepository implements ITaskRepository {
 
-  async create(newUser: CreateUserDTO): Promise<User> {
+  async create(newTask: CreateTaskDto): Promise<Task> {
     try {
       const result = await pool.query(
-        'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-        [newUser.username, newUser.email, newUser.password],
+        'INSERT INTO tasks (title, description, user_id) VALUES ($1, $2, $3) RETURNING *',
+        [newTask.title, newTask.description, newTask.user_id],
       );
       return result.rows[0];
     } catch (error) {
@@ -39,18 +40,9 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findAll(): Promise<User[]> {
+  async findById(id: string): Promise<Task | null> {
     try {
-      const result = await pool.query('SELECT * FROM users');
-      return result.rows || [];
-    } catch (error) {
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
-    }
-  }
-
-  async findById(id: string): Promise<User | null> {
-    try {
-      const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      const result = await pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
       return result.rows[0] || null;
     } catch (error) {
       const dbError = error as IDatabaseError;
@@ -69,69 +61,13 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    try {
-      const result = await pool.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email]
-      );
-
-      if (result.rows.length === 0) {
-        return null;
-      }
-    
-      return result.rows[0];
-    } catch (error) {
-      const dbError = error as IDatabaseError;
-      
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
-        );
-      }
-
-      throw new DataBaseException(
-        'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
-      );
-    }
-  }
-
-  async findByUsername(username: string): Promise<User | null> {
-    try {
-      const result = await pool.query(
-        'SELECT * FROM users WHERE username = $1',
-        [username],
-      );
-      if (result.rows.length === 0) {
-        return null;
-      }
-      return result.rows[0];
-    } catch (error) {
-      const dbError = error as IDatabaseError;
-
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
-        );
-      }
-
-      throw new DataBaseException(
-        'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
-      );
-    }
-  }
-
-  async update(updatedUser: UpdateUserDTO): Promise<UserUpdatedDTO> {
+  async update(updatedTask: UpdateTaskDto): Promise<Task> {
     try {
 
-      const existingUser = await this.findById(updatedUser.id);
-      if (!existingUser) {
+      const existingTask = await this.findById(updatedTask.id);
+      if (!existingTask) {
         throw new DataBaseException(
-          'User not found',
+          'Task not found',
           DataBaseErrorCode.NOT_FOUND
         );
       }
@@ -140,24 +76,24 @@ export class UserRepository implements IUserRepository {
       const values: any[] = [];
       let paramCount = 1;
 
-      if (updatedUser.username) {
-        setClause.push(`username = $${paramCount}`);
-        values.push(updatedUser.username);
+      if (updatedTask.title) {
+        setClause.push(`title = $${paramCount}`);
+        values.push(updatedTask.title);
         paramCount++;
       }
-      if (updatedUser.email) {
-        setClause.push(`email = $${paramCount}`);
-        values.push(updatedUser.email);
+      if (updatedTask.description) {
+        setClause.push(`description = $${paramCount}`);
+        values.push(updatedTask.description);
         paramCount++;
       }
 
-      const USER_ID_INDEX = paramCount;
-      values.push(updatedUser.id);
+      const TASK_ID_INDEX = paramCount;
+      values.push(updatedTask.id);
 
       const query = `
-        UPDATE users 
+        UPDATE tasks 
         SET ${setClause.join(', ')} 
-        WHERE id = $${USER_ID_INDEX} 
+        WHERE id = $${TASK_ID_INDEX} 
         RETURNING *
       `;
 
@@ -187,25 +123,28 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async updatePassword(userId: string, newHashedPassword: string): Promise<void> {
+  async toggleCompleted(id: string): Promise<void> {
     try {
-      await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHashedPassword, userId]);
+      await pool.query('UPDATE tasks SET completed = NOT completed WHERE id = $1', [id]);
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.UNKNOWN_ERROR) {
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
-          'Database error',
-          DataBaseErrorCode.UNKNOWN_ERROR
+          'Task not found',
+          DataBaseErrorCode.NOT_FOUND
         );
       }
-      throw error;
+      throw new DataBaseException(
+        'Unknown database error',
+        DataBaseErrorCode.UNKNOWN_ERROR
+      );
     }
   }
 
   async delete(id: string): Promise<void> {
     try {
       await pool.query(
-        'DELETE FROM users WHERE id = $1',
+        'DELETE FROM tasks WHERE id = $1',
         [id],
       );
     } catch (error) {

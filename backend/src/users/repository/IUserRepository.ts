@@ -1,11 +1,9 @@
-import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from "../models/dtos/UserDTO";
+import { CreateUserDTO, UpdateUserDTO } from "../models/dtos/UserDTO";
 import { User } from "../models/entities/User";
+import { IBaseRepository } from "../../shared/interfaces/base/IBaseRepository";
 
-export interface IUserRepository{
-  findById(id: string): Promise<User | null>;
-  findByEmail(email: string): Promise<User | null>;
+export interface IUserRepository extends IBaseRepository<User, CreateUserDTO, UpdateUserDTO> {
   findByUsername(username: string): Promise<User | null>;
-  create(user: CreateUserDTO): Promise<User>;
-  update(updatedUser: UpdateUserDTO): Promise<UserUpdatedDTO>;
-  delete(id: string): Promise<void>;
+  findByEmail(email: string): Promise<User | null>;
+  updatePassword(id: string, password: string): Promise<void>;
 }

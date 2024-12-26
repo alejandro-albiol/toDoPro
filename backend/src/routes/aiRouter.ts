@@ -1,5 +1,5 @@
 import Express, { Request, Response, NextFunction } from 'express';
-import { AIRecommendationController } from '../controllers/AIRecommendationController.js';
+import { AIRecommendationController } from '../shared/controllers/AIRecommendationController.js';
 import { IdValidator } from '../middlewares/IdValidator.js';
 
 const aiRouter = Express.Router();

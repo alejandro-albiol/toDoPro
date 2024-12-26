@@ -5,12 +5,12 @@ import Express, {
   RequestHandler,
 } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { TaskController } from '../controllers/TaskController.js';
+import { TaskController } from '../tasks/controller/TaskController.js';
 import { IdValidator } from '../middlewares/IdValidator.js';
 import {
   CreateTaskDTO,
   UpdateTaskDTO,
-} from '../shared/interfaces/dtos/task/UpdateTaskDto.js';
+} from '../tasks/models/dtos/UpdateTaskDto.js';
 
 interface TypedRequestBody<T> extends Request {
   body: T;

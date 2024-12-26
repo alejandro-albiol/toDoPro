@@ -55,10 +55,14 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async updatePassword(id: string, password: string): Promise<void> {
+    const hashedPassword = await HashServices.hashPassword(password);
+    await this.userRepository.updatePassword(id, hashedPassword);
+  }
+
+  async delete(id: string): Promise<void> {
     try {
       await this.userRepository.delete(id);
-      return true;
     } catch (error) {
       throw new UserNotFoundException(id);
     }

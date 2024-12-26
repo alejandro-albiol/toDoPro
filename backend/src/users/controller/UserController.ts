@@ -1,5 +1,4 @@
 import { IUserService } from '../service/IUserService.js';
-import { UserNotFoundException } from '../exceptions/UserNotFound.exception.js';
 import { CreateUserDTO, UpdateUserDTO } from '../models/dtos/UserDTO.js';
 import { UserException } from '../exceptions/UserException.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
@@ -40,6 +39,19 @@ export class UserController implements IUserController {
       const userDto = await this.toUpdateUserDto(userToUpdate);
       const userUpdatedDto = await this.userService.update(userDto);
       return userUpdatedDto;
+    } catch (error) {
+      if (error instanceof UserException || error instanceof DataBaseException) {
+        throw error;
+      }
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async updatePassword(id: string, password: string) {
+    try {
+      await this.userService.updatePassword(id, password);
+      return;
     } catch (error) {
       if (error instanceof UserException || error instanceof DataBaseException) {
         throw error;

@@ -3,7 +3,7 @@ import { CreateUserDTO, ChangePasswordDTO, LoginDTO } from '../users/models/dtos
 import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
 import { IAuthValidator } from '../shared/interfaces/middlewares/IAuthValidator.js';
 import { UpdateUserDTO } from '../users/models/dtos/UserDTO.js';
-import { ApiResponse } from '../models/responses/ApiResponse.js';
+import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
 import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 
 export class UserValidator implements IAuthValidator, IValidator {

@@ -1,6 +1,6 @@
-import { Task } from '../models/entities/Task.js';
-import { AIRecommendationService } from '../shared/services/AIRecommendationService.js';
-import { TaskServices } from '../shared/services/TaskServices.js';
+import { Task } from '../../tasks/models/entities/Task.js';
+import { AIRecommendationService } from '../services/AIRecommendationService.js';
+import { TaskServices } from '../services/TaskServices.js';
 
 export class AIRecommendationController {
   static async getRecommendation(userId: string): Promise<string> {

@@ -3,5 +3,5 @@ export interface UpdateTaskDto {
   title?: string;
   description?: string;
   completed?: boolean;
-  user_id?: string;
+  user_id: string;
 }

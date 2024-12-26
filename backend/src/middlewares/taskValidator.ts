@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateTaskDto } from '../shared/interfaces/dtos/task/CreateTaskDto';
+import { CreateTaskDto } from '../tasks/models/dtos/CreateTaskDto';
 import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
-import { UpdateTaskDto } from '../shared/interfaces/dtos/task/UpdateTaskDto';
+import { UpdateTaskDto } from '../tasks/models/dtos/UpdateTaskDto';
 import { IApiError } from '../shared/interfaces/responses/IApiError.js';
-import { ApiResponse } from '../models/responses/ApiResponse';
+import { ApiResponse } from '../shared/models/responses/ApiResponse';
 
 export class TaskValidator implements IValidator {
   validateCreate() {

@@ -1,11 +1,11 @@
 import { pool } from '../../config/configDataBase';
-import { TaskStatsDto } from '../interfaces/dtos/task/TaskStatsDto';
-import { Task } from '../../models/entities/Task';
-import { CreateTaskDto } from '../interfaces/dtos/task/CreateTaskDto';
-import { UpdateTaskDto } from '../interfaces/dtos/task/UpdateTaskDto';
-import { ITaskRepository } from '../interfaces/repositories/ITaskRepository';
-import { TaskValidationException } from '../../models/exceptions/validation/task/TaskValidationException';
-import { TaskNotFoundException } from '../../models/exceptions/notFound/task/TaskNotFoundException';
+import { TaskStatsDto } from '../../tasks/models/dtos/TaskStatsDto';
+import { Task } from '../../tasks/models/entities/Task';
+import { CreateTaskDto } from '../../tasks/models/dtos/CreateTaskDto';
+import { UpdateTaskDto } from '../../tasks/models/dtos/UpdateTaskDto';
+import { ITaskRepository } from '../../tasks/repository/ITaskRepository';
+import { TaskValidationException } from '../models/exceptions/validation/task/TaskValidationException';
+import { TaskNotFoundException } from '../models/exceptions/notFound/task/TaskNotFoundException';
 import { DataBaseException } from '../exceptions/DataBaseException';
 
 export class TaskServices {
