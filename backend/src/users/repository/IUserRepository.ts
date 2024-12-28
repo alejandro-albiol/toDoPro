@@ -1,4 +1,5 @@
-import { CreateUserDTO, UpdateUserDTO } from "../models/dtos/UserDTO";
+import { CreateUserDTO } from "../models/dtos/CreateUserDTO";
+import { UpdateUserDTO } from "../models/dtos/UpdateUserDTO";
 import { User } from "../models/entities/User";
 import { IBaseRepository } from "../../shared/interfaces/base/IBaseRepository";
 

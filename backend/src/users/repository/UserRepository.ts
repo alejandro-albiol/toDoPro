@@ -1,7 +1,9 @@
 import { IUserRepository } from './IUserRepository.js';
 import { User } from '../models/entities/User.js';
 import { pool } from '../../config/configDataBase.js';
-import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
+import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
+import { UserUpdatedDTO } from '../models/dtos/UpdatedUserDTO.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';

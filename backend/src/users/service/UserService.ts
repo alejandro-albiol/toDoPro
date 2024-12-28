@@ -1,5 +1,7 @@
 import { IUserService } from './IUserService.js';
-import { CreateUserDTO, UpdateUserDTO, UserUpdatedDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
+import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
+import { UserUpdatedDTO } from '../models/dtos/UpdatedUserDTO.js';
 import { User } from '../models/entities/User.js';
 import { UserRepository } from '../repository/UserRepository.js';
 import { UserNotFoundException } from '../exceptions/UserNotFound.exception.js';
@@ -54,7 +56,7 @@ export class UserService implements IUserService {
     }
     return user;
   }
-
+//TODO: MOVE TO SHARED FOLDER (AUTHENTICATION)??
   async updatePassword(id: string, password: string): Promise<void> {
     const hashedPassword = await HashServices.hashPassword(password);
     await this.userRepository.updatePassword(id, hashedPassword);

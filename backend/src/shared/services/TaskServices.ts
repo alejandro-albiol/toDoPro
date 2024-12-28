@@ -1,8 +1,8 @@
 import { pool } from '../../config/configDataBase';
-import { TaskStatsDto } from '../../tasks/models/dtos/TaskStatsDto';
+import { TaskStatsDto } from '../../tasks/models/dtos/TaskStatsDTO';
 import { Task } from '../../tasks/models/entities/Task';
-import { CreateTaskDto } from '../../tasks/models/dtos/CreateTaskDto';
-import { UpdateTaskDto } from '../../tasks/models/dtos/UpdateTaskDto';
+import { CreateTaskDto } from '../../tasks/models/dtos/CreateTaskDTO';
+import { UpdateTaskDto } from '../../tasks/models/dtos/UpdateTaskDTO';
 import { ITaskRepository } from '../../tasks/repository/ITaskRepository';
 import { TaskValidationException } from '../models/exceptions/validation/task/TaskValidationException';
 import { TaskNotFoundException } from '../models/exceptions/notFound/task/TaskNotFoundException';

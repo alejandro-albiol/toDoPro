@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateTaskDto } from '../tasks/models/dtos/CreateTaskDto';
+import { CreateTaskDto } from '../tasks/models/dtos/CreateTaskDTO';
 import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
-import { UpdateTaskDto } from '../tasks/models/dtos/UpdateTaskDto';
+import { UpdateTaskDto } from '../tasks/models/dtos/UpdateTaskDTO';
 import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 import { ApiResponse } from '../shared/models/responses/ApiResponse';
 

@@ -3,13 +3,13 @@ import { pool } from '../../config/configDataBase.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';
-import { CreateTaskDto } from '../models/dtos/CreateTaskDto.js';
+import { CreateTaskDTO } from '../models/dtos/CreateTaskDTO.js';
 import { Task } from '../models/entities/Task.js';
-import { UpdateTaskDto } from '../models/dtos/UpdateTaskDto.js';
+import { UpdateTaskDTO } from '../models/dtos/UpdateTaskDTO.js';
 
 export class TaskRepository implements ITaskRepository {
 
-  async create(newTask: CreateTaskDto): Promise<Task> {
+  async create(newTask: CreateTaskDTO): Promise<Task> {
     try {
       const result = await pool.query(
         'INSERT INTO tasks (title, description, user_id) VALUES ($1, $2, $3) RETURNING *',
@@ -40,6 +40,25 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
+  async findAll(): Promise<Task[]> {
+    try {
+      const result = await pool.query('SELECT * FROM tasks');
+      return result.rows || [];
+    } catch (error) {
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+    }
+  }
+
+  async findAllByUserId(userId: string): Promise<Task[]> {
+    try {
+      const result = await pool.query('SELECT * FROM tasks WHERE user_id = $1', [userId]);
+      return result.rows || [];
+    } catch (error) {
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+    }
+  }
+
+
   async findById(id: string): Promise<Task | null> {
     try {
       const result = await pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
@@ -61,7 +80,7 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async update(updatedTask: UpdateTaskDto): Promise<Task> {
+  async update(updatedTask: UpdateTaskDTO): Promise<Task> {
     try {
 
       const existingTask = await this.findById(updatedTask.id);
@@ -123,9 +142,10 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async toggleCompleted(id: string): Promise<void> {
+  async toggleCompleted(id: string): Promise<Task> {
     try {
-      await pool.query('UPDATE tasks SET completed = NOT completed WHERE id = $1', [id]);
+      const result = await pool.query('UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *', [id]);
+      return result.rows[0];
     } catch (error) {
       const dbError = error as IDatabaseError;
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
