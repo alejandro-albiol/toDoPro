@@ -32,6 +32,8 @@
     "supertest": "^7.0.0"
   },
   "dependencies": {
-    "groq-sdk": "^0.9.1"
+    "groq-sdk": "^0.9.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

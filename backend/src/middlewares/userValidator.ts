@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserDTO, ChangePasswordDTO, LoginDTO } from '../users/models/dtos/UserDTO.js';
-import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
-import { IAuthValidator } from '../shared/interfaces/middlewares/IAuthValidator.js';
-import { UpdateUserDTO } from '../users/models/dtos/UserDTO.js';
-import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
+import { CreateUserDTO } from '../users/models/dtos/CreateUserDTO.js';
 import { IApiError } from '../shared/interfaces/responses/IApiError.js';
+import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
+import { IAuthValidator } from '../shared/interfaces/middlewares/IAuthValidator.js';
+import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
+import { ChangePasswordDTO } from '../users/models/dtos/UserDTO.js';
+import { LoginDTO } from '../users/models/dtos/UserDTO.js';
+import { UpdateUserDTO } from '../users/models/dtos/UpdateUserDTO.js';
 
 export class UserValidator implements IAuthValidator, IValidator {
   validateCreate() {
@@ -14,29 +16,25 @@ export class UserValidator implements IAuthValidator, IValidator {
 
       if (!data.username?.trim()) {
         errors.push({
-          type: 'validation',
-          field: 'username',
+          code: 'USERNAME_REQUIRED',
           message: 'Username is required',
         });
       }
       if (data.username.length < 3) {
         errors.push({
-          type: 'validation',
-          field: 'username',
+          code: 'USERNAME_TOO_SHORT',
           message: 'Username must be at least 3 characters long',
         });
       }
       if (!data.email?.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         errors.push({
-          type: 'validation',
-          field: 'email',
+          code: 'INVALID_EMAIL_FORMAT',
           message: 'Invalid email format',
         });
       }
       if (!data.password || data.password.length < 6) {
         errors.push({
-          type: 'validation',
-          field: 'password',
+          code: 'PASSWORD_TOO_SHORT',
           message: 'Password must be at least 6 characters long',
         });
       }
@@ -59,16 +57,14 @@ export class UserValidator implements IAuthValidator, IValidator {
 
       if (!data.username?.trim()) {
         errors.push({
-          type: 'validation',
-          field: 'username',
+          code: 'USERNAME_REQUIRED',
           message: 'Username is required',
         });
       }
 
       if (!data.password) {
         errors.push({
-          type: 'validation',
-          field: 'password',
+          code: 'PASSWORD_REQUIRED',
           message: 'Password is required',
         });
       }
@@ -92,16 +88,14 @@ export class UserValidator implements IAuthValidator, IValidator {
 
       if (!data.currentPassword) {
         errors.push({
-          type: 'validation',
-          field: 'currentPassword',
+          code: 'CURRENT_PASSWORD_REQUIRED',
           message: 'Current password is required',
         });
       }
 
       if (!data.newPassword || data.newPassword.length < 6) {
         errors.push({
-          type: 'validation',
-          field: 'newPassword',
+          code: 'NEW_PASSWORD_TOO_SHORT',
           message: 'New password must be at least 6 characters long',
         });
       }
@@ -125,8 +119,7 @@ export class UserValidator implements IAuthValidator, IValidator {
 
       if (!data.username && !data.email) {
         errors.push({
-          type: 'validation',
-          field: 'username or email',
+          code: 'USERNAME_OR_EMAIL_REQUIRED',
           message:
             'At least one field (username or email) is required for update',
         });
@@ -135,8 +128,7 @@ export class UserValidator implements IAuthValidator, IValidator {
       if (data.username) {
         if (data.username.length < 3) {
           errors.push({
-            type: 'validation',
-            field: 'username',
+            code: 'USERNAME_TOO_SHORT',
             message: 'Username must be at least 3 characters long',
           });
         }
@@ -145,8 +137,7 @@ export class UserValidator implements IAuthValidator, IValidator {
       if (data.email) {
         if (!data.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
           errors.push({
-            type: 'validation',
-            field: 'email',
+            code: 'INVALID_EMAIL_FORMAT',
             message: 'Invalid email format',
           });
         }

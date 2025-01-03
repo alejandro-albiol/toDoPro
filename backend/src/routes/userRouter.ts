@@ -1,8 +1,8 @@
 import express from 'express';
-import { UserController } from '../users/controller/UserController';
-import { UserService } from '../users/service/UserService';
-import { UserRepository } from '../users/repository/UserRepository';
-import { ApiResponse } from '../shared/models/responses/ApiResponse';
+import { UserController } from '../users/controller/UserController.js';
+import { UserService } from '../users/service/UserService.js';
+import { UserRepository } from '../users/repository/UserRepository.js';
+import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
@@ -10,7 +10,62 @@ const userController = new UserController(userService);
 
 const userRouter = express.Router();
 
-// TODO: Añadir middleware de validación para create y update
+/**
+ * @swagger
+ * /api/v1/users:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       400:
+ *         description: Invalid input data
+ *       409:
+ *         description: Email already exists
+ *       422:
+ *         description: Validation error
+ *       500:
+ *         description: Database error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       code:
+ *                         type: string
+ *                       message:
+ *                         type: string
+ */
 userRouter.post('/', async (req, res, next) => {
     try {
         const user = await userController.create(req.body);

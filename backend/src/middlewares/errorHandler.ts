@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { BaseException } from '../shared/exceptions/BaseException';
-import { DataBaseException } from '../shared/exceptions/DataBaseException';
-import { ApiResponse } from '../shared/models/responses/ApiResponse';
-import { IApiError } from '../shared/interfaces/responses/IApiError';
+import { BaseException } from '../shared/exceptions/BaseException.js';
+import { DataBaseException } from '../shared/exceptions/DataBaseException.js';
+import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
+import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 
 export const errorHandler = (
     error: Error,

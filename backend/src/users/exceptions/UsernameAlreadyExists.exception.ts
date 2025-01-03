@@ -1,5 +1,5 @@
-import { ErrorCode } from '../../shared/exceptions/enums/ErrorCode.enum';
-import { UserException } from './UserException';
+import { ErrorCode } from '../../shared/exceptions/enums/ErrorCode.enum.js';
+import { UserException } from './UserException.js';
 
 export class UsernameAlreadyExistsException extends UserException {
   constructor(username: string) {

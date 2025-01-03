@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { app } from '../../src/app';
-import { UserController } from '../../src/users/controller/UserController';
-import { ApiResponse } from '../../src/shared/models/responses/ApiResponse';
+import { app } from '../../src/app.js';
+import { UserController } from '../../src/users/controller/UserController.js';
+import { ApiResponse } from '../../src/shared/models/responses/ApiResponse.js';
 
-jest.mock('../../src/users/controller/UserController');
+jest.mock('../../src/users/controller/UserController.js');
 
 describe('UserRouter', () => {
     const mockUser = {
