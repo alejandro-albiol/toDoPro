@@ -21,31 +21,25 @@ const userRouter = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - name
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               name:
- *                 type: string
+ *             $ref: '#/components/schemas/CreateUserDTO'
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: User created successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: Invalid input data
- *       409:
- *         description: Email already exists
- *       422:
- *         description: Validation error
- *       500:
- *         description: Database error
+ *         description: Bad Request
  *         content:
  *           application/json:
  *             schema:
@@ -63,9 +57,41 @@ const userRouter = express.Router();
  *                     properties:
  *                       code:
  *                         type: string
+ *                         enum: [USERNAME_ALREADY_EXISTS, EMAIL_ALREADY_EXISTS]
  *                       message:
  *                         type: string
  */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     CreateUserDTO:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *         password:
+ *           type: string
+ *           format: password
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ */
+
 userRouter.post('/', async (req, res, next) => {
     try {
         const user = await userController.create(req.body);
