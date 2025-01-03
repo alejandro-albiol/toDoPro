@@ -1,4 +1,4 @@
-import { DataBaseErrorCode } from './enums/DataBaseErrorCode.enum';
+import { DataBaseErrorCode } from './enums/DataBaseErrorCode.enum.js';
 
 export class DataBaseException extends Error {
   constructor(

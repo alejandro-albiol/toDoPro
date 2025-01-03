@@ -10,6 +10,7 @@ import { UsernameAlreadyExistsException } from '../exceptions/UsernameAlreadyExi
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { HashServices } from '../../shared/services/HashServices.js';
+import { InvalidUserDataException } from '../exceptions/InvalidUserDataException.js';
 
 export class UserService implements IUserService {
   private userRepository: UserRepository;
@@ -25,17 +26,24 @@ export class UserService implements IUserService {
         ...userData,
         password: hashedPassword,
       };
+      
       return await this.userRepository.create(userWithHashedPassword);
-    } catch (error) {
-      if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
-          if (error.metadata?.constraint?.includes('email')) {
-            throw new EmailAlreadyExistsException(userData.email);
-          }
-          if (error.metadata?.constraint?.includes('username')) {
-            throw new UsernameAlreadyExistsException(userData.username);
-          }
+    } catch (error: any) {
+      console.log('Service error type:', error.constructor.name);
+      console.log('Service error code:', error.code);
+      console.log('Service error detail:', error.detail);
+      console.log('Service error constraint:', error.metadata?.constraint);
+
+      if (error instanceof DataBaseException && error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+        if (error.metadata?.constraint?.includes('email')) {
+          throw new EmailAlreadyExistsException(userData.email);
         }
+        if (error.metadata?.constraint?.includes('username')) {
+          throw new UsernameAlreadyExistsException(userData.username);
+        }
+      }
+      if (error instanceof DataBaseException && error.code === DataBaseErrorCode.INVALID_INPUT) {
+        throw new InvalidUserDataException('Invalid data type for user fields');
       }
       throw new DataBaseException('Error creating user', DataBaseErrorCode.UNKNOWN_ERROR);
     }

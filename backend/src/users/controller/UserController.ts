@@ -4,22 +4,14 @@ import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
 import { UserException } from '../exceptions/UserException.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { IUserController } from './IUserController.js';
+import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 
 export class UserController implements IUserController {
   constructor(private userService: IUserService) {}
   
   async create(newUser: CreateUserDTO) {
-    try {
-      const newUserDto = await this.toCreateUserDto(newUser);
-      const user = await this.userService.create(newUserDto);
-      return user;
-    } catch (error) {
-      if (error instanceof UserException || error instanceof DataBaseException) {
-        throw error;
-      }
-      console.error(error);
-      throw error;
-    }
+    const newUserDto = await this.toCreateUserDto(newUser);
+    return await this.userService.create(newUserDto);
   }
 
   async findById(id: string) {
@@ -75,12 +67,19 @@ export class UserController implements IUserController {
   }
 
   
-  private async toCreateUserDto(newUser: CreateUserDTO): Promise<CreateUserDTO> {
-    return {
-      username: newUser.username.toLowerCase(),
-      email: newUser.email.toLowerCase(),
-      password: newUser.password,
-    };
+  private async toCreateUserDto(newUser: any): Promise<CreateUserDTO> {
+    try {
+        return {
+            username: newUser.username?.toLowerCase(),
+            email: newUser.email?.toLowerCase(),
+            password: newUser.password
+        };
+    } catch (error) {
+        throw new DataBaseException(
+            'Invalid input data type',
+            DataBaseErrorCode.INVALID_INPUT
+        );
+    }
   }
 
   private async toUpdateUserDto(userToUpdate: UpdateUserDTO): Promise<UpdateUserDTO> {

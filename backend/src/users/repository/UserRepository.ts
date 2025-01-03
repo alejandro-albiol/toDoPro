@@ -20,23 +20,46 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
       
+      if (dbError.code === DataBaseErrorCode.INVALID_INPUT) {
+        throw new DataBaseException(
+          dbError.message!,
+          DataBaseErrorCode.INVALID_INPUT,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
+        );
+      }
+
       if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
-          'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION
+          dbError.message!,
+          DataBaseErrorCode.UNIQUE_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
       
       if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION
+          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
       
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -46,7 +69,10 @@ export class UserRepository implements IUserRepository {
       const result = await pool.query('SELECT * FROM users');
       return result.rows || [];
     } catch (error) {
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR, {
+        constraint: 'unknown',
+        detail: 'Unknown database error'
+      });
     }
   }
 
@@ -60,13 +86,21 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
           'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
+          DataBaseErrorCode.UNDEFINED_COLUMN,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -89,13 +123,21 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
           'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
+          DataBaseErrorCode.UNDEFINED_COLUMN,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -116,13 +158,21 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
           'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
+          DataBaseErrorCode.UNDEFINED_COLUMN,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -134,7 +184,11 @@ export class UserRepository implements IUserRepository {
       if (!existingUser) {
         throw new DataBaseException(
           'User not found',
-          DataBaseErrorCode.NOT_FOUND
+          DataBaseErrorCode.NOT_FOUND,
+          {
+            constraint: 'user_id',
+            detail: 'User not found'
+          }
         );
       }
 
@@ -171,20 +225,32 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
           'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION
+          DataBaseErrorCode.UNIQUE_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION
+          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -197,7 +263,11 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.UNKNOWN_ERROR) {
         throw new DataBaseException(
           'Database error',
-          DataBaseErrorCode.UNKNOWN_ERROR
+          DataBaseErrorCode.UNKNOWN_ERROR,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
       throw error;
@@ -216,13 +286,21 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
         throw new DataBaseException(
           'Cannot delete due to existing references',
-          DataBaseErrorCode.FOREIGN_KEY_VIOLATION
+          DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
