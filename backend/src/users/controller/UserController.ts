@@ -1,5 +1,6 @@
 import { IUserService } from '../service/IUserService.js';
-import { CreateUserDTO, UpdateUserDTO } from '../models/dtos/UserDTO.js';
+import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
+import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
 import { UserException } from '../exceptions/UserException.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { IUserController } from './IUserController.js';
@@ -51,7 +52,6 @@ export class UserController implements IUserController {
   async updatePassword(id: string, password: string) {
     try {
       await this.userService.updatePassword(id, password);
-      return;
     } catch (error) {
       if (error instanceof UserException || error instanceof DataBaseException) {
         throw error;
