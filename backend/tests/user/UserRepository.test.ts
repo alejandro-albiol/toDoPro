@@ -1,8 +1,8 @@
-import { UserRepository } from '../../src/users/repository/UserRepository';
-import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum';
-import { mockPool } from '../__mocks__/databaseMock';
-import { DataBaseException } from '../../src/shared/exceptions/DataBaseException';
-import { IDatabaseError } from '../../src/shared/interfaces/IDataBaseError';
+import { UserRepository } from '../../src/users/repository/UserRepository.js';
+import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum.js';
+import { mockPool } from '../__mocks__/databaseMock.js';
+import { DataBaseException } from '../../src/shared/exceptions/DataBaseException.js';
+import { IDatabaseError } from '../../src/shared/interfaces/IDataBaseError.js';
 
 describe('UserRepository', () => {
   let repository: UserRepository;

@@ -13,4 +13,5 @@ export enum DataBaseErrorCode {
   UNDEFINED_COLUMN = '42703',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   INVALID_INPUT = '22P02'
+  
 }

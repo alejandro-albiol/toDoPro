@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
+import { ErrorCode } from '../shared/exceptions/enums/ErrorCode.enum.js';
+import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
 
 export class IdValidator {
   static validate(paramName: string): RequestHandler {
@@ -8,11 +10,12 @@ export class IdValidator {
 
       const numericId = parseInt(id);
       if (!this.isValidId(numericId)) {
-        res.status(400).json({
-          isSuccess: false,
-          message: `Invalid ${paramName} format`,
-          data: null,
-        });
+        res.status(400).json(new ApiResponse('error', `Invalid ${paramName} format`, null, [
+          {
+            code: ErrorCode.INVALID_ID_FORMAT,
+            message: `Invalid ${paramName} format`,
+          },
+        ]));
         return;
       }
 

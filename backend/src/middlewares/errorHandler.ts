@@ -5,6 +5,10 @@ import { IApiError } from '../shared/interfaces/responses/IApiError.js';
 import { EmailAlreadyExistsException } from '../users/exceptions/EmailAlreadyExists.exception.js';
 import { UsernameAlreadyExistsException } from '../users/exceptions/UsernameAlreadyExists.exception.js';
 import { DataBaseErrorCode } from '../shared/exceptions/enums/DataBaseErrorCode.enum.js';
+import { ErrorCode } from '../shared/exceptions/enums/ErrorCode.enum.js';
+import { UserNotFoundException } from '../users/exceptions/UserNotFound.exception.js';
+import { UserException } from '../users/exceptions/UserException.js';
+import { InvalidUserDataException } from '../users/exceptions/InvalidUserDataException.js';
 
 export const errorHandler = (
     error: Error,
@@ -12,26 +16,53 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.log('ErrorHandler received:', error);
-    console.log('Error type in handler:', error.constructor.name);
 
-    if (error instanceof EmailAlreadyExistsException) {
+    if (res.headersSent) {
+        return;
+    }
+
+    if ((error as any).type === 'entity.parse.failed' || error.name === 'SyntaxError') {
         const apiError: IApiError = {
-            code: DataBaseErrorCode.UNIQUE_VIOLATION,
+            code: ErrorCode.INVALID_JSON_FORMAT,
             message: error.message
         };
-        return res.status(409).json(
-            new ApiResponse('error', error.message, null, [apiError])
+        return res.status(400).json(
+            new ApiResponse('error', 'Invalid JSON format', null, [apiError])
         );
     }
 
-    if (error instanceof UsernameAlreadyExistsException) {
+    if (error instanceof UserException) {
         const apiError: IApiError = {
-            code: DataBaseErrorCode.UNIQUE_VIOLATION,
+            code: error.errorCode,
             message: error.message
         };
-        return res.status(409).json(
-            new ApiResponse('error', error.message, null, [apiError])
+
+        if (error instanceof UserNotFoundException) {
+            return res.status(404).json(
+                new ApiResponse('error', 'User not found', null, [apiError])
+            );
+        }
+
+        if (error instanceof EmailAlreadyExistsException) {
+            return res.status(409).json(
+                new ApiResponse('error', 'Email already exists', null, [apiError])
+            );
+        }
+
+        if (error instanceof UsernameAlreadyExistsException) {
+            return res.status(409).json(
+                new ApiResponse('error', 'Username already exists', null, [apiError])
+            );
+        }
+
+        if (error instanceof InvalidUserDataException) {
+            return res.status(400).json(
+                new ApiResponse('error', 'Invalid user data', null, [apiError])
+            );
+        }
+
+        return res.status(400).json(
+            new ApiResponse('error', 'User operation failed', null, [apiError])
         );
     }
 
@@ -47,8 +78,14 @@ export const errorHandler = (
             );
         }
 
+        if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+            return res.status(409).json(
+                new ApiResponse('error', 'User already exists', null, [apiError])
+            );
+        }
+
         return res.status(500).json(
-            new ApiResponse('error', error.message, null, [apiError])
+            new ApiResponse('error', 'An unexpected error occurred', null, [apiError])
         );
     }
 
@@ -56,8 +93,8 @@ export const errorHandler = (
         code: 'UNKNOWN_ERROR',
         message: 'Internal server error'
     };
-    console.error('Unhandled error:', error);
+    
     return res.status(500).json(
         new ApiResponse('error', 'Internal server error', null, [unknownError])
     );
-};
+}

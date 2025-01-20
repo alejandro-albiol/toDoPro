@@ -78,30 +78,13 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     try {
+      console.log('Repository - Finding user with id:', id);
       const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+      console.log('Repository - Query result:', result.rows[0]);
       return result.rows[0] || null;
     } catch (error) {
-      const dbError = error as IDatabaseError;
-      
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN,
-          {
-            constraint: dbError.constraint,
-            detail: dbError.detail
-          }
-        );
-      }
-
-      throw new DataBaseException(
-        'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR,
-        {
-          constraint: dbError.constraint,
-          detail: dbError.detail
-        }
-      );
+      console.log('Repository - Error:', error);
+      throw error;
     }
   }
 

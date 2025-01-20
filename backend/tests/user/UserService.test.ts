@@ -1,11 +1,11 @@
-import { UserService } from '../../src/users/service/UserService';
-import { UserRepository } from '../../src/users/repository/UserRepository';
-import { DataBaseException } from '../../src/shared/exceptions/DataBaseException';
-import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum';
-import { EmailAlreadyExistsException } from '../../src/users/exceptions/EmailAlreadyExists.exception';
-import { UsernameAlreadyExistsException } from '../../src/users/exceptions/UsernameAlreadyExists.exception';
-import { UserNotFoundException } from '../../src/users/exceptions/UserNotFound.exception';
-import { HashServices } from '../../src/shared/services/HashServices';
+import { UserService } from '../../src/users/service/UserService.js';
+import { UserRepository } from '../../src/users/repository/UserRepository.js';
+import { DataBaseException } from '../../src/shared/exceptions/DataBaseException.js';
+import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum.js';
+import { EmailAlreadyExistsException } from '../../src/users/exceptions/EmailAlreadyExists.exception.js';
+import { UsernameAlreadyExistsException } from '../../src/users/exceptions/UsernameAlreadyExists.exception.js';
+import { UserNotFoundException } from '../../src/users/exceptions/UserNotFound.exception.js';
+import { HashServices } from '../../src/shared/services/HashServices.js';
 
 describe('UserService', () => {
   let service: UserService;

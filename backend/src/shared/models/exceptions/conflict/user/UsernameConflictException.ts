@@ -1,4 +1,4 @@
-import { UserConflictException } from './UserConflictException';
+import { UserConflictException } from './UserConflictException.js';
 
 export class UsernameConflictException extends UserConflictException {
   constructor(username: string) {

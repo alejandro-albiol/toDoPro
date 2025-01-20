@@ -1,10 +1,10 @@
-import { HashServices } from "../../src/shared/services/HashServices";
-import { UserController } from "../../src/users/controller/UserController";
-import { UserRepository } from "../../src/users/repository/UserRepository";
-import { UserService } from "../../src/users/service/UserService";
-import { IUserService } from "../../src/users/service/IUserService";
-import { DataBaseException } from "../../src/shared/exceptions/DataBaseException";
-import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/DataBaseErrorCode.enum";
+import { HashServices } from "../../src/shared/services/HashServices.js";
+import { UserController } from "../../src/users/controller/UserController.js";
+import { UserRepository } from "../../src/users/repository/UserRepository.js";
+import { UserService } from "../../src/users/service/UserService.js";
+import { IUserService } from "../../src/users/service/IUserService.js";
+import { DataBaseException } from "../../src/shared/exceptions/DataBaseException.js";
+import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/DataBaseErrorCode.enum.js";
 
 const mockUserService = new UserService(new UserRepository());
 const mockUserController = new UserController(mockUserService);

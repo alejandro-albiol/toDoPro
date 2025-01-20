@@ -1,4 +1,4 @@
-import { ValidationException } from '../ValidationException';
+import { ValidationException } from '../ValidationException.js';
 
 export class TaskValidationException extends ValidationException {
   constructor(field: string) {

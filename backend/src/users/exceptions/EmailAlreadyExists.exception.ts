@@ -4,8 +4,8 @@ import { UserException } from './UserException.js';
 export class EmailAlreadyExistsException extends UserException {
   constructor(email: string) {
     super(
-      `User with email ${email} already exists`,
-      400,
+      `User with email '${email}' already exists`,
+      409,
       ErrorCode.EMAIL_ALREADY_EXISTS,
     );
   }

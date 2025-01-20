@@ -6,6 +6,8 @@
     "test": "tests"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
@@ -24,5 +26,8 @@
     "@testing-library/user-event": "^14.5.2",
     "jsdom": "^25.0.1",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "vite": "^5.0.0"
   }
 }

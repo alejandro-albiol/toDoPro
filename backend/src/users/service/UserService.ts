@@ -42,6 +42,11 @@ export class UserService implements IUserService {
           throw new UsernameAlreadyExistsException(userData.username);
         }
       }
+
+      if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_NULL_VIOLATION){
+        throw new InvalidUserDataException('All fields are required')
+      }
+      
       if (error instanceof DataBaseException && error.code === DataBaseErrorCode.INVALID_INPUT) {
         throw new InvalidUserDataException('Invalid data type for user fields');
       }
@@ -50,9 +55,12 @@ export class UserService implements IUserService {
   }
 
   async findById(id: string): Promise<User> {
+    console.log('Service - Finding user with id:', id);
     const user = await this.userRepository.findById(id);
+    console.log('Service - User found:', user);
     if (!user) {
-      throw new UserNotFoundException(id);
+        console.log('Service - Throwing UserNotFoundException');
+        throw new UserNotFoundException(id);
     }
     return user;
   }

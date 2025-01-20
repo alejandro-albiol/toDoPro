@@ -1,9 +1,9 @@
-import { ITaskRepository } from "../repository/ITaskRepository";
-import { ITaskService } from "./ITaskService";
-import { Task } from "../models/entities/Task";
-import { CreateTaskDTO } from "../models/dtos/CreateTaskDTO";
-import { UpdateTaskDTO } from "../models/dtos/UpdateTaskDTO";
-import { UpdatedTaskDTO } from "../models/dtos/UpdatedTaskDTO";
+import { ITaskRepository } from "../repository/ITaskRepository.js";
+import { ITaskService } from "./ITaskService.js";
+import { Task } from "../models/entities/Task.js";
+import { CreateTaskDTO } from "../models/dtos/CreateTaskDTO.js";
+import { UpdateTaskDTO } from "../models/dtos/UpdateTaskDTO.js";
+import { UpdatedTaskDTO } from "../models/dtos/UpdatedTaskDTO.js";
 
 export class TaskService implements ITaskService {
     private taskRepository: ITaskRepository;

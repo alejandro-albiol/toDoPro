@@ -9,5 +9,8 @@ export enum ErrorCode {
   INVALID_TOKEN = 'A2',
   
   TASK_NOT_FOUND = 'T1',
-  TASK_ALREADY_EXISTS = 'T2'
+  TASK_ALREADY_EXISTS = 'T2',
+
+  INVALID_JSON_FORMAT = 'F1',
+  INVALID_ID_FORMAT = 'F2',
 }
