@@ -1,22 +1,28 @@
 import { IUserService } from '../service/IUserService.js';
 import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
 import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
-import { UserException } from '../exceptions/UserException.js';
+import { UserException } from '../exceptions/base-user.exception.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { IUserController } from './IUserController.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
-import { InvalidUserDataException } from '../exceptions/InvalidUserDataException.js';
+import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';
+import { User } from '../models/entities/User.js';
+import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 
 export class UserController implements IUserController {
   constructor(private userService: IUserService) {}
   
-  async create(newUser: CreateUserDTO) {
+  async create(newUser: CreateUserDTO): Promise<User> {
     try {
         if (!newUser) {
             throw new InvalidUserDataException('User data is required');
         }
         const newUserDto = await this.toCreateUserDto(newUser);
-        return await this.userService.create(newUserDto);
+        const user = await this.userService.create(newUserDto);
+        if (!user) {
+            throw new InvalidUserDataException('User not found');
+        }
+        return user;
     } catch (error) {
         if (error instanceof UserException || error instanceof DataBaseException || error instanceof SyntaxError) {
             throw error;
@@ -26,11 +32,14 @@ export class UserController implements IUserController {
     }
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<User> {
     try {
         console.log('Controller - Finding user with id:', id);
         const user = await this.userService.findById(id);
         console.log('Controller - User found:', user);
+        if (!user) {
+            throw new UserNotFoundException(id);
+        }
         return user;
     } catch (error) {
         console.log('Controller - Error caught:', error);
@@ -85,7 +94,7 @@ export class UserController implements IUserController {
   }
 
   
-  private async toCreateUserDto(newUser: any): Promise<CreateUserDTO> {
+  private async toCreateUserDto(newUser: CreateUserDTO): Promise<CreateUserDTO> {
     try {
         return {
             username: newUser.username?.toLowerCase(),
@@ -93,10 +102,7 @@ export class UserController implements IUserController {
             password: newUser.password
         };
     } catch (error) {
-        throw new DataBaseException(
-            'Invalid input data type',
-            DataBaseErrorCode.INVALID_INPUT
-        );
+        throw new InvalidUserDataException('Invalid input data type');
     }
   }
 

@@ -30,7 +30,8 @@ describe('UserRepository', () => {
 
     it('should throw DatabaseException on unique violation', async () => {
       mockPool.query.mockRejectedValueOnce({
-        code: DataBaseErrorCode.UNIQUE_VIOLATION
+        code: DataBaseErrorCode.UNIQUE_VIOLATION,
+        message: 'Unique constraint violation'
       });
 
       await expect(repository.create(newUser))

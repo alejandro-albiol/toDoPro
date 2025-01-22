@@ -2,10 +2,11 @@ import { UserService } from '../../src/users/service/UserService.js';
 import { UserRepository } from '../../src/users/repository/UserRepository.js';
 import { DataBaseException } from '../../src/shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../src/shared/exceptions/enums/DataBaseErrorCode.enum.js';
-import { EmailAlreadyExistsException } from '../../src/users/exceptions/EmailAlreadyExists.exception.js';
-import { UsernameAlreadyExistsException } from '../../src/users/exceptions/UsernameAlreadyExists.exception.js';
-import { UserNotFoundException } from '../../src/users/exceptions/UserNotFound.exception.js';
+import { EmailAlreadyExistsException } from '../../src/users/exceptions/email-already-exists.exception.js';
+import { UsernameAlreadyExistsException } from '../../src/users/exceptions/username-already-exists.exception.js';
+import { UserNotFoundException } from '../../src/users/exceptions/user-not-found.exception.js';
 import { HashServices } from '../../src/shared/services/HashServices.js';
+import { InvalidUserDataException } from '../../src/users/exceptions/invalid-user-data.exception.js';
 
 describe('UserService', () => {
   let service: UserService;
@@ -52,13 +53,8 @@ describe('UserService', () => {
     it('should throw EmailAlreadyExistsException when email exists', async () => {
       repository.create.mockRejectedValueOnce(
         new DataBaseException(
-          'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION,
-          {
-            constraint: 'users_email_key',
-            column: 'email',
-            table: 'users'
-          }
+          'duplicate key value violates unique constraint "users_email_key"',
+          DataBaseErrorCode.UNIQUE_VIOLATION
         )
       );
 
@@ -70,13 +66,8 @@ describe('UserService', () => {
     it('should throw UsernameAlreadyExistsException when username exists', async () => {
       repository.create.mockRejectedValueOnce(
         new DataBaseException(
-          'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION,
-          {
-            constraint: 'users_username_key',
-            column: 'username',
-            table: 'users'
-          }
+          'duplicate key value violates unique constraint "users_username_key"',
+          DataBaseErrorCode.UNIQUE_VIOLATION
         )
       );
 
@@ -85,7 +76,7 @@ describe('UserService', () => {
         .toThrow(UsernameAlreadyExistsException);
     });
 
-    it('should throw InternalErrorException for unknown errors', async () => {
+    it('should throw DataBaseException for unknown errors', async () => {
       repository.create.mockRejectedValueOnce(
         new DataBaseException(
           'Unknown error',
@@ -101,30 +92,44 @@ describe('UserService', () => {
 
   describe('findById', () => {
     it('should return user when found', async () => {
-      repository.findById.mockResolvedValueOnce({ id: '1', ...newUser });
+        repository.findById.mockResolvedValueOnce({ id: '1', ...newUser });
+        const result = await service.findById('1');
+        expect(result).toEqual({ id: '1', ...newUser });
     });
 
     it('should throw UserNotFoundException when user not found', async () => {
-      repository.findById.mockResolvedValueOnce(null);
-
-      await expect(service.findById('999'))
-        .rejects
-        .toThrow(UserNotFoundException);
+        repository.findById.mockResolvedValueOnce(null);
+        await expect(service.findById('999'))
+            .rejects
+            .toThrow(UserNotFoundException);  // Esto es correcto
     });
 
-    it('should handle unknown errors', async () => {
-      repository.findById.mockRejectedValueOnce(
-        new DataBaseException(
-          'Unknown error',
-          DataBaseErrorCode.UNKNOWN_ERROR
-        )
-      );
+    it('should throw InvalidUserDataException when input is invalid', async () => {
+        repository.findById.mockRejectedValueOnce(
+            new DataBaseException(
+                'Invalid input syntax',
+                DataBaseErrorCode.INVALID_INPUT
+            )
+        );
 
-      await expect(service.findById('a'))
-        .rejects
-        .toThrow(DataBaseException);
+        await expect(service.findById('invalid-id'))
+            .rejects
+            .toThrow(InvalidUserDataException);
     });
-  });
+
+    it('should throw DataBaseException for unknown database errors', async () => {
+        repository.findById.mockRejectedValueOnce(
+            new DataBaseException(
+                'Database connection error',
+                DataBaseErrorCode.UNKNOWN_ERROR
+            )
+        );
+
+        await expect(service.findById('1'))
+            .rejects
+            .toThrow(DataBaseException);
+    });
+});
 
   describe('update', () => {
     it('should update user successfully', async () => {
@@ -141,9 +146,7 @@ describe('UserService', () => {
       });
 
       const result = await service.update(updateData);
-
       expect(repository.update).toHaveBeenCalledWith(updateData);
-      
       expect(result).toEqual({
         id: '1',
         email: 'updated@test.com',
@@ -151,7 +154,7 @@ describe('UserService', () => {
       });
     });
 
-    it('should throw when user not found', async () => {
+    it('should throw UserNotFoundException when user not found', async () => {
       repository.update.mockRejectedValueOnce(
         new DataBaseException(
           'User not found',
@@ -161,7 +164,7 @@ describe('UserService', () => {
 
       await expect(service.update({ id: '999', email: 'test@test.com', username: 'test' }))
         .rejects
-        .toThrow(DataBaseException);
+        .toThrow(UserNotFoundException);
     });
   });
 

@@ -3,7 +3,7 @@ import { User } from '../models/entities/User.js';
 import { pool } from '../../config/configDataBase.js';
 import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
 import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
-import { UserUpdatedDTO } from '../models/dtos/UpdatedUserDTO.js';
+import { UpdatedUserDTO } from '../models/dtos/UpdatedUserDTO.js';
 import { DataBaseException } from '../../shared/exceptions/DataBaseException.js';
 import { DataBaseErrorCode } from '../../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { IDatabaseError } from '../../shared/interfaces/IDataBaseError.js';
@@ -19,10 +19,10 @@ export class UserRepository implements IUserRepository {
       return result.rows[0];
     } catch (error) {
       const dbError = error as IDatabaseError;
-      
+
       if (dbError.code === DataBaseErrorCode.INVALID_INPUT) {
         throw new DataBaseException(
-          dbError.message!,
+          dbError.message || 'Invalid input syntax',
           DataBaseErrorCode.INVALID_INPUT,
           {
             constraint: dbError.constraint,
@@ -33,7 +33,7 @@ export class UserRepository implements IUserRepository {
 
       if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
-          dbError.message!,
+          dbError.message || 'Unique constraint violation',
           DataBaseErrorCode.UNIQUE_VIOLATION,
           {
             constraint: dbError.constraint,
@@ -69,22 +69,23 @@ export class UserRepository implements IUserRepository {
       const result = await pool.query('SELECT * FROM users');
       return result.rows || [];
     } catch (error) {
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR, {
-        constraint: 'unknown',
-        detail: 'Unknown database error'
-      });
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
 
   async findById(id: string): Promise<User | null> {
     try {
-      console.log('Repository - Finding user with id:', id);
       const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-      console.log('Repository - Query result:', result.rows[0]);
       return result.rows[0] || null;
     } catch (error) {
-      console.log('Repository - Error:', error);
-      throw error;
+      const dbError = error as IDatabaseError;
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
+        );
+      }
+      throw new DataBaseException('Error finding user', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -103,6 +104,13 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
       
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
+        );
+      }
+
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
           'Invalid column reference',
@@ -115,7 +123,7 @@ export class UserRepository implements IUserRepository {
       }
 
       throw new DataBaseException(
-        'Unknown database error',
+        'Error finding user',
         DataBaseErrorCode.UNKNOWN_ERROR,
         {
           constraint: dbError.constraint,
@@ -138,6 +146,13 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
 
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
+        );
+      }
+
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
           'Invalid column reference',
@@ -150,7 +165,7 @@ export class UserRepository implements IUserRepository {
       }
 
       throw new DataBaseException(
-        'Unknown database error',
+        'Error finding user',
         DataBaseErrorCode.UNKNOWN_ERROR,
         {
           constraint: dbError.constraint,
@@ -160,7 +175,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async update(updatedUser: UpdateUserDTO): Promise<UserUpdatedDTO> {
+  async update(updatedUser: UpdateUserDTO): Promise<UpdatedUserDTO> {
     try {
 
       const existingUser = await this.findById(updatedUser.id);
@@ -243,17 +258,17 @@ export class UserRepository implements IUserRepository {
       await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHashedPassword, userId]);
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.UNKNOWN_ERROR) {
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
-          'Database error',
-          DataBaseErrorCode.UNKNOWN_ERROR,
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND,
           {
-            constraint: dbError.constraint,
-            detail: dbError.detail
+            constraint: 'user_id',
+            detail: 'User not found'
           }
         );
       }
-      throw error;
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -274,6 +289,13 @@ export class UserRepository implements IUserRepository {
             constraint: dbError.constraint,
             detail: dbError.detail
           }
+        );
+      }
+
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND
         );
       }
 

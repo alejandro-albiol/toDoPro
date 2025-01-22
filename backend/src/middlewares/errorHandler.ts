@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { DataBaseException } from '../shared/exceptions/DataBaseException.js';
 import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
 import { IApiError } from '../shared/interfaces/responses/IApiError.js';
-import { EmailAlreadyExistsException } from '../users/exceptions/EmailAlreadyExists.exception.js';
-import { UsernameAlreadyExistsException } from '../users/exceptions/UsernameAlreadyExists.exception.js';
+import { EmailAlreadyExistsException } from '../users/exceptions/email-already-exists.exception.js';
+import { UsernameAlreadyExistsException } from '../users/exceptions/username-already-exists.exception.js';
 import { DataBaseErrorCode } from '../shared/exceptions/enums/DataBaseErrorCode.enum.js';
 import { ErrorCode } from '../shared/exceptions/enums/ErrorCode.enum.js';
-import { UserNotFoundException } from '../users/exceptions/UserNotFound.exception.js';
-import { UserException } from '../users/exceptions/UserException.js';
-import { InvalidUserDataException } from '../users/exceptions/InvalidUserDataException.js';
+import { UserNotFoundException } from '../users/exceptions/user-not-found.exception.js';
+import { UserException } from '../users/exceptions/base-user.exception.js';
+import { InvalidUserDataException } from '../users/exceptions/invalid-user-data.exception.js';
 
 export const errorHandler = (
     error: Error,

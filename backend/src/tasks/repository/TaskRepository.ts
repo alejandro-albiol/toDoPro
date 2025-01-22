@@ -21,21 +21,44 @@ export class TaskRepository implements ITaskRepository {
       
       if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
-          'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION
+          dbError.message || 'Unique constraint violation',
+          DataBaseErrorCode.UNIQUE_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
       
       if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION
+          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
       
+      if (dbError.code === DataBaseErrorCode.INVALID_INPUT) {
+        throw new DataBaseException(
+          dbError.message || 'Invalid input',
+          DataBaseErrorCode.INVALID_INPUT,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
+        );
+      }
+
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
@@ -54,10 +77,16 @@ export class TaskRepository implements ITaskRepository {
       const result = await pool.query('SELECT * FROM tasks WHERE user_id = $1', [userId]);
       return result.rows || [];
     } catch (error) {
+      const dbError = error as IDatabaseError;
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'Task not found',
+          DataBaseErrorCode.NOT_FOUND
+        );
+      }
       throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
-
 
   async findById(id: string): Promise<Task | null> {
     try {
@@ -65,32 +94,18 @@ export class TaskRepository implements ITaskRepository {
       return result.rows[0] || null;
     } catch (error) {
       const dbError = error as IDatabaseError;
-      
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN
-        );
-      }
-
-      throw new DataBaseException(
-        'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
-      );
-    }
-  }
-
-  async update(updatedTask: UpdateTaskDTO): Promise<Task> {
-    try {
-
-      const existingTask = await this.findById(updatedTask.id);
-      if (!existingTask) {
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'Task not found',
           DataBaseErrorCode.NOT_FOUND
         );
       }
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+    }
+  }
 
+  async update(updatedTask: UpdateTaskDTO): Promise<Task> {
+    try {
       const setClause: string[] = [];
       const values: any[] = [];
       let paramCount = 1;
@@ -124,27 +139,42 @@ export class TaskRepository implements ITaskRepository {
       if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
           'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION
+          DataBaseErrorCode.UNIQUE_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION
+          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }
 
   async toggleCompleted(id: string): Promise<Task> {
     try {
-      const result = await pool.query('UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *', [id]);
+      const result = await pool.query(
+        'UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *',
+        [id]
+      );
       return result.rows[0];
     } catch (error) {
       const dbError = error as IDatabaseError;
@@ -154,10 +184,7 @@ export class TaskRepository implements ITaskRepository {
           DataBaseErrorCode.NOT_FOUND
         );
       }
-      throw new DataBaseException(
-        'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
-      );
+      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -173,13 +200,28 @@ export class TaskRepository implements ITaskRepository {
       if (dbError.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
         throw new DataBaseException(
           'Cannot delete due to existing references',
-          DataBaseErrorCode.FOREIGN_KEY_VIOLATION
+          DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
+        );
+      }
+
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'Task not found',
+          DataBaseErrorCode.NOT_FOUND
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        DataBaseErrorCode.UNKNOWN_ERROR,
+        {
+          constraint: dbError.constraint,
+          detail: dbError.detail
+        }
       );
     }
   }

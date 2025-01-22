@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
@@ -11,9 +11,8 @@ export default {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: 'tsconfig.json'
-      }
-    ]
+      },
+    ],
   },
   setupFiles: ['<rootDir>/tests/__mocks__/databaseMock.ts']
 }; 

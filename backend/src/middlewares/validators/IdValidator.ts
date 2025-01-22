@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
-import { ErrorCode } from '../shared/exceptions/enums/ErrorCode.enum.js';
-import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
+import { ErrorCode } from '../../shared/exceptions/enums/ErrorCode.enum.js';
+import { ApiResponse } from '../../shared/models/responses/ApiResponse.js';
 
 export class IdValidator {
   static validate(paramName: string): RequestHandler {

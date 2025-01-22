@@ -1,15 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import { CreateUserDTO } from '../users/models/dtos/CreateUserDTO.js';
-import { IApiError } from '../shared/interfaces/responses/IApiError.js';
-import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
-import { IAuthValidator } from '../shared/interfaces/middlewares/IAuthValidator.js';
-import { IValidator } from '../shared/interfaces/middlewares/IValidator.js';
-import { ChangePasswordDTO } from '../users/models/dtos/UserDTO.js';
-import { LoginDTO } from '../users/models/dtos/UserDTO.js';
-import { UpdateUserDTO } from '../users/models/dtos/UpdateUserDTO.js';
+import { RequestHandler, Request, Response, NextFunction } from 'express';
+import { CreateUserDTO } from '../../users/models/dtos/CreateUserDTO.js';
+import { IApiError } from '../../shared/interfaces/responses/IApiError.js';
+import { ApiResponse } from '../../shared/models/responses/ApiResponse.js';
+import { IAuthValidator } from '../../shared/interfaces/middlewares/IAuthValidator.js';
+import { IValidator } from '../../shared/interfaces/middlewares/IValidator.js';
+import { ChangePasswordDTO } from '../../users/models/dtos/UserDTO.js';
+import { LoginDTO } from '../../users/models/dtos/UserDTO.js';
+import { UpdateUserDTO } from '../../users/models/dtos/UpdateUserDTO.js';
 
 export class UserValidator implements IAuthValidator, IValidator {
-  validateCreate() {
+  validateCreate(): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
       const data = req.body as CreateUserDTO;
       const errors: IApiError[] = [];
@@ -50,7 +50,7 @@ export class UserValidator implements IAuthValidator, IValidator {
     };
   }
 
-  validateLogin() {
+  validateLogin(): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
       const data = req.body as LoginDTO;
       const errors: IApiError[] = [];
@@ -81,7 +81,7 @@ export class UserValidator implements IAuthValidator, IValidator {
     };
   }
 
-  validatePasswordUpdate() {
+  validatePasswordUpdate(): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
       const data = req.body as ChangePasswordDTO;
       const errors: IApiError[] = [];
@@ -112,7 +112,7 @@ export class UserValidator implements IAuthValidator, IValidator {
     };
   }
 
-  validateUpdate() {
+  validateUpdate(): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
       const data = req.body as UpdateUserDTO;
       const errors: IApiError[] = [];
@@ -151,6 +151,12 @@ export class UserValidator implements IAuthValidator, IValidator {
           );
       }
 
+      next();
+    };
+  }
+
+  validateDelete(): RequestHandler {
+    return (req: Request, res: Response, next: NextFunction) => {
       next();
     };
   }

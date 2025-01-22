@@ -3,7 +3,7 @@ import { UserController } from '../users/controller/UserController.js';
 import { UserService } from '../users/service/UserService.js';
 import { UserRepository } from '../users/repository/UserRepository.js';
 import { ApiResponse } from '../shared/models/responses/ApiResponse.js';
-import { IdValidator } from '../middlewares/IdValidator.js';
+import { IdValidator } from '../middlewares/validators/IdValidator.js';
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
