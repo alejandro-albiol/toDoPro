@@ -1,5 +1,5 @@
-import { BaseException } from '../../shared/exceptions/BaseException.js';
-import { ErrorCode } from '../../shared/exceptions/enums/ErrorCode.enum.js';
+import { BaseException } from '../../shared/exceptions/base.exception.js';
+import { ErrorCode } from '../../shared/exceptions/enums/error-code.enum.js';
 
 export class InvalidUserDataException extends BaseException {
     constructor(message: string) {

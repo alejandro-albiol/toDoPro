@@ -1,6 +1,6 @@
 import express from 'express';
-import { errorHandler } from './middlewares/errorHandler.js';
-import userRouter from './routes/userRouter.js';
+import { errorHandler } from './middlewares/error-handler.js';
+import userRouter from './routes/user-router.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.js';
 

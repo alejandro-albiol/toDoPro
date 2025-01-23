@@ -14,5 +14,5 @@ export default {
       },
     ],
   },
-  setupFiles: ['<rootDir>/tests/__mocks__/databaseMock.ts']
+  setupFiles: ['<rootDir>/tests/__mocks__/database-mock.ts']
 }; 

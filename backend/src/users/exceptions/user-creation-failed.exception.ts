@@ -1,5 +1,5 @@
 import { UserException } from "./base-user.exception.js";
-import { ErrorCode } from "../../shared/exceptions/enums/ErrorCode.enum.js";
+import { ErrorCode } from "../../shared/exceptions/enums/error-code.enum.js";
 
 export class UserCreationFailedException extends UserException {
     constructor(message: string) {
