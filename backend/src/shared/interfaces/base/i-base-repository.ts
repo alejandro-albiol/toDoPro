@@ -3,5 +3,5 @@ export interface IBaseRepository<T, CreateDTO, UpdateDTO, UpdatedDTO = Partial<T
   findAll(): Promise<T[]>;
   create(dto: CreateDTO): Promise<T>;
   update(dto: UpdateDTO): Promise<UpdatedDTO>;
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<null>;
 }

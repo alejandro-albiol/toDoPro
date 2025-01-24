@@ -71,10 +71,11 @@ export class TaskService implements ITaskService {
         }
     }   
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string): Promise<null> {
         try {
-            return this.taskRepository.delete(id);
-        } catch (error: any) {
+            await this.taskRepository.delete(id);
+            return null;
+        } catch (error) {
             if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException(id);
             }

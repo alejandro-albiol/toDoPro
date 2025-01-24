@@ -8,5 +8,5 @@ export const mockUser = {
 export const mockUserInput = {
     username: 'testuser',
     email: 'testuser@example.com',
-    password: 'password'
+    password: 'Password!12345'
 };

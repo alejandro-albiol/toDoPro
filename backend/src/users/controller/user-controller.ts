@@ -83,7 +83,7 @@ export class UserController implements IUserController {
   async delete(id: string) {
     try {
       await this.userService.delete(id);
-      return;
+      return null;
     } catch (error) {
       if (error instanceof UserException || error instanceof DataBaseException) {
         throw error;

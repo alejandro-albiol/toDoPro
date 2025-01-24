@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { TaskValidator } from '../../../src/middlewares/validators/task-validator';
+import { ErrorCode } from '../../../src/shared/exceptions/enums/error-code.enum.js';
 
 describe('TaskValidator', () => {
     let mockRequest: Partial<Request>;
@@ -48,7 +49,7 @@ describe('TaskValidator', () => {
                     status: 'error',
                     errors: expect.arrayContaining([
                         expect.objectContaining({
-                            code: 'INVALID_TITLE'
+                            code: ErrorCode.INVALID_TITLE
                         })
                     ])
                 })
@@ -70,7 +71,7 @@ describe('TaskValidator', () => {
                     status: 'error',
                     errors: expect.arrayContaining([
                         expect.objectContaining({
-                            code: 'INVALID_DESCRIPTION'
+                            code: ErrorCode.INVALID_DESCRIPTION
                         })
                     ])
                 })
@@ -92,7 +93,7 @@ describe('TaskValidator', () => {
                     status: 'error',
                     errors: expect.arrayContaining([
                         expect.objectContaining({
-                            code: 'INVALID_USER_ID'
+                            code: ErrorCode.INVALID_ID_FORMAT
                         })
                     ])
                 })
@@ -139,7 +140,7 @@ describe('TaskValidator', () => {
                     status: 'error',
                     errors: expect.arrayContaining([
                         expect.objectContaining({
-                            code: 'INVALID_TITLE'
+                            code: ErrorCode.INVALID_TITLE
                         })
                     ])
                 })

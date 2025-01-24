@@ -26,7 +26,10 @@ describe('TaskRouter', () => {
 
             expect(response.status).toBe(201);
             expect(spy).toHaveBeenCalledWith(mockTaskInput);
-            expect(response.body.data).toEqual(mockTask);
+            expect(response.body.data).toEqual({
+                ...mockTask,
+                creation_date: mockTask.creation_date.toISOString()
+            });
         });
     });
 
@@ -40,7 +43,10 @@ describe('TaskRouter', () => {
 
             expect(response.status).toBe(200);
             expect(spy).toHaveBeenCalledWith('1');
-            expect(response.body.data).toEqual([mockTask]);
+            expect(response.body.data).toEqual([{
+                ...mockTask,
+                creation_date: mockTask.creation_date.toISOString()
+            }]);
         });
     });
 
@@ -54,7 +60,10 @@ describe('TaskRouter', () => {
 
             expect(response.status).toBe(200);
             expect(spy).toHaveBeenCalledWith('1');
-            expect(response.body.data).toEqual(mockTask);
+            expect(response.body.data).toEqual({
+                ...mockTask,
+                creation_date: mockTask.creation_date.toISOString()
+            });
         });
     });
 
@@ -70,7 +79,10 @@ describe('TaskRouter', () => {
 
             expect(response.status).toBe(200);
             expect(spy).toHaveBeenCalledWith({ id: '1', title: 'Updated Task' });
-            expect(response.body.data).toEqual(updatedTask);
+            expect(response.body.data).toEqual({
+                ...updatedTask,
+                creation_date: updatedTask.creation_date.toISOString()
+            });
         });
     });
 
@@ -85,17 +97,22 @@ describe('TaskRouter', () => {
 
             expect(response.status).toBe(200);
             expect(spy).toHaveBeenCalledWith('1');
-            expect(response.body.data).toEqual(toggledTask);
+            expect(response.body.data).toEqual({
+                ...toggledTask,
+                creation_date: toggledTask.creation_date.toISOString()
+            });
         });
     });
 
     describe('DELETE /:id', () => {
         it('should delete a task', async () => {
             const spy = jest.spyOn(TaskService.prototype, 'delete')
-                .mockResolvedValueOnce();
+                .mockResolvedValueOnce(null);
 
             const response = await request(app)
                 .delete('/tasks/1');
+
+            console.log('Response body:', response.body);
 
             expect(response.status).toBe(200);
             expect(spy).toHaveBeenCalledWith('1');

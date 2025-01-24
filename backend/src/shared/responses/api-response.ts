@@ -15,7 +15,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   ) {
     this.status = status;
     this.message = message;
-    if (data) this.data = data;
+    this.data = data;
     if (errors) this.errors = errors;
   }
 }

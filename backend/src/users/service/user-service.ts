@@ -144,9 +144,10 @@ export class UserService implements IUserService {
     }
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<null> {
     try {
       await this.userRepository.delete(id);
+      return null;
     } catch (error) {
       if (error instanceof DataBaseException) {
         if (error.code === DataBaseErrorCode.NOT_FOUND) {

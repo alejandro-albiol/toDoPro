@@ -69,9 +69,10 @@ export class TaskController implements ITaskController {
         }
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string): Promise<null> {
         try {
-            return this.taskService.delete(id);
+            await this.taskService.delete(id);
+            return null;
         } catch (error) {
             throw new TaskNotFoundException(id);
         }

@@ -202,12 +202,13 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<null> {
     try {
       await pool.query(
         'DELETE FROM tasks WHERE id = $1',
         [id],
       );
+      return null;
     } catch (error) {
       const dbError = error as IDatabaseError;
       

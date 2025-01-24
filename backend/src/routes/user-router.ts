@@ -613,14 +613,22 @@ userRouter.get('/:id',
     }
 );
 
-userRouter.put('/:id', IdValidator.validate('id'), async (req, res, next) => {
-    try {
-        const user = await userController.update(req.body);
-        res.status(200).json(new ApiResponse('success', 'User updated successfully', user));
-    } catch (error) {
-        next(error);
+userRouter.put('/:id',
+    IdValidator.validate('id'),
+    UserValidator.validateUpdate(),
+    async (req, res, next) => {
+        try {
+            const userData = {
+                id: req.params.id,
+                ...req.body
+            };
+            const user = await userController.update(userData);
+            res.status(200).json(new ApiResponse('success', 'User updated successfully', user));
+        } catch (error) {
+            next(error);
+        }
     }
-});
+);
 
 userRouter.put('/:id/password',
     IdValidator.validate('id'),

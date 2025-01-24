@@ -55,7 +55,7 @@ describe('UserRouter', () => {
                 .send({ username: 'updatedUsername' });
 
             expect(response.status).toBe(200);
-            expect(spy).toHaveBeenCalledWith({ id: '1', username: 'updatedUsername' });
+            expect(spy).toHaveBeenCalledWith({ id: '1', username: 'updatedusername' });
             expect(response.body.data).toEqual(updatedUser);
         });
     });
@@ -67,10 +67,10 @@ describe('UserRouter', () => {
 
             const response = await request(app)
                 .put('/users/1/password')
-                .send({ password: 'newPassword' });
+                .send({ password: 'NewPassword123!' });
 
             expect(response.status).toBe(200);
-            expect(spy).toHaveBeenCalledWith('1', 'newPassword');
+            expect(spy).toHaveBeenCalledWith('1', 'NewPassword123!');
             expect(response.body.data).toBeNull();
         });
     });
@@ -78,7 +78,7 @@ describe('UserRouter', () => {
     describe('DELETE /:id', () => {
         it('should delete a user', async () => {
             const spy = jest.spyOn(UserService.prototype, 'delete')
-                .mockResolvedValueOnce();
+                .mockResolvedValueOnce(null);
 
             const response = await request(app)
                 .delete('/users/1');
@@ -93,7 +93,10 @@ describe('UserRouter', () => {
         it('should return 400 when creating user with invalid data', async () => {
             const response = await request(app)
                 .post('/users')
-                .send({});  // Invalid data: missing required fields
+                .send({ 
+                    username: 'test',
+                    password: 'test'
+                });
 
             expect(response.status).toBe(400);
         });
@@ -109,7 +112,7 @@ describe('UserRouter', () => {
         it('should return 400 when updating password with invalid data', async () => {
             const response = await request(app)
                 .put('/users/1/password')
-                .send({});  // Invalid data: missing password
+                .send({ password: 'weak' });
 
             expect(response.status).toBe(400);
         });
