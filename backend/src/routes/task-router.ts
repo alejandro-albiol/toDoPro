@@ -12,20 +12,6 @@ const taskController = new TaskController(taskService);
 
 const taskRouter = express.Router();
 
-/**
- * @swagger
- * /tasks:
- *   post:
- *     summary: Create a new task
- *     tags: [Tasks]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Task'
- */
-
 taskRouter.post('/',
     TaskValidator.validateCreate(),
     async (req, res, next) => {
@@ -37,14 +23,6 @@ taskRouter.post('/',
         }
     }
 );
-
-/**
- * @swagger
-    * /tasks:
-    *   get:
-    *     summary: Get all tasks
-    *     tags: [Tasks]
- */
 
 taskRouter.get('/user/:userId',
     IdValidator.validate('userId'),
@@ -58,14 +36,6 @@ taskRouter.get('/user/:userId',
     }
 );
 
-/**
- * @swagger
- * /tasks/{id}:
- *   get:
- *     summary: Get a task by id
- *     tags: [Tasks]
- */
-
 taskRouter.get('/:id',
     IdValidator.validate('id'),
     async (req, res, next) => {
@@ -77,14 +47,6 @@ taskRouter.get('/:id',
         }
     }
 );
-
-/**
- * @swagger
- * /tasks/{id}:
- *   put:
- *     summary: Update a task by id
- *     tags: [Tasks]
- */
 
 taskRouter.put('/:id',
     IdValidator.validate('id'),
@@ -102,14 +64,6 @@ taskRouter.put('/:id',
     }
 );
 
-/**
- * @swagger
- * /tasks/{id}/toggle:
- *   put:
- *     summary: Toggle the completion status of a task
- *     tags: [Tasks]
- */
-
 taskRouter.put('/:id/toggle',
     IdValidator.validate('id'),
     async (req, res, next) => {
@@ -122,14 +76,6 @@ taskRouter.put('/:id/toggle',
     }
 );
 
-/**
- * @swagger
- * /tasks/{id}:
- *   delete:
- *     summary: Delete a task by id
- *     tags: [Tasks]
- */
-
 taskRouter.delete('/:id',
     IdValidator.validate('id'),
     async (req, res, next) => {
@@ -141,21 +87,5 @@ taskRouter.delete('/:id',
         }
     }
 );
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     Task:
- *       type: object
- *       properties:
- *         title:
- *           type: string
- *         description:
- *           type: string
- *         user_id:
- *           type: string
- * 
- */
-
+    
 export { taskRouter };
