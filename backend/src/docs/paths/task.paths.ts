@@ -59,7 +59,7 @@ export const TaskPaths = {
           }
         },
         404: {
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/TaskNotFound'
         },
         500: {
           $ref: '#/components/responses/InternalServerError'
@@ -93,7 +93,7 @@ export const TaskPaths = {
           }
         },
         404: {
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/TaskNotFound'
         },
         500: {
           $ref: '#/components/responses/InternalServerError'
@@ -135,7 +135,7 @@ export const TaskPaths = {
           }
         },
         404: {
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/TaskNotFound'
         },
         500: {
           $ref: '#/components/responses/InternalServerError'
@@ -167,7 +167,7 @@ export const TaskPaths = {
           }
         },
         404: {
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/TaskNotFound'
         },
         500: {
           $ref: '#/components/responses/InternalServerError'
@@ -201,7 +201,7 @@ export const TaskPaths = {
           }
         },
         404: {
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/TaskNotFound'
         },
         500: {
           $ref: '#/components/responses/InternalServerError'
