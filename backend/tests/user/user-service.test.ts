@@ -1,6 +1,6 @@
 import { UserService } from "../../src/users/service/user-service.js";
-import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/data-base-error-code.enum.js";
-import { DataBaseException } from "../../src/shared/exceptions/data-base.exception.js";
+import { DataBaseErrorCode } from "../../src/shared/models/exceptions/enums/data-base-error-code.enum.js";
+import { DataBaseException } from "../../src/shared/models/exceptions/data-base.exception.js";
 import { UserNotFoundException } from "../../src/users/exceptions/user-not-found.exception.js";
 import { InvalidUserDataException } from "../../src/users/exceptions/invalid-user-data.exception.js";
 import { EmailAlreadyExistsException } from "../../src/users/exceptions/email-already-exists.exception.js";

@@ -54,7 +54,7 @@ describe('UserRouter', () => {
                 .put('/users/1')
                 .send({ username: 'updatedUsername' });
 
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(201);
             expect(spy).toHaveBeenCalledWith({ id: '1', username: 'updatedusername' });
             expect(response.body.data).toEqual(updatedUser);
         });
@@ -69,7 +69,7 @@ describe('UserRouter', () => {
                 .put('/users/1/password')
                 .send({ password: 'NewPassword123!' });
 
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(201);
             expect(spy).toHaveBeenCalledWith('1', 'NewPassword123!');
             expect(response.body.data).toBeNull();
         });

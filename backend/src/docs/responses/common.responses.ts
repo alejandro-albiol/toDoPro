@@ -1,34 +1,34 @@
 export const commonResponses = {
-  BadRequest: {
-    description: 'Bad request',
+  InvalidJsonFormat: {
+    description: 'Invalid JSON format',
     content: {
       'application/json': {
         schema: { $ref: '#/components/schemas/ApiResponse' },
         example: {
           status: 'error',
-          message: 'Invalid request data',
+          message: 'Invalid JSON format',
           errors: [
             {
-              code: 'VALIDATION_ERROR',
-              message: 'Invalid input data'
+              code: 'F1',
+              message: 'Invalid JSON format'
             }
           ]
         }
       }
     }
   },
-  NotFound: {
-    description: 'Resource not found',
+  InvalidIdFormat: {
+    description: 'Invalid ID format',
     content: {
       'application/json': {
         schema: { $ref: '#/components/schemas/ApiResponse' },
         example: {
           status: 'error',
-          message: 'Resource not found',
+          message: 'Invalid ID format',
           errors: [
             {
-              code: 'NOT_FOUND',
-              message: 'Resource with specified ID not found'
+              code: 'F2',
+              message: 'Invalid ID format'
             }
           ]
         }

@@ -1,6 +1,6 @@
 import { UserRepository } from "../../src/users/repository/user-repository.js";
-import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/data-base-error-code.enum.js";
-import { DataBaseException } from "../../src/shared/exceptions/data-base.exception.js";
+import { DataBaseErrorCode } from "../../src/shared/models/exceptions/enums/data-base-error-code.enum.js";
+import { DataBaseException } from "../../src/shared/models/exceptions/data-base.exception.js";
 import { mockPool } from "../__mocks__/database-mock.js";
 
 describe('UserRepository', () => {

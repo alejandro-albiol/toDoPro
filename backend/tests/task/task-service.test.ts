@@ -1,8 +1,7 @@
 import { TaskService } from "../../src/tasks/service/task-service";
 import { TaskNotFoundException } from "../../src/tasks/exceptions/task-not-found.exception";
 import { InvalidTaskDataException } from "../../src/tasks/exceptions/invalid-task-data.exception";
-import { DataBaseException } from "../../src/shared/exceptions/data-base.exception";
-import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/data-base-error-code.enum";
+import { Task } from "../../src/tasks/models/entities/task.entity";
 
 describe('TaskService', () => {
     let taskService: TaskService;

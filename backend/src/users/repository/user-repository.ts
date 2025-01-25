@@ -83,7 +83,13 @@ export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<User | null> {
     try {
       const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-      return result.rows[0] || null;
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return {
+        ...result.rows[0],
+        id: result.rows[0].id.toString()
+      };
     } catch (error) {
       const dbError = error as IDatabaseError;
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {

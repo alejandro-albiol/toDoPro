@@ -8,9 +8,11 @@ import aiRouter from './routes/ai-router.js';
 import staticRouter from './routes/static-router.js';
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const apiRouter = express.Router();
-    
+
 apiRouter.use('/users', userRouter);
 apiRouter.use('/tasks', taskRouter);
 apiRouter.use('/ai', aiRouter);

@@ -46,7 +46,7 @@ userRouter.put('/:id',
                 ...req.body
             };
             const user = await userController.update(userData);
-            res.status(200).json(new ApiResponse('success', 'User updated successfully', user));
+            res.status(201).json(new ApiResponse('success', 'User updated successfully', user));
         } catch (error) {
             next(error);
         }
@@ -59,7 +59,7 @@ userRouter.put('/:id/password',
     async (req, res, next) => {
         try {
             await userController.updatePassword(req.params.id, req.body.password);
-            res.status(204).json(new ApiResponse('success', 'Password updated successfully', null));
+            res.status(201).json(new ApiResponse('success', 'Password updated successfully', null));
         } catch (error) {
             next(error);
         }
@@ -69,7 +69,7 @@ userRouter.put('/:id/password',
 userRouter.delete('/:id', IdValidator.validate('id'), async (req, res, next) => {
     try {
         await userController.delete(req.params.id);
-        res.status(204).json(new ApiResponse('success', 'User deleted successfully', null));
+        res.status(200).json(new ApiResponse('success', 'User deleted successfully', null));
     } catch (error) {
         next(error);
     }

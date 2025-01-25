@@ -1,8 +1,8 @@
-import { DataBaseErrorCode } from "../../src/shared/exceptions/enums/data-base-error-code.enum";
-import { DataBaseException } from "../../src/shared/exceptions/data-base.exception";
-import { TaskRepository } from "../../src/tasks/repository/task-repository";
-import { mockPool } from "../__mocks__/database-mock";
-import { Task } from "../../src/tasks/models/entities/task.entity";
+import { DataBaseException } from "../../src/shared/models/exceptions/data-base.exception.js";
+import { TaskRepository } from "../../src/tasks/repository/task-repository.js";
+import { mockPool } from "../__mocks__/database-mock.js";
+import { Task } from "../../src/tasks/models/entities/task.entity.js";
+import { DataBaseErrorCode } from "../../src/shared/models/exceptions/enums/data-base-error-code.enum.js";
 
 describe('TaskRepository', () => {
     let taskRepository: TaskRepository;

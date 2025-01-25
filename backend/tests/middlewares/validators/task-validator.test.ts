@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { TaskValidator } from '../../../src/middlewares/validators/task-validator';
-import { ErrorCode } from '../../../src/shared/exceptions/enums/error-code.enum.js';
+import { ErrorCode } from '../../../src/shared/models/exceptions/enums/error-code.enum.js';
 
 describe('TaskValidator', () => {
     let mockRequest: Partial<Request>;

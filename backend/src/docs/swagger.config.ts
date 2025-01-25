@@ -10,9 +10,9 @@ import { UserPaths } from './paths/user.paths.js';
 export const swaggerConfig = {
   openapi: '3.0.0',
   info: {
-    title: 'TodoPro API',
+    title: 'toDoPro API',
     version: '1.0.0',
-    description: 'API documentation for TodoPro application'
+    description: 'API documentation for toDoPro application'
   },
   servers: [
     {

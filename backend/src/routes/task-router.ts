@@ -57,7 +57,7 @@ taskRouter.put('/:id',
                 id: req.params.id,
                 ...req.body
             });
-            res.status(200).json(new ApiResponse('success', 'Task updated successfully', task));
+            res.status(201).json(new ApiResponse('success', 'Task updated successfully', task));
         } catch (error) {
             next(error);
         }
@@ -69,7 +69,7 @@ taskRouter.put('/:id/toggle-completed',
     async (req, res, next) => {
         try {
             const task = await taskController.toggleCompleted(req.params.id);
-            res.status(200).json(new ApiResponse('success', 'Task completed status toggled successfully', task));
+            res.status(201).json(new ApiResponse('success', 'Task completed status toggled successfully', task));
         } catch (error) {
             next(error);
         }
@@ -81,7 +81,7 @@ taskRouter.delete('/:id',
     async (req, res, next) => {
         try {
             await taskController.delete(req.params.id);
-            res.status(204).json(new ApiResponse('success', 'Task deleted successfully', null));
+            res.status(200).json(new ApiResponse('success', 'Task deleted successfully', null));
         } catch (error) {
             next(error);
         }

@@ -22,9 +22,13 @@ export class UserController implements IUserController {
         if (!user) {
             throw new InvalidUserDataException('User not found');
         }
-        return user;
+        return {
+            ...user,
+            id: user.id.toString()
+        };
     } catch (error) {
         if (error instanceof UserException || error instanceof DataBaseException || error instanceof SyntaxError) {
+            console.error(error);
             throw error;
         }
         console.error(error);
@@ -40,7 +44,10 @@ export class UserController implements IUserController {
         if (!user) {
             throw new UserNotFoundException(id);
         }
-        return user;
+        return {
+            ...user,
+            id: user.id.toString()
+        };
     } catch (error) {
         console.log('Controller - Error caught:', error);
         if (error instanceof UserException || error instanceof DataBaseException) {

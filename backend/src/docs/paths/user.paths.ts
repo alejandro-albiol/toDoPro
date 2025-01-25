@@ -15,7 +15,9 @@ export const UserPaths = {
       },
       responses: {
         201: { $ref: '#/components/responses/UserCreated' },
-        400: { $ref: '#/components/responses/BadRequest' }
+        400: { $ref: '#/components/responses/InvalidUserData' },
+        409: { $ref: '#/components/responses/UserConflict' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   },
@@ -23,6 +25,22 @@ export const UserPaths = {
     get: {
       tags: ['Users'],
       summary: 'Get user by ID',
+      parameters: [
+        {
+          in: 'path',
+          name: 'id',
+          required: true,
+          schema: { type: 'string' }
+        }
+      ],
+      responses: {
+        200: { $ref: '#/components/responses/UserResponse' },
+        404: { $ref: '#/components/responses/UserNotFound' }
+      }
+    },
+    put: {
+      tags: ['Users'],
+      summary: 'Update a user',
       parameters: [
         {
           in: 'path',

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import { taskRouter } from '../../src/routes/task-router';
+import taskRouter from '../../src/routes/task-router';
 import { TaskService } from '../../src/tasks/service/task-service';
 import { mockTask, mockTaskInput } from '../__mocks__/task-mock';
 
@@ -77,7 +77,7 @@ describe('TaskRouter', () => {
                 .put('/tasks/1')
                 .send({ title: 'Updated Task' });
 
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(201);
             expect(spy).toHaveBeenCalledWith({ id: '1', title: 'Updated Task' });
             expect(response.body.data).toEqual({
                 ...updatedTask,
@@ -86,16 +86,16 @@ describe('TaskRouter', () => {
         });
     });
 
-    describe('PUT /:id/toggle', () => {
+    describe('PUT /:id/toggle-completed', () => {
         it('should toggle task completion', async () => {
             const toggledTask = { ...mockTask, completed: !mockTask.completed };
             const spy = jest.spyOn(TaskService.prototype, 'toggleCompleted')
                 .mockResolvedValueOnce(toggledTask);
 
             const response = await request(app)
-                .put('/tasks/1/toggle');
+                .put('/tasks/1/toggle-completed');
 
-            expect(response.status).toBe(200);
+            expect(response.status).toBe(201);
             expect(spy).toHaveBeenCalledWith('1');
             expect(response.body.data).toEqual({
                 ...toggledTask,
