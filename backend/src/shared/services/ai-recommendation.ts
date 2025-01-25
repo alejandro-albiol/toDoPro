@@ -1,6 +1,6 @@
 import Groq from 'groq-sdk';
 import { Task } from '../../tasks/models/entities/task.entity.js';
-import { GroqCompletion } from '../responses/GroqResponses.js';
+import { ChatCompletion } from 'groq-sdk/src/resources/chat/completions.js';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -26,7 +26,7 @@ export class AIRecommendationService {
 
   private static async getGroqCompletion(
     tasks: Task[],
-  ): Promise<GroqCompletion> {
+  ): Promise<ChatCompletion> {
     const formattedTasks = tasks.map((task) => ({
       title: task.title,
       description: task.description || 'No description',
@@ -39,8 +39,7 @@ export class AIRecommendationService {
           content: `You are Groq, a friendly task advisor. Based on these tasks: ${JSON.stringify(formattedTasks)}, 
                              provide ONE short motivational tip about task prioritization.
                              Keep your response under 100 characters.
-                             Be encouraging but concise.
-                             Do not mention specific tasks.`,
+                             Be encouraging but concise. Always send a plain text response.`,
         },
       ],
       model: 'llama3-8b-8192',

@@ -1,0 +1,10 @@
+export enum UserErrorCodes {
+    USER_NOT_FOUND = 'U1',
+    EMAIL_ALREADY_EXISTS = 'U2',
+    USERNAME_ALREADY_EXISTS = 'U3',
+    INVALID_USER_DATA = 'U4',
+    INVALID_USERNAME = 'U5',
+    INVALID_EMAIL = 'U6',
+    INVALID_PASSWORD = 'U7',
+    USER_CREATION_FAILED = 'U8',
+}

@@ -6,12 +6,14 @@ import { swaggerConfig } from './docs/swagger.config.js';
 import taskRouter from './routes/task-router.js';
 import aiRouter from './routes/ai-router.js';
 import staticRouter from './routes/static-router.js';
+import path from 'path';
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const apiRouter = express.Router();
+app.use(express.static(path.join(process.cwd(), '..', 'public')));
 
 apiRouter.use('/users', userRouter);
 apiRouter.use('/tasks', taskRouter);

@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { BaseValidator } from './base-validator.js';
 import { ErrorCode } from '../../shared/models/exceptions/enums/error-code.enum.js';
+import { TaskErrorCodes } from '../../tasks/exceptions/enums/task-error-codes.enum.js';
 
 export class TaskValidator extends BaseValidator {
     static validateCreate() {
@@ -9,7 +10,7 @@ export class TaskValidator extends BaseValidator {
                 const { title } = req.body;
                 if (!this.isValidString(title, 3, 50)) {
                     return {
-                        code: ErrorCode.INVALID_TITLE,
+                        code: TaskErrorCodes.INVALID_TITLE,
                         message: 'Title must be between 3 and 50 characters'
                     };
                 }
@@ -19,7 +20,7 @@ export class TaskValidator extends BaseValidator {
                 const { description } = req.body;
                 if (description && !this.isValidString(description, 0, 500)) {
                     return {
-                        code: ErrorCode.INVALID_DESCRIPTION,
+                        code: TaskErrorCodes.INVALID_DESCRIPTION,
                         message: 'Description cannot exceed 500 characters'
                     };
                 }
@@ -29,7 +30,7 @@ export class TaskValidator extends BaseValidator {
                 const { user_id } = req.body;
                 if (!this.isValidId(user_id)) {
                     return {
-                        code: ErrorCode.INVALID_ID_FORMAT,
+                        code: TaskErrorCodes.INVALID_USER_ID,
                         message: 'Invalid user ID'
                     };
                 }
@@ -44,7 +45,7 @@ export class TaskValidator extends BaseValidator {
                 const { title } = req.body;
                 if (title !== undefined && !this.isValidString(title, 3, 50)) {
                     return {
-                        code: ErrorCode.INVALID_TITLE,
+                        code: TaskErrorCodes.INVALID_TITLE,
                         message: 'Title must be between 3 and 50 characters'
                     };
                 }
@@ -54,7 +55,7 @@ export class TaskValidator extends BaseValidator {
                 const { description } = req.body;
                 if (description !== undefined && !this.isValidString(description, 0, 500)) {
                     return {
-                        code: ErrorCode.INVALID_DESCRIPTION,
+                        code: TaskErrorCodes.INVALID_DESCRIPTION,
                         message: 'Description cannot exceed 500 characters'
                     };
                 }

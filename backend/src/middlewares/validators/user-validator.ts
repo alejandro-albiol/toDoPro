@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { BaseValidator } from './base-validator.js';
 import { ErrorCode } from '../../shared/models/exceptions/enums/error-code.enum.js';
+import { UserErrorCodes } from '../../users/exceptions/enums/user-error-codes.enum.js';
 
 export class UserValidator extends BaseValidator {
     static validateCreate() {
@@ -9,7 +10,7 @@ export class UserValidator extends BaseValidator {
                 const { username } = req.body;
                 if (!this.isValidString(username, 3, 30)) {
                     return {
-                        code: ErrorCode.INVALID_USERNAME,
+                        code: UserErrorCodes.INVALID_USERNAME,
                         message: 'Username must be between 3 and 30 characters'
                     };
                 }
@@ -19,7 +20,7 @@ export class UserValidator extends BaseValidator {
                 const { email } = req.body;
                 if (!this.isValidEmail(email)) {
                     return {
-                        code: ErrorCode.INVALID_EMAIL,
+                        code: UserErrorCodes.INVALID_EMAIL,
                         message: 'Invalid email format'
                     };
                 }
@@ -29,7 +30,7 @@ export class UserValidator extends BaseValidator {
                 const { password } = req.body;
                 if (!this.isValidPassword(password)) {
                     return {
-                        code: ErrorCode.INVALID_PASSWORD,
+                        code: UserErrorCodes.INVALID_PASSWORD,
                         message: 'Password must be at least 8 characters and contain letters and numbers'
                     };
                 }
@@ -44,7 +45,7 @@ export class UserValidator extends BaseValidator {
                 const { username } = req.body;
                 if (username && !this.isValidString(username, 3, 30)) {
                     return {
-                        code: ErrorCode.INVALID_USERNAME,
+                        code: UserErrorCodes.INVALID_USERNAME,
                         message: 'Username must be between 3 and 30 characters'
                     };
                 }
@@ -54,7 +55,7 @@ export class UserValidator extends BaseValidator {
                 const { email } = req.body;
                 if (email && !this.isValidEmail(email)) {
                     return {
-                        code: ErrorCode.INVALID_EMAIL,
+                        code: UserErrorCodes.INVALID_EMAIL,
                         message: 'Invalid email format'
                     };
                 }
@@ -69,7 +70,7 @@ export class UserValidator extends BaseValidator {
                 const { password } = req.body;
                 if (!this.isValidPassword(password)) {
                     return {
-                        code: ErrorCode.INVALID_PASSWORD,
+                        code: UserErrorCodes.INVALID_PASSWORD,
                         message: 'Password must be at least 8 characters and contain letters and numbers'
                     };
                 }
