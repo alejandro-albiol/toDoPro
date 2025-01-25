@@ -1,7 +1,7 @@
-import { CreateUserDTO } from "../models/dtos/CreateUserDTO.js";
-import { UpdateUserDTO } from "../models/dtos/UpdateUserDTO.js";
-import { User } from "../models/entities/User.js";
-import { IBaseRepository } from "../../shared/interfaces/base/i-base-repository.js";
+import { CreateUserDTO } from "../models/dtos/create-user.dto.js";
+import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
+import { User } from "../models/entities/user.entity.js";
+import { IBaseRepository } from "../../shared/models/interfaces/base/i-base-repository.js";
 
 export interface IUserRepository extends IBaseRepository<User, CreateUserDTO, UpdateUserDTO> {
   findByUsername(username: string): Promise<User | null>;

@@ -1,4 +1,4 @@
-import { ErrorCode } from "../../shared/exceptions/enums/error-code.enum.js";
+import { ErrorCode } from "../../shared/models/exceptions/enums/error-code.enum.js";
 import { TaskException } from "./base-task.exception.js";
 
 export class InvalidTaskDataException extends TaskException {

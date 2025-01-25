@@ -1,4 +1,4 @@
-import { IBaseController } from "../../shared/interfaces/base/i-base-controller.js";
+import { IBaseController } from "../../shared/models/interfaces/base/i-base-controller.js";
 import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";

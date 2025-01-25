@@ -29,7 +29,7 @@ taskRouter.get('/user/:userId',
     async (req, res, next) => {
         try {
             const tasks = await taskController.findAllByUserId(req.params.userId);
-            res.status(200).json(new ApiResponse('success', 'Tasks found', tasks));
+            res.status(200).json(new ApiResponse('success', 'Tasks found successfully', tasks));
         } catch (error) {
             next(error);
         }
@@ -41,7 +41,7 @@ taskRouter.get('/:id',
     async (req, res, next) => {
         try {
             const task = await taskController.findById(req.params.id);
-            res.status(200).json(new ApiResponse('success', 'Task found', task));
+            res.status(200).json(new ApiResponse('success', 'Task found successfully', task));
         } catch (error) {
             next(error);
         }
@@ -64,12 +64,12 @@ taskRouter.put('/:id',
     }
 );
 
-taskRouter.put('/:id/toggle',
+taskRouter.put('/:id/toggle-completed',
     IdValidator.validate('id'),
     async (req, res, next) => {
         try {
             const task = await taskController.toggleCompleted(req.params.id);
-            res.status(200).json(new ApiResponse('success', 'Task status toggled successfully', task));
+            res.status(200).json(new ApiResponse('success', 'Task completed status toggled successfully', task));
         } catch (error) {
             next(error);
         }
@@ -81,11 +81,11 @@ taskRouter.delete('/:id',
     async (req, res, next) => {
         try {
             await taskController.delete(req.params.id);
-            res.status(200).json(new ApiResponse('success', 'Task deleted successfully', null));
+            res.status(204).json(new ApiResponse('success', 'Task deleted successfully', null));
         } catch (error) {
             next(error);
         }
     }
 );
-    
-export { taskRouter };
+
+export default taskRouter;

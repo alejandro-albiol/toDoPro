@@ -1,5 +1,5 @@
-import { IApiResponse } from '../interfaces/responses/i-api-response.js';
-import { IApiError } from '../interfaces/responses/i-api-error.js';
+import { IApiResponse } from '../models/interfaces/responses/i-api-response.js';
+import { IApiError } from '../models/interfaces/responses/i-api-error.js';
 
 export class ApiResponse<T = any> implements IApiResponse<T> {
   status: 'success' | 'error';

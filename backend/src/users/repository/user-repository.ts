@@ -1,12 +1,12 @@
 import { IUserRepository } from './i-user-repository.js';
-import { User } from '../models/entities/User.js';
+import { User } from '../models/entities/user.entity.js';
 import { pool } from '../../config/configDataBase.js';
-import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
-import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
-import { UpdatedUserDTO } from '../models/dtos/UpdatedUserDTO.js';
-import { DataBaseException } from '../../shared/exceptions/data-base.exception.js';
-import { DataBaseErrorCode } from '../../shared/exceptions/enums/data-base-error-code.enum.js';
-import { IDatabaseError } from '../../shared/interfaces/i-database-error.js';
+import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
+import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
+import { UpdatedUserDTO } from '../models/dtos/updated-user.dto.js';
+import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
+import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
+import { IDatabaseError } from '../../shared/models/interfaces/i-database-error.js';
 
 export class UserRepository implements IUserRepository {
 

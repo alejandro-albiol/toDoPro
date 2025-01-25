@@ -1,4 +1,4 @@
-import { IBaseService } from '../../shared/interfaces/base/i-base-service.js';
+import { IBaseService } from '../../shared/models/interfaces/base/i-base-service.js';
 import { Task } from '../models/entities/task.entity.js';
 import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
 import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';

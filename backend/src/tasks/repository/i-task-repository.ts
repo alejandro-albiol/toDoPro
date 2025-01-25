@@ -1,4 +1,4 @@
-import { IBaseRepository } from "../../shared/interfaces/base/i-base-repository.js";
+import { IBaseRepository } from "../../shared/models/interfaces/base/i-base-repository.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { BaseValidator } from './base-validator.js';
-import { ErrorCode } from '../../shared/exceptions/enums/error-code.enum.js';
+import { ErrorCode } from '../../shared/models/exceptions/enums/error-code.enum.js';
 
 export class TaskValidator extends BaseValidator {
     static validateCreate() {

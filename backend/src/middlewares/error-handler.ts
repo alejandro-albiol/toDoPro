@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { DataBaseException } from '../shared/exceptions/data-base.exception.js';
+import { DataBaseException } from '../shared/models/exceptions/data-base.exception.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
-import { IApiError } from '../shared/interfaces/responses/i-api-error.js';
+import { IApiError } from '../shared/models/interfaces/responses/i-api-error.js';
 import { EmailAlreadyExistsException } from '../users/exceptions/email-already-exists.exception.js';
 import { UsernameAlreadyExistsException } from '../users/exceptions/username-already-exists.exception.js';
-import { DataBaseErrorCode } from '../shared/exceptions/enums/data-base-error-code.enum.js';
-import { ErrorCode } from '../shared/exceptions/enums/error-code.enum.js';
+import { DataBaseErrorCode } from '../shared/models/exceptions/enums/data-base-error-code.enum.js';
+import { ErrorCode } from '../shared/models/exceptions/enums/error-code.enum.js';
 import { UserNotFoundException } from '../users/exceptions/user-not-found.exception.js';
 import { UserException } from '../users/exceptions/base-user.exception.js';
 import { InvalidUserDataException } from '../users/exceptions/invalid-user-data.exception.js';

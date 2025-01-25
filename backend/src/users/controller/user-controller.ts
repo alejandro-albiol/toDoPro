@@ -1,12 +1,12 @@
 import { IUserService } from '../service/i-user-service.js';
-import { CreateUserDTO } from '../models/dtos/CreateUserDTO.js';
-import { UpdateUserDTO } from '../models/dtos/UpdateUserDTO.js';
+import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
+import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
 import { UserException } from '../exceptions/base-user.exception.js';
-import { DataBaseException } from '../../shared/exceptions/data-base.exception.js';
+import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
 import { IUserController } from './i-user-controller.js';
-import { DataBaseErrorCode } from '../../shared/exceptions/enums/data-base-error-code.enum.js';
+import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
 import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';
-import { User } from '../models/entities/User.js';
+import { User } from '../models/entities/user.entity.js';
 import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 
 export class UserController implements IUserController {

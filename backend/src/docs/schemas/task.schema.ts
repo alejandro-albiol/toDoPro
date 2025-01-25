@@ -1,4 +1,17 @@
 export const taskSchema = {
+    Task: {
+        type: 'object',
+        properties: {
+            id: { type: 'string' },
+            title: { type: 'string' },
+            description: { type: 'string' },
+            user_id: { type: 'string' },
+            creation_date: { type: 'string' },
+            completed: { type: 'boolean' },
+            completed_at: { type: 'string' }
+        },
+        required: ['id', 'title', 'description', 'completed', 'user_id', 'creation_date']
+    },
     CreateTaskDTO: {
         type: 'object',
         properties: {
@@ -28,18 +41,5 @@ export const taskSchema = {
             completed: { type: 'boolean' }
         },
         required: ['id', 'title', 'description', 'completed']
-    },
-    Task: {
-        type: 'object',
-        properties: {
-            id: { type: 'string' },
-            title: { type: 'string' },
-            description: { type: 'string' },
-            user_id: { type: 'string' },
-            creation_date: { type: 'string' },
-            completed: { type: 'boolean' },
-            completed_at: { type: 'string' }
-        },
-        required: ['id', 'title', 'description', 'completed', 'user_id', 'creation_date']
     }
 };
