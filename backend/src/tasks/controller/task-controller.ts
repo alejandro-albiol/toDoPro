@@ -1,5 +1,5 @@
 import { ITaskController } from "./i-task-controller.js";
-import { ITaskService } from "../service/i-task-service.js";
+import { ITaskService } from "../service/i-task.service.js";
 import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";

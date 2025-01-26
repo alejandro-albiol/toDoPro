@@ -1,4 +1,4 @@
-import { IUserRepository } from './i-user-repository.js';
+import { IUserRepository } from './i-user.repository.js';
 import { User } from '../models/entities/user.entity.js';
 import { pool } from '../../config/configDataBase.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
@@ -102,21 +102,19 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByUsername(username: string): Promise<User | null> {
     try {
       const result = await pool.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email]
+        'SELECT * FROM users WHERE username = $1',
+        [username],
       );
-
       if (result.rows.length === 0) {
         return null;
       }
-    
       return result.rows[0];
     } catch (error) {
       const dbError = error as IDatabaseError;
-      
+
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'User not found',
@@ -146,19 +144,22 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findByUsername(username: string): Promise<User | null> {
+
+  async findByEmail(email: string): Promise<User | null> {
     try {
       const result = await pool.query(
-        'SELECT * FROM users WHERE username = $1',
-        [username],
+        'SELECT * FROM users WHERE email = $1',
+        [email]
       );
+
       if (result.rows.length === 0) {
         return null;
       }
+    
       return result.rows[0];
     } catch (error) {
       const dbError = error as IDatabaseError;
-
+      
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'User not found',

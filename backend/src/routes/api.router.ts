@@ -1,7 +1,7 @@
 import Express from 'express';
-import userRouter from './user-router.js';
-import taskRouter from './task-router.js';
-import aiRouter from './ai-router.js';
+import userRouter from './user.router.js';
+import taskRouter from './task.router.js';
+import aiRouter from './ai.router.js';
 
 const apiRouter = Express.Router();
 

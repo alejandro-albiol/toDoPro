@@ -1,11 +1,11 @@
 import express from 'express';
 import { errorHandler } from './middlewares/error-handler.js';
-import userRouter from './routes/user-router.js';
+import userRouter from './routes/user.router.js';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerConfig } from './docs/swagger.config.js';
-import taskRouter from './routes/task-router.js';
-import aiRouter from './routes/ai-router.js';
-import staticRouter from './routes/static-router.js';
+import taskRouter from './routes/task.router.js';
+import aiRouter from './routes/ai.router.js';
+import staticRouter from './routes/static.router.js';
 import path from 'path';
 
 const app = express();

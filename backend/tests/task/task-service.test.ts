@@ -1,7 +1,6 @@
-import { TaskService } from "../../src/tasks/service/task-service";
-import { TaskNotFoundException } from "../../src/tasks/exceptions/task-not-found.exception";
-import { InvalidTaskDataException } from "../../src/tasks/exceptions/invalid-task-data.exception";
-import { Task } from "../../src/tasks/models/entities/task.entity";
+import { TaskService } from "../../src/tasks/service/task.service.js";
+import { TaskNotFoundException } from "../../src/tasks/exceptions/task-not-found.exception.js";
+import { InvalidTaskDataException } from "../../src/tasks/exceptions/invalid-task-data.exception.js";
 
 describe('TaskService', () => {
     let taskService: TaskService;

@@ -1,5 +1,5 @@
-import { ITaskRepository } from "../repository/i-task-repository.js";
-import { ITaskService } from "./i-task-service.js";
+import { ITaskRepository } from "../repository/i-task.repository.js";
+import { ITaskService } from "./i-task.service.js";
 import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";

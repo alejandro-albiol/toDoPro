@@ -1,7 +1,7 @@
 import express from 'express';
-import { UserController } from '../users/controller/user-controller.js';
-import { UserService } from '../users/service/user-service.js';
-import { UserRepository } from '../users/repository/user-repository.js';
+import { UserController } from '../users/controller/user.controller.js';
+import { UserService } from '../users/service/user.service.js';
+import { UserRepository } from '../users/repository/user.repository.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
 import { IdValidator } from '../middlewares/validators/id-validator.js';
 import { UserValidator } from '../middlewares/validators/user-validator.js';

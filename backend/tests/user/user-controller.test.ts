@@ -1,8 +1,8 @@
-import { UserController } from "../../src/users/controller/user-controller";
-import { UserNotFoundException } from "../../src/users/exceptions/user-not-found.exception";
-import { EmailAlreadyExistsException } from "../../src/users/exceptions/email-already-exists.exception";
-import { UsernameAlreadyExistsException } from "../../src/users/exceptions/username-already-exists.exception";
-import { UserCreationFailedException } from "../../src/users/exceptions/user-creation-failed.exception";
+import { UserController } from "../../src/users/controller/user.controller.js";
+import { UserNotFoundException } from "../../src/users/exceptions/user-not-found.exception.js";
+import { EmailAlreadyExistsException } from "../../src/users/exceptions/email-already-exists.exception.js";
+import { UsernameAlreadyExistsException } from "../../src/users/exceptions/username-already-exists.exception.js";
+import { UserCreationFailedException } from "../../src/users/exceptions/user-creation-failed.exception.js";
 
 describe('UserController', () => {
     let userController: UserController;

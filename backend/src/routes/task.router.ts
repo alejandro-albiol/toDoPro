@@ -3,8 +3,8 @@ import { TaskController } from '../tasks/controller/task-controller.js';
 import { TaskValidator } from '../middlewares/validators/task-validator.js';
 import { IdValidator } from '../middlewares/validators/id-validator.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
-import { TaskRepository } from '../tasks/repository/task-repository.js';
-import { TaskService } from '../tasks/service/task-service.js';
+import { TaskRepository } from '../tasks/repository/task.repository.js';
+import { TaskService } from '../tasks/service/task.service.js';
 
 const taskRepository = new TaskRepository();
 const taskService = new TaskService(taskRepository);

@@ -1,7 +1,5 @@
 export enum ErrorCode {
 
-  INVALID_PASSWORD = 'A1',
-  INVALID_TOKEN = 'A2',
   
   INVALID_JSON_FORMAT = 'F1',
   INVALID_ID_FORMAT = 'F2',

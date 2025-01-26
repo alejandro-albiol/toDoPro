@@ -1,14 +1,14 @@
 import request from 'supertest';
 import express from 'express';
-import userRouter from '../../src/routes/user-router';
-import { UserService } from '../../src/users/service/user-service';
-import { mockUser, mockUserInput } from '../__mocks__/user-mock';
+import { UserService } from '../../src/users/service/user.service.js';
+import { mockUser, mockUserInput } from '../__mocks__/user-mock.js';
+import userRouter from '../../src/routes/user.router.js';
 
 const app = express();
 app.use(express.json());
 app.use('/users', userRouter);
 
-jest.mock('../../src/users/service/user-service');
+jest.mock('../../src/users/service/user.service.js');
 
 describe('UserRouter', () => {
     beforeEach(() => {

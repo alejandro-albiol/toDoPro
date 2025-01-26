@@ -1,14 +1,14 @@
 import request from 'supertest';
 import express from 'express';
-import taskRouter from '../../src/routes/task-router';
-import { TaskService } from '../../src/tasks/service/task-service';
+import taskRouter from '../../src/routes/task.router.js';
+import { TaskService } from '../../src/tasks/service/task.service.js';
 import { mockTask, mockTaskInput } from '../__mocks__/task-mock';
 
 const app = express();
 app.use(express.json());
 app.use('/tasks', taskRouter);
 
-jest.mock('../../src/tasks/service/task-service');
+jest.mock('../../src/tasks/service/task.service.js');
 
 describe('TaskRouter', () => {
     beforeEach(() => {

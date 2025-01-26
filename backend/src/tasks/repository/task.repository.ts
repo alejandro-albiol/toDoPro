@@ -1,4 +1,4 @@
-import { ITaskRepository } from './i-task-repository.js';
+import { ITaskRepository } from './i-task.repository.js';
 import { pool } from '../../config/configDataBase.js';
 import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
 import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';

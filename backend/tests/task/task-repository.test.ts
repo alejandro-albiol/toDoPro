@@ -1,7 +1,6 @@
 import { DataBaseException } from "../../src/shared/models/exceptions/data-base.exception.js";
-import { TaskRepository } from "../../src/tasks/repository/task-repository.js";
+import { TaskRepository } from "../../src/tasks/repository/task.repository.js";
 import { mockPool } from "../__mocks__/database-mock.js";
-import { Task } from "../../src/tasks/models/entities/task.entity.js";
 import { DataBaseErrorCode } from "../../src/shared/models/exceptions/enums/data-base-error-code.enum.js";
 
 describe('TaskRepository', () => {

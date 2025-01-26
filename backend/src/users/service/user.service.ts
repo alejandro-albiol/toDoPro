@@ -1,9 +1,9 @@
-import { IUserService } from './i-user-service.js';
+import { IUserService } from './i-user.service.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
 import { UpdatedUserDTO } from '../models/dtos/updated-user.dto.js';
 import { User } from '../models/entities/user.entity.js';
-import { UserRepository } from '../repository/user-repository.js';
+import { UserRepository } from '../repository/user.repository.js';
 import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 import { EmailAlreadyExistsException } from '../exceptions/email-already-exists.exception.js';
 import { UsernameAlreadyExistsException } from '../exceptions/username-already-exists.exception.js';
@@ -72,6 +72,27 @@ export class UserService implements IUserService {
         throw error;
       }
       throw new DataBaseException('Error finding user', DataBaseErrorCode.UNKNOWN_ERROR);
+    }
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    try {
+      const user = await this.userRepository.findByUsername(username);
+      if (!user) {
+        throw new UserNotFoundException(username);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw error;
+      }
+      if (error instanceof DataBaseException) {
+        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+          throw new UserNotFoundException(username);
+        }
+        throw error;
+      }
+      throw new DataBaseException('Error finding user by username', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
 

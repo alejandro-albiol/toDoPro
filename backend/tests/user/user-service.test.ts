@@ -1,4 +1,4 @@
-import { UserService } from "../../src/users/service/user-service.js";
+import { UserService } from "../../src/users/service/user.service.js";
 import { DataBaseErrorCode } from "../../src/shared/models/exceptions/enums/data-base-error-code.enum.js";
 import { DataBaseException } from "../../src/shared/models/exceptions/data-base.exception.js";
 import { UserNotFoundException } from "../../src/users/exceptions/user-not-found.exception.js";
@@ -6,7 +6,7 @@ import { InvalidUserDataException } from "../../src/users/exceptions/invalid-use
 import { EmailAlreadyExistsException } from "../../src/users/exceptions/email-already-exists.exception.js";
 import { UsernameAlreadyExistsException } from "../../src/users/exceptions/username-already-exists.exception.js";
 import { UserCreationFailedException } from "../../src/users/exceptions/user-creation-failed.exception.js";
-import { IUserService } from "../../src/users/service/i-user-service.js";
+import { IUserService } from "../../src/users/service/i-user.service.js";
 
 describe('UserService', () => {
     let userService: IUserService;
