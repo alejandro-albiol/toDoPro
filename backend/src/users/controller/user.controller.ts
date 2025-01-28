@@ -54,10 +54,7 @@ export class UserController implements IUserController {
             throw error;
         }
         console.error('Controller - Unknown error:', error);
-        throw new DataBaseException(
-            'An unknown error occurred',
-            DataBaseErrorCode.UNKNOWN_ERROR
-        );
+        throw new InvalidUserDataException('An unknown error occurred');
     }
   }
 
@@ -71,19 +68,7 @@ export class UserController implements IUserController {
         throw error;
       }
       console.error(error);
-      throw error;
-    }
-  }
-
-  async updatePassword(id: string, password: string) {
-    try {
-      await this.userService.updatePassword(id, password);
-    } catch (error) {
-      if (error instanceof UserException || error instanceof DataBaseException) {
-        throw error;
-      }
-      console.error(error);
-      throw error;
+      throw new InvalidUserDataException('An unknown error occurred');
     }
   }
 
@@ -96,7 +81,7 @@ export class UserController implements IUserController {
         throw error;
       }
       console.error(error);
-      throw error;
+      throw new InvalidUserDataException('An unknown error occurred');
     }
   }
 

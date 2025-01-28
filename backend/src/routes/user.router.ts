@@ -53,19 +53,6 @@ userRouter.put('/:id',
     }
 );
 
-userRouter.put('/:id/password',
-    IdValidator.validate('id'),
-    UserValidator.validatePassword(),
-    async (req, res, next) => {
-        try {
-            await userController.updatePassword(req.params.id, req.body.password);
-            res.status(201).json(new ApiResponse('success', 'Password updated successfully', null));
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
 userRouter.delete('/:id', IdValidator.validate('id'), async (req, res, next) => {
     try {
         await userController.delete(req.params.id);

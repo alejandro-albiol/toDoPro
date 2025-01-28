@@ -5,5 +5,4 @@ import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
 import { UpdatedUserDTO } from "../models/dtos/updated-user.dto.js";
 
 export interface IUserController extends IBaseController<User, CreateUserDTO, UpdateUserDTO, UpdatedUserDTO> {
-  updatePassword(id: string, password: string): Promise<void>;
 }

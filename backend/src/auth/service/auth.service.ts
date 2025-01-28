@@ -2,8 +2,8 @@ import { HashService } from '../../shared/services/hash-service.js';
 import { CreateUserDTO } from '../../users/models/dtos/create-user.dto.js';
 import { UserService } from '../../users/service/user.service.js';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';
-import { ILoginDTO } from '../models/dtos/i-login.dto.js';
-import { ChangePasswordDTO } from '../models/dtos/i-change-password.dto.js';
+import { LoginDTO } from '../models/dtos/login.dto.js';
+import { ChangePasswordDTO } from '../models/dtos/change-password.dto.js';
 import { JwtService } from './jwt.service.js';
 import { UserNotFoundException } from '../../users/exceptions/user-not-found.exception.js';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
@@ -14,17 +14,13 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
 
-    async login(credentials: ILoginDTO): Promise<string> {
+    async login(credentials: LoginDTO): Promise<string> {
         const user = await this.userService.findByUsername(credentials.username);
         
         if (!user || !await HashService.verifyPassword(credentials.password, user.password)) {
             throw new InvalidCredentialsException('Invalid credentials');
         }
         return this.jwtService.generateToken(user.id, user.username);
-    }
-
-    async register(userData: CreateUserDTO): Promise<void> {
-        await this.userService.create(userData);
     }
 
     async changePassword(token: string, changePasswordDTO: ChangePasswordDTO): Promise<void> {
