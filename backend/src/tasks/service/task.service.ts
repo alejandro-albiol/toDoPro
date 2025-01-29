@@ -4,7 +4,7 @@ import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
 import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
-import { DataBaseException } from "../../shared/models/exceptions/data-base.exception.js";
+import { DataBaseException } from "../../shared/models/exceptions/database.exception.js";
 import { DataBaseErrorCode } from "../../shared/models/exceptions/enums/data-base-error-code.enum.js";
 import { TaskNotFoundException } from "../exceptions/task-not-found.exception.js";
 import { InvalidTaskDataException } from "../exceptions/invalid-task-data.exception.js";

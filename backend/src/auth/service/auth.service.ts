@@ -1,4 +1,4 @@
-import { HashService } from '../../shared/services/hash-service.js';
+import { HashService } from '../../shared/services/hash.service.js';
 import { CreateUserDTO } from '../../users/models/dtos/create-user.dto.js';
 import { UserService } from '../../users/service/user.service.js';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';

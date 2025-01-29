@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { DataBaseException } from '../shared/models/exceptions/data-base.exception.js';
+import { DataBaseException } from '../shared/models/exceptions/database.exception.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
 import { IApiError } from '../shared/models/interfaces/responses/i-api-error.js';
 import { DataBaseErrorCode } from '../shared/models/exceptions/enums/data-base-error-code.enum.js';

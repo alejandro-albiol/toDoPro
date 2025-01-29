@@ -4,7 +4,7 @@ import { pool } from '../../config/configDataBase.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
 import { UpdatedUserDTO } from '../models/dtos/updated-user.dto.js';
-import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
+import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
 import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
 import { IDatabaseError } from '../../shared/models/interfaces/i-database-error.js';
 
@@ -73,9 +73,14 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'No users found',
-          DataBaseErrorCode.NOT_FOUND
+          DataBaseErrorCode.NOT_FOUND,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
+
       throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
     }
   }
@@ -95,8 +100,13 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'User not found',
-          DataBaseErrorCode.NOT_FOUND
+          DataBaseErrorCode.NOT_FOUND,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
+
       }
       throw new DataBaseException('Error finding user', DataBaseErrorCode.UNKNOWN_ERROR);
     }
@@ -163,9 +173,14 @@ export class UserRepository implements IUserRepository {
       if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'User not found',
-          DataBaseErrorCode.NOT_FOUND
+          DataBaseErrorCode.NOT_FOUND,
+          {
+            constraint: dbError.constraint,
+            detail: dbError.detail
+          }
         );
       }
+
 
       if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
         throw new DataBaseException(
@@ -255,6 +270,18 @@ export class UserRepository implements IUserRepository {
           }
         );
       }
+
+      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+        throw new DataBaseException(
+          'User not found',
+          DataBaseErrorCode.NOT_FOUND,
+          {
+            constraint: dbError.constraint,  
+            detail: dbError.detail
+          }
+        );
+      }
+
 
       throw new DataBaseException(
         'Unknown database error',

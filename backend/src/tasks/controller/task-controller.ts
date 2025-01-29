@@ -6,7 +6,7 @@ import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
 import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
 import { TaskException } from "../exceptions/base-task.exception.js";
 import { InvalidTaskDataException } from "../exceptions/invalid-task-data.exception.js";
-import { DataBaseException } from "../../shared/models/exceptions/data-base.exception.js";
+import { DataBaseException } from "../../shared/models/exceptions/database.exception.js";
 import { TaskNotFoundException } from "../exceptions/task-not-found.exception.js";
 import { TaskCreationFailedException } from "../exceptions/task-creation-failed.exception.js";
 

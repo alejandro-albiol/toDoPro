@@ -2,7 +2,7 @@ import { IUserService } from '../service/i-user.service.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
 import { UserException } from '../exceptions/base-user.exception.js';
-import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
+import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
 import { IUserController } from './i-user.controller.js';
 import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
 import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';

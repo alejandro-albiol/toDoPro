@@ -6,17 +6,15 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev:build": "tsc && nodemon dist/index.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "test:watch": "cross-env NODE_ENV=test jest --watch",
-    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
-    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "dev": "nodemon --exec ts-node src/index.ts --ext ts,json",
+    "test": "jest --coverage",
+    "test:unit": "jest --testMatch='**/unit/**/*.test.ts' --coverage",
+    "test:integration": "jest --testMatch='**/integration/**/*.test.ts'",
+    "test:e2e": "jest --testMatch='**/e2e/**/*.test.ts'",
+    "test:watch": "jest --watch",
+    "test:changed": "jest --onlyChanged",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
   },
   "keywords": [],
   "author": "",

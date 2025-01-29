@@ -2,7 +2,7 @@ import { AuthService } from '../service/auth.service.js';
 import { LoginDTO } from '../models/dtos/login.dto.js';
 import { ChangePasswordDTO } from '../models/dtos/change-password.dto.js';
 import { AuthException } from '../exceptions/base-auth.exception.js';
-import { DataBaseException } from '../../shared/models/exceptions/data-base.exception.js';
+import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';
 
 export class AuthController {

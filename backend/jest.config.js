@@ -14,5 +14,21 @@ export default {
       },
     ],
   },
-  setupFiles: ['<rootDir>/tests/__mocks__/database-mock.ts']
+  setupFiles: ['<rootDir>/tests/__mocks__/setup-tests.ts'],
+  watchPathIgnorePatterns: [
+    'desktop.ini',
+    'node_modules'
+  ],
+  testPathIgnorePatterns: [
+    'desktop.ini',
+    'node_modules'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
 }; 
