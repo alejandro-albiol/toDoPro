@@ -37,10 +37,10 @@ export class UserService implements IUserService {
         if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
           const errorMessage = error.message.toLowerCase();
           if (errorMessage.includes('email')) {
-            throw new EmailAlreadyExistsException(newUser.email || 'unknown');
+            throw new EmailAlreadyExistsException(newUser.email ?? 'unknown');
           }
           if (errorMessage.includes('username')) {
-            throw new UsernameAlreadyExistsException(newUser.username || 'unknown');
+            throw new UsernameAlreadyExistsException(newUser.username ?? 'unknown');
           }
         }
         if (error.code === DataBaseErrorCode.INVALID_INPUT) {
@@ -63,13 +63,12 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
-          throw new UserNotFoundException(id);
-        }
         if (error.code === DataBaseErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user ID format');
         }
-        throw error;
+        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+          throw new UserNotFoundException(id);
+        }
       }
       throw new DataBaseException('Error finding user', DataBaseErrorCode.UNKNOWN_ERROR);
     }
@@ -87,10 +86,12 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
+        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+          throw new InvalidUserDataException('Invalid user username format');
+        }
         if (error.code === DataBaseErrorCode.NOT_FOUND) {
           throw new UserNotFoundException(username);
         }
-        throw error;
       }
       throw new DataBaseException('Error finding user by username', DataBaseErrorCode.UNKNOWN_ERROR);
     }
@@ -108,11 +109,11 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
-          throw new UserNotFoundException(email);
-        }
         if (error.code === DataBaseErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user email format');
+        }
+        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+          throw new UserNotFoundException(email);
         }
       }
       throw new DataBaseException('Error finding user by email', DataBaseErrorCode.UNKNOWN_ERROR);
@@ -131,10 +132,10 @@ export class UserService implements IUserService {
         if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
           const errorMessage = error.message.toLowerCase();
           if (errorMessage.includes('email')) {
-            throw new EmailAlreadyExistsException(userData.email || 'unknown');
+            throw new EmailAlreadyExistsException(userData.email ?? 'unknown');
           }
           if (errorMessage.includes('username')) {
-            throw new UsernameAlreadyExistsException(userData.username || 'unknown');
+            throw new UsernameAlreadyExistsException(userData.username ?? 'unknown');
           }
         }
         if (error.code === DataBaseErrorCode.NOT_FOUND) {

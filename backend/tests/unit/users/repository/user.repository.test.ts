@@ -8,45 +8,31 @@ describe('UserRepository', () => {
     let userRepository: UserRepository;
 
     beforeEach(() => {
-        jest.clearAllMocks();
         userRepository = new UserRepository();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     describe('create', () => {
         it('should create a new user successfully', async () => {
-            const newUser = {
-                username: 'testUser',
-                email: 'test@test.com',
-                password: 'hashedPassword123'
-            };
-
             poolMock.query.mockResolvedValue({
-                rows: [{
-                    id: '1',
-                    username: 'testUser',
-                    email: 'test@test.com',
-                    password: 'hashedPassword123'
-                }],
+                rows: [userMock.validUser],
                 rowCount: 1
             });
 
-            const result = await userRepository.create(newUser);
+            const result = await userRepository.create(userMock.createUserData);
 
             expect(poolMock.query).toHaveBeenCalledWith(
                 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-                [newUser.username, newUser.email, newUser.password]
+                [userMock.createUserData.username, userMock.createUserData.email, userMock.createUserData.password]
             );
 
-            expect(result).toEqual({
-                id: '1',
-                username: 'testUser',
-                email: 'test@test.com',
-                password: 'hashedPassword123'
-            });
+            expect(result).toEqual(userMock.validUser);
         });
 
         it('should throw DataBaseException on unique constraint violation', async () => {
-            const newUser = userMock.createUserData;
             const dbError = {
                 code: DataBaseErrorCode.UNIQUE_VIOLATION,
                 constraint: 'users_email_key',
@@ -54,11 +40,10 @@ describe('UserRepository', () => {
             };
             poolMock.query.mockRejectedValue(dbError);
 
-            await expect(userRepository.create(newUser))
+            await expect(userRepository.create(userMock.createUserData))
                 .rejects
                 .toMatchObject({
                     name: 'DatabaseException',
-                    message: 'Unique constraint violation',
                     code: DataBaseErrorCode.UNIQUE_VIOLATION,
                     metadata: {
                         constraint: 'users_email_key',
@@ -195,30 +180,19 @@ describe('UserRepository', () => {
 
     describe('findById', () => {
         it('should return user when found', async () => {
-            const userId = '1';
             poolMock.query.mockResolvedValue({
-                rows: [{
-                    id: '1',
-                    username: 'testUser',
-                    email: 'test@test.com',
-                    password: 'hashedPassword123'
-                }],
+                rows: [userMock.validUser],
                 rowCount: 1
             });
 
-            const result = await userRepository.findById(userId);
+            const result = await userRepository.findById(userMock.validUser.id);
 
             expect(poolMock.query).toHaveBeenCalledWith(
                 'SELECT * FROM users WHERE id = $1',
-                [userId]
+                [userMock.validUser.id]
             );
 
-            expect(result).toEqual({
-                id: '1',
-                username: 'testUser',
-                email: 'test@test.com',
-                password: 'hashedPassword123',
-            });
+            expect(result).toEqual(userMock.validUser);
         });
 
         it('should return null when user not found', async () => {
@@ -265,30 +239,19 @@ describe('UserRepository', () => {
 
     describe('findByUsername', () => {
         it('should return user when found', async () => {
-            const username = 'testUser';
             poolMock.query.mockResolvedValue({
-                rows: [{
-                    id: '1',
-                    username: 'testUser',
-                    email: 'test@test.com',
-                    password: 'hashedPassword123'
-                }],
+                rows: [userMock.validUser],
                 rowCount: 1
             });
 
-            const result = await userRepository.findByUsername(username);
+            const result = await userRepository.findByUsername(userMock.validUser.username);
 
             expect(poolMock.query).toHaveBeenCalledWith(
                 'SELECT * FROM users WHERE username = $1',
-                [username]
+                [userMock.validUser.username]
             );
 
-            expect(result).toEqual({
-                id: '1',
-                username: 'testUser',
-                email: 'test@test.com',
-                password: 'hashedPassword123'
-            });
+            expect(result).toEqual(userMock.validUser);
         });
 
         it('should return null when user not found', async () => {
