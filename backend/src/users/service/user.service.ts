@@ -12,42 +12,45 @@ import { DataBaseException } from '../../shared/models/exceptions/database.excep
 import { HashService } from '../../shared/services/hash.service.js';
 import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';
 import { UserCreationFailedException } from '../exceptions/user-creation-failed.exception.js';
+import { UserException } from '../exceptions/base-user.exception.js';
+import { UserOperationException } from '../exceptions/user-operation.exception.js';
 
 export class UserService implements IUserService {
-  private userRepository: UserRepository;
-
-  constructor(userRepository: UserRepository) {
-    this.userRepository = userRepository;
-  }
+  constructor(private userRepository: UserRepository) {}
 
   async create(newUser: CreateUserDTO): Promise<User> {
     try {
-      const hashedPassword = await HashService.hashPassword(newUser.password);
-      const userWithHashedPassword = { ...newUser, password: hashedPassword };
-      const user = await this.userRepository.create(userWithHashedPassword);
-      if (!user) {
-        throw new UserCreationFailedException('Failed to create user');
+      const existingEmail = await this.userRepository.findByEmail(newUser.email);
+      if (existingEmail) {
+        throw new EmailAlreadyExistsException(newUser.email);
       }
-      return user;
+      
+      const existingUsername = await this.userRepository.findByUsername(newUser.username);
+      if (existingUsername) {
+        throw new UsernameAlreadyExistsException(newUser.username);
+      }
+
+      const hashedPassword = await HashService.hashPassword(newUser.password);
+      return await this.userRepository.create({
+        ...newUser,
+        password: hashedPassword
+      });
     } catch (error) {
-      if (error instanceof UserCreationFailedException) {
+      if (error instanceof UserException) {
         throw error;
       }
       if (error instanceof DataBaseException) {
         if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
-          const errorMessage = error.message.toLowerCase();
-          if (errorMessage.includes('email')) {
-            throw new EmailAlreadyExistsException(newUser.email ?? 'unknown');
+          if (error.message.includes('email')) {
+            throw new EmailAlreadyExistsException(newUser.email);
           }
-          if (errorMessage.includes('username')) {
-            throw new UsernameAlreadyExistsException(newUser.username ?? 'unknown');
+          if (error.message.includes('username')) {
+            throw new UsernameAlreadyExistsException(newUser.username);
           }
         }
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
-          throw new InvalidUserDataException('Invalid user data format');
-        }
+        throw new UserCreationFailedException('Database error while creating user');
       }
-      throw new DataBaseException('Error creating user', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new UserCreationFailedException('Failed to create user');
     }
   }
 
@@ -66,11 +69,9 @@ export class UserService implements IUserService {
         if (error.code === DataBaseErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user ID format');
         }
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
-          throw new UserNotFoundException(id);
-        }
+        throw new UserNotFoundException(id);
       }
-      throw new DataBaseException('Error finding user', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new UserNotFoundException(id);
     }
   }
 
@@ -166,20 +167,27 @@ export class UserService implements IUserService {
     }
   }
 
-  async delete(id: string): Promise<null> {
+  async delete(id: string): Promise<boolean> {
     try {
-      await this.userRepository.delete(id);
-      return null;
+      const deleted = await this.userRepository.delete(id);
+      if (!deleted) {
+        throw new UserNotFoundException(id);
+      }
+      return deleted;
     } catch (error) {
+      if (error instanceof UserNotFoundException) {
+        throw error;
+      }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
-          throw new UserNotFoundException(id);
+        if (error.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
+          throw new UserOperationException('Cannot delete user with existing references');
         }
         if (error.code === DataBaseErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user ID format');
         }
+        throw new UserNotFoundException(id);
       }
-      throw new DataBaseException('Error deleting user', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new UserOperationException('Error deleting user');
     }
   }
 }

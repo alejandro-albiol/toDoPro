@@ -1,6 +1,5 @@
 import { Request } from 'express';
 import { BaseValidator } from './base-validator.js';
-import { ErrorCode } from '../../shared/models/exceptions/enums/error-code.enum.js';
 import { UserErrorCodes } from '../../users/exceptions/enums/user-error-codes.enum.js';
 
 export class UserValidator extends BaseValidator {

@@ -2,107 +2,87 @@ import { IUserService } from '../service/i-user.service.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
 import { UserException } from '../exceptions/base-user.exception.js';
-import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
 import { IUserController } from './i-user.controller.js';
-import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
 import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';
 import { User } from '../models/entities/user.entity.js';
 import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
+import { UserCreationFailedException } from '../exceptions/user-creation-failed.exception.js';
+import { UpdatedUserDTO } from '../models/dtos/updated-user.dto.js';
+import { UserOperationException } from '../exceptions/user-operation.exception.js';
 
 export class UserController implements IUserController {
   constructor(private userService: IUserService) {}
   
   async create(newUser: CreateUserDTO): Promise<User> {
     try {
-        if (!newUser) {
-            throw new InvalidUserDataException('User data is required');
-        }
         const newUserDto = await this.toCreateUserDto(newUser);
-        const user = await this.userService.create(newUserDto);
-        if (!user) {
-            throw new InvalidUserDataException('User not found');
+        const createdUser = await this.userService.create(newUserDto);
+        if (!createdUser) {
+            throw new UserCreationFailedException('Failed to create user');
         }
-        return {
-            ...user,
-            id: user.id.toString()
-        };
+        return createdUser;
     } catch (error) {
-        if (error instanceof UserException || error instanceof DataBaseException || error instanceof SyntaxError) {
-            console.error(error);
+        if (error instanceof UserException) {
             throw error;
         }
-        console.error(error);
-        throw new InvalidUserDataException('An unknown error occurred');
+        throw new UserCreationFailedException('Failed to create user');
     }
   }
 
   async findById(id: string): Promise<User> {
+    if (!id) {
+        throw new InvalidUserDataException('User ID is required');
+    }
     try {
-        console.log('Controller - Finding user with id:', id);
         const user = await this.userService.findById(id);
-        console.log('Controller - User found:', user);
         if (!user) {
             throw new UserNotFoundException(id);
         }
-        return {
-            ...user,
-            id: user.id.toString()
-        };
+        return user;
     } catch (error) {
-        console.log('Controller - Error caught:', error);
-        if (error instanceof UserException || error instanceof DataBaseException) {
+        if (error instanceof UserException) {
             throw error;
         }
-        console.error('Controller - Unknown error:', error);
-        throw new InvalidUserDataException('An unknown error occurred');
+        throw new UserOperationException('An unknown error occurred');
     }
   }
 
-  async update(userToUpdate: UpdateUserDTO) {
+  async update(userToUpdate: UpdateUserDTO): Promise<UpdatedUserDTO> {
     try {
-      const userDto = await this.toUpdateUserDto(userToUpdate);
-      const userUpdatedDto = await this.userService.update(userDto);
-      return userUpdatedDto;
+        const userDto = await this.toUpdateUserDto(userToUpdate);
+        return await this.userService.update(userDto);
     } catch (error) {
-      if (error instanceof UserException || error instanceof DataBaseException) {
-        throw error;
-      }
-      console.error(error);
-      throw new InvalidUserDataException('An unknown error occurred');
+        if (error instanceof UserException) {
+            throw error;
+        }
+        throw new UserOperationException('An unknown error occurred');
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
-      await this.userService.delete(id);
-      return null;
+        return await this.userService.delete(id);
     } catch (error) {
-      if (error instanceof UserException || error instanceof DataBaseException) {
-        throw error;
-      }
-      console.error(error);
-      throw new InvalidUserDataException('An unknown error occurred');
+        if (error instanceof UserException) {
+            throw error;
+        }
+        throw new UserOperationException('An unknown error occurred');
     }
   }
 
-  
   private async toCreateUserDto(newUser: CreateUserDTO): Promise<CreateUserDTO> {
-    try {
-        return {
-            username: newUser.username?.toLowerCase(),
-            email: newUser.email?.toLowerCase(),
-            password: newUser.password
-        };
-    } catch (error) {
-        throw new InvalidUserDataException('Invalid input data type');
-    }
+    return {
+        username: newUser.username?.toLowerCase(),
+        email: newUser.email?.toLowerCase(),
+        password: newUser.password
+    };
   }
 
   private async toUpdateUserDto(userToUpdate: UpdateUserDTO): Promise<UpdateUserDTO> {
     return {
-      id: userToUpdate.id,
-      username: userToUpdate.username?.toLowerCase(),
-      email: userToUpdate.email?.toLowerCase(),
+        id: userToUpdate.id,
+        username: userToUpdate.username?.toLowerCase(),
+        email: userToUpdate.email?.toLowerCase(),
     };
   }
 }

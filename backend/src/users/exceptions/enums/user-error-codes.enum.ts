@@ -7,4 +7,5 @@ export enum UserErrorCodes {
     INVALID_EMAIL = 'U6',
     INVALID_PASSWORD = 'U7',
     USER_CREATION_FAILED = 'U8',
+    USER_OPERATION_FAILED = 'U9',
 }

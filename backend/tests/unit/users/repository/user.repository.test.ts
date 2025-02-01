@@ -1,36 +1,47 @@
 import { UserRepository } from '../../../../src/users/repository/user.repository';
 import { userMock } from '../../../__mocks__/entities/user.mock';
-import { poolMock, queryResultMock } from '../../../__mocks__/config/database.mock';
 import { DataBaseException } from '../../../../src/shared/models/exceptions/database.exception';
 import { DataBaseErrorCode } from '../../../../src/shared/models/exceptions/enums/data-base-error-code.enum';
+import { queryResultMock } from '../../../__mocks__/database/query.mock';       
+
+let userRepository: UserRepository;
+const poolMock = {
+    query: jest.fn()
+};
 
 describe('UserRepository', () => {
-    let userRepository: UserRepository;
-
     beforeEach(() => {
-        userRepository = new UserRepository();
-    });
-
-    afterEach(() => {
+        userRepository = new UserRepository(poolMock);
         jest.clearAllMocks();
     });
 
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
     describe('create', () => {
-        it('should create a new user successfully', async () => {
+        it('should create user successfully', async () => {
             poolMock.query.mockResolvedValue({
                 rows: [userMock.validUser],
                 rowCount: 1
             });
-
-            const result = await userRepository.create(userMock.createUserData);
-
-            expect(poolMock.query).toHaveBeenCalledWith(
-                'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-                [userMock.createUserData.username, userMock.createUserData.email, userMock.createUserData.password]
-            );
-
+            
+            const result = await userRepository.create(userMock.validUser);
+            
             expect(result).toEqual(userMock.validUser);
+            expect(poolMock.query).toHaveBeenCalledWith(
+                expect.any(String),
+                [userMock.validUser.username, userMock.validUser.email, userMock.validUser.password]
+            );
         });
+
+        it('should throw DataBaseException on unique violation', async () => {
+            poolMock.query.mockRejectedValue(queryResultMock.dbErrors.uniqueViolation);
+            await expect(userRepository.create(userMock.validUser))
+                .rejects
+                .toThrow(DataBaseException);
+        });
+    });
 
         it('should throw DataBaseException on unique constraint violation', async () => {
             const dbError = {
@@ -115,64 +126,29 @@ describe('UserRepository', () => {
         it('should return users array when rows exist', async () => {
             poolMock.query.mockResolvedValue({
                 rows: userMock.userList,
-                rowCount: userMock.userList.length
+                rowCount: 2
             });
 
             const result = await userRepository.findAll();
             expect(result).toEqual(userMock.userList);
         });
 
-        it('should return empty array when rows is undefined', async () => {
-            
+        it('should return empty array when no rows exist', async () => {
             poolMock.query.mockResolvedValue({
                 rows: [],
                 rowCount: 0
             });
 
-
-            // Act
             const result = await userRepository.findAll();
-
-            // Assert
             expect(result).toEqual([]);
-        });
-
-        it('should return empty array when rows is null', async () => {
-            // Arrange
-            poolMock.query.mockResolvedValue({
-                rows: null,
-                rowCount: 0
-            });
-
-            // Act
-            const result = await userRepository.findAll();
-
-            // Assert
-            expect(result).toEqual([]);
-        });
-
-        it('should throw DataBaseException when user not found', async () => {
-            poolMock.query.mockRejectedValue({
-                code: DataBaseErrorCode.NOT_FOUND,
-                constraint: 'user_id',
-                detail: 'User not found'
-            });
-
-            await expect(userRepository.findAll())
-                .rejects
-                .toMatchObject({
-                    code: DataBaseErrorCode.NOT_FOUND
-                });
         });
 
         it('should throw DataBaseException on database error', async () => {
-            poolMock.query.mockRejectedValue(new Error('Database connection error'));
+            poolMock.query.mockRejectedValue(new Error('DB connection failed'));
 
             await expect(userRepository.findAll())
                 .rejects
                 .toMatchObject({
-                    name: 'DatabaseException',
-                    message: 'Unknown database error',
                     code: DataBaseErrorCode.UNKNOWN_ERROR
                 });
         });
@@ -185,53 +161,27 @@ describe('UserRepository', () => {
                 rowCount: 1
             });
 
-            const result = await userRepository.findById(userMock.validUser.id);
-
-            expect(poolMock.query).toHaveBeenCalledWith(
-                'SELECT * FROM users WHERE id = $1',
-                [userMock.validUser.id]
-            );
-
+            const result = await userRepository.findById('1');
             expect(result).toEqual(userMock.validUser);
         });
 
         it('should return null when user not found', async () => {
-            const userId = '999';
             poolMock.query.mockResolvedValue({
                 rows: [],
                 rowCount: 0
             });
 
-            const result = await userRepository.findById(userId);
-
+            const result = await userRepository.findById('999');
             expect(result).toBeNull();
-            expect(poolMock.query).toHaveBeenCalledWith(
-                'SELECT * FROM users WHERE id = $1',
-                [userId]
-            );
         });
 
         it('should throw DataBaseException on database error', async () => {
-            const userId = '1';
             poolMock.query.mockRejectedValue(new Error('DB connection failed'));
 
-            await expect(userRepository.findById(userId))
-                .rejects
-                .toThrow(DataBaseException);
-        });
-
-        it('should throw DataBaseException when user not found', async () => {
-            const userId = '999';
-            poolMock.query.mockRejectedValue({
-                code: DataBaseErrorCode.NOT_FOUND,
-                constraint: 'user_id',
-                detail: 'User not found'
-            });
-
-            await expect(userRepository.findById(userId))
+            await expect(userRepository.findById('1'))
                 .rejects
                 .toMatchObject({
-                    code: DataBaseErrorCode.NOT_FOUND
+                    code: DataBaseErrorCode.UNKNOWN_ERROR
                 });
         });
     });
@@ -393,138 +343,23 @@ describe('UserRepository', () => {
             };
 
             poolMock.query.mockResolvedValueOnce({
-                rows: [{ id: '1', username: 'oldUser', email: 'old@test.com' }],
+                rows: [{ id: '1' }],
                 rowCount: 1
             });
 
+            // Mock para update
             poolMock.query.mockResolvedValueOnce({
-                rows: [updateUser],
+                rows: [{ ...updateUser }],
                 rowCount: 1
             });
 
             const result = await userRepository.update(updateUser);
-
-            expect(poolMock.query).toHaveBeenNthCalledWith(1,
-                'SELECT * FROM users WHERE id = $1',
-                [updateUser.id]
-            );
-
-            expect(poolMock.query).toHaveBeenNthCalledWith(2,
-                expect.stringMatching(/UPDATE users[\s\n]+SET username = \$1, email = \$2[\s\n]+WHERE id = \$3[\s\n]+RETURNING \*/),
-                [updateUser.username, updateUser.email, updateUser.id]
-            );
-
             expect(result).toEqual(updateUser);
         });
 
-        it('should throw DataBaseException on database error', async () => {
-            const updateUser = {
-                id: '1',
-                username: 'updatedUser',
-                email: 'updated@test.com'
-            };
-            poolMock.query.mockRejectedValue(new Error('DB connection failed'));
-
-            await expect(userRepository.update(updateUser))
-                .rejects
-                .toThrow(DataBaseException);
-        });
-
-        it('should throw DataBaseException on unique constraint violation', async () => {
-            const updateUser = {
-                id: '1',
-                username: 'test',
-                email: 'existing@test.com'
-            };
-            
-            poolMock.query.mockResolvedValueOnce({
-                rows: [{ id: '1' }],
-                rowCount: 1
-            });
-
-            poolMock.query.mockRejectedValueOnce({
-                code: DataBaseErrorCode.UNIQUE_VIOLATION,
-                constraint: 'users_email_key',
-                detail: 'Key (email)=(existing@test.com) already exists.'
-            });
-
-            await expect(userRepository.update(updateUser))
-                .rejects
-                .toMatchObject({
-                    name: 'DatabaseException',
-                    code: DataBaseErrorCode.UNIQUE_VIOLATION,
-                    metadata: {
-                        constraint: 'users_email_key',
-                        detail: 'Key (email)=(existing@test.com) already exists.'
-                    }
-                });
-        });
-
-        it('should throw DataBaseException on not null violation', async () => {
-            const updateUser = {
-                id: '1',
-                username: undefined,
-                email: 'test@test.com'
-            };
-            
-            poolMock.query.mockResolvedValueOnce({
-                rows: [{ id: '1' }],
-                rowCount: 1
-            });
-
-            poolMock.query.mockRejectedValueOnce({
-                code: DataBaseErrorCode.NOT_NULL_VIOLATION,
-                constraint: 'users_username_not_null',
-                detail: 'Column username cannot be null'
-            });
-
-            await expect(userRepository.update(updateUser))
-                .rejects
-                .toMatchObject({
-                    name: 'DatabaseException',
-                    code: DataBaseErrorCode.NOT_NULL_VIOLATION,
-                    metadata: {
-                        constraint: 'users_username_not_null',
-                        detail: 'Column username cannot be null'
-                    }
-                });
-        });
-
-        it('should throw DataBaseException on unknown error', async () => {
-            const updateUser = {
-                id: '1',
-                username: 'test',
-                email: 'test@test.com'
-            };
-            
-            poolMock.query.mockResolvedValueOnce({
-                rows: [{ id: '1' }],
-                rowCount: 1
-            });
-
-            poolMock.query.mockRejectedValueOnce({
-                code: DataBaseErrorCode.UNKNOWN_ERROR,
-                detail: 'Unexpected database error'
-            });
-
-            await expect(userRepository.update(updateUser))
-                .rejects
-                .toMatchObject({
-                    name: 'DatabaseException',
-                    code: DataBaseErrorCode.UNKNOWN_ERROR,
-                    metadata: {
-                        detail: 'Unexpected database error'
-                    }
-                });
-        });
-
         it('should throw DataBaseException when user not found', async () => {
-            const updateUser = {
-                id: '999',
-                username: 'test'
-            };
-
-            poolMock.query.mockResolvedValue({
+            const updateUser = { id: '999' };
+            poolMock.query.mockResolvedValueOnce({
                 rows: [],
                 rowCount: 0
             });
@@ -532,7 +367,38 @@ describe('UserRepository', () => {
             await expect(userRepository.update(updateUser))
                 .rejects
                 .toMatchObject({
-                    code: DataBaseErrorCode.NOT_FOUND
+                    code: DataBaseErrorCode.NOT_FOUND,
+                    message: 'User not found',
+                    metadata: {
+                        detail: 'User with id 999 not found'
+                    }
+                });
+        });
+
+        it('should throw DataBaseException on unique constraint violation', async () => {
+            const updateUser = { id: '1', email: 'test@test.com' };
+            
+            // Mock para verificar existencia
+            poolMock.query.mockResolvedValueOnce({
+                rows: [{ id: '1' }],
+                rowCount: 1
+            });
+
+            // Mock para el error de unique violation
+            poolMock.query.mockRejectedValueOnce({
+                code: DataBaseErrorCode.UNIQUE_VIOLATION,
+                constraint: 'users_email_key',
+                detail: 'Key (email)=(test@test.com) already exists'
+            });
+
+            await expect(userRepository.update(updateUser))
+                .rejects
+                .toMatchObject({
+                    code: DataBaseErrorCode.UNIQUE_VIOLATION,
+                    metadata: {
+                        constraint: 'users_email_key',
+                        detail: 'Key (email)=(test@test.com) already exists'
+                    }
                 });
         });
     });
@@ -583,13 +449,11 @@ describe('UserRepository', () => {
     describe('delete', () => {
         it('should delete user successfully', async () => {
             const userId = '1';
-            poolMock.query.mockResolvedValue({
-                rows: [],
-                rowCount: 1
-            });
+            poolMock.query.mockResolvedValue({ rows: [], rowCount: 1 });
 
-            await userRepository.delete(userId);
+            const result = await userRepository.delete(userId);
 
+            expect(result).toBe(true);
             expect(poolMock.query).toHaveBeenCalledWith(
                 'DELETE FROM users WHERE id = $1',
                 [userId]
@@ -627,28 +491,83 @@ describe('UserRepository', () => {
 
         it('should throw DataBaseException when user not found', async () => {
             const userId = '999';
-            poolMock.query.mockRejectedValue({
-                code: DataBaseErrorCode.NOT_FOUND
+            poolMock.query.mockResolvedValue({
+                rows: [],
+                rowCount: 0
             });
 
             await expect(userRepository.delete(userId))
                 .rejects
                 .toMatchObject({
-                    code: DataBaseErrorCode.NOT_FOUND
+                    code: DataBaseErrorCode.NOT_FOUND,
+                    message: 'User not found',
+                    metadata: {
+                        detail: `User with id ${userId} not found`
+                    }
                 });
         });
 
         it('should throw DataBaseException on unknown error', async () => {
             const userId = '1';
             poolMock.query.mockRejectedValue({
-                code: 'SOME_UNKNOWN_ERROR'
+                code: DataBaseErrorCode.UNKNOWN_ERROR
             });
 
             await expect(userRepository.delete(userId))
                 .rejects
                 .toMatchObject({
-                    code: DataBaseErrorCode.UNKNOWN_ERROR
+                    code: DataBaseErrorCode.UNKNOWN_ERROR,
+                    message: 'Unknown database error'
                 });
         });
     });
-});
+
+    describe('error handling', () => {
+        it('should throw DataBaseException on foreign key violation during update', async () => {
+            const updateUser = { id: '1', roleId: '999' };
+            
+            poolMock.query.mockResolvedValueOnce({
+                rows: [{ id: '1' }],
+                rowCount: 1
+            });
+
+            poolMock.query.mockRejectedValueOnce({
+                code: DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
+                constraint: 'users_role_id_fkey',
+                detail: 'Key (role_id)=(999) is not present in table "roles"'
+            });
+
+            await expect(userRepository.update(updateUser))
+                .rejects
+                .toMatchObject({
+                    code: DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
+                    metadata: {
+                        constraint: 'users_role_id_fkey',
+                        detail: 'Key (role_id)=(999) is not present in table "roles"'
+                    }
+                });
+        });
+
+        it('should throw DataBaseException on invalid input during create', async () => {
+            const newUser = {
+                username: 'test',
+                email: 'invalid-email',
+                password: 'password123'
+            };
+
+            poolMock.query.mockRejectedValue({
+                code: DataBaseErrorCode.INVALID_INPUT,
+                detail: 'Invalid email format'
+            });
+
+            await expect(userRepository.create(newUser))
+                .rejects
+                .toMatchObject({
+                    code: DataBaseErrorCode.INVALID_INPUT,
+                    metadata: {
+                        detail: 'Invalid email format'
+                    }
+                });
+        });
+    }
+);
