@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { DataBaseException } from '../shared/models/exceptions/database.exception.js';
+import { DataBaseException } from '../shared/database/exceptions/database.exception.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
 import { IApiError } from '../shared/models/interfaces/responses/i-api-error.js';
-import { DataBaseErrorCode } from '../shared/models/exceptions/enums/data-base-error-code.enum.js';
-import { ErrorCode } from '../shared/models/exceptions/enums/error-code.enum.js';
+import { PostgresErrorCode } from '../shared/database/exceptions/enums/postgres-error-code.enum.js';
+import { ErrorCode } from '../shared/models/constants/error-code.enum.js';
 import { UserException } from '../users/exceptions/base-user.exception.js';
 import { TaskException } from '../tasks/exceptions/base-task.exception.js';
 
@@ -54,19 +54,19 @@ export const errorHandler = (
         };
 
         switch (error.code) {
-            case DataBaseErrorCode.INVALID_INPUT:
+            case PostgresErrorCode.INVALID_INPUT:
                 return res.status(400).json(
                     new ApiResponse('error', 'Invalid data format', null, [apiError])
                 );
-            case DataBaseErrorCode.NOT_FOUND:
+            case PostgresErrorCode.NOT_FOUND:
                 return res.status(404).json(
                     new ApiResponse('error', 'Resource not found', null, [apiError])
                 );
-            case DataBaseErrorCode.UNIQUE_VIOLATION:
+            case PostgresErrorCode.UNIQUE_VIOLATION:
                 return res.status(409).json(
                     new ApiResponse('error', 'Resource already exists', null, [apiError])
                 );
-            case DataBaseErrorCode.FOREIGN_KEY_VIOLATION:
+            case PostgresErrorCode.FOREIGN_KEY_VIOLATION:
                 return res.status(409).json(
                     new ApiResponse('error', 'Cannot delete due to existing references', null, [apiError])
                 );

@@ -7,8 +7,8 @@ import { UserRepository } from '../repository/user.repository.js';
 import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 import { EmailAlreadyExistsException } from '../exceptions/email-already-exists.exception.js';
 import { UsernameAlreadyExistsException } from '../exceptions/username-already-exists.exception.js';
-import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
-import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
+import { PostgresErrorCode } from '../../shared/database/exceptions/enums/postgres-error-code.enum.js';
+import { DataBaseException } from '../../shared/database/exceptions/database.exception.js';
 import { HashService } from '../../shared/services/hash.service.js';
 import { InvalidUserDataException } from '../exceptions/invalid-user-data.exception.js';
 import { UserCreationFailedException } from '../exceptions/user-creation-failed.exception.js';
@@ -40,7 +40,7 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+        if (error.code === PostgresErrorCode.UNIQUE_VIOLATION) {
           if (error.message.includes('email')) {
             throw new EmailAlreadyExistsException(newUser.email);
           }
@@ -66,7 +66,7 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user ID format');
         }
         throw new UserNotFoundException(id);
@@ -87,14 +87,14 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user username format');
         }
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+        if (error.code === PostgresErrorCode.NOT_FOUND) {
           throw new UserNotFoundException(username);
         }
       }
-      throw new DataBaseException('Error finding user by username', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Error finding user by username', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -110,14 +110,14 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user email format');
         }
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+        if (error.code === PostgresErrorCode.NOT_FOUND) {
           throw new UserNotFoundException(email);
         }
       }
-      throw new DataBaseException('Error finding user by email', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Error finding user by email', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -130,7 +130,7 @@ export class UserService implements IUserService {
       return user;
     } catch (error) {
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+        if (error.code === PostgresErrorCode.UNIQUE_VIOLATION) {
           const errorMessage = error.message.toLowerCase();
           if (errorMessage.includes('email')) {
             throw new EmailAlreadyExistsException(userData.email ?? 'unknown');
@@ -139,14 +139,14 @@ export class UserService implements IUserService {
             throw new UsernameAlreadyExistsException(userData.username ?? 'unknown');
           }
         }
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+        if (error.code === PostgresErrorCode.NOT_FOUND) {
           throw new UserNotFoundException(userData.id);
         }
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user data format');
         }
       }
-      throw new DataBaseException('Error updating user', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Error updating user', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -156,14 +156,14 @@ export class UserService implements IUserService {
       await this.userRepository.updatePassword(id, hashedPassword);
     } catch (error) {
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.NOT_FOUND) {
+        if (error.code === PostgresErrorCode.NOT_FOUND) {
           throw new UserNotFoundException(id);
         }
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid password format');
         }
       }
-      throw new DataBaseException('Error updating password', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Error updating password', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -179,10 +179,10 @@ export class UserService implements IUserService {
         throw error;
       }
       if (error instanceof DataBaseException) {
-        if (error.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
+        if (error.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION) {
           throw new UserOperationException('Cannot delete user with existing references');
         }
-        if (error.code === DataBaseErrorCode.INVALID_INPUT) {
+        if (error.code === PostgresErrorCode.INVALID_INPUT) {
           throw new InvalidUserDataException('Invalid user ID format');
         }
         throw new UserNotFoundException(id);

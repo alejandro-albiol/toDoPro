@@ -1,4 +1,4 @@
-import { BaseException } from '../../shared/models/exceptions/base.exception.js';
+import { BaseException } from '../../shared/models/interfaces/base/i-base.exception.js';
 import { UserErrorCodes } from './enums/user-error-codes.enum.js';
 
 export class InvalidUserDataException extends BaseException {

@@ -1,8 +1,8 @@
 import { ITaskRepository } from './i-task.repository.js';
 import { pool } from '../../config/configDataBase.js';
-import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
-import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
-import { IDatabaseError } from '../../shared/models/interfaces/i-database-error.js';
+import { DataBaseException } from '../../shared/database/exceptions/database.exception.js';
+import { PostgresErrorCode } from '../../shared/database/exceptions/enums/postgres-error-code.enum.js';
+import { IDatabaseError } from '../../shared/database/exceptions/i-database-error.js';
 import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
 import { Task } from '../models/entities/task.entity.js';
 import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';
@@ -19,10 +19,10 @@ export class TaskRepository implements ITaskRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
       
-      if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+      if (dbError.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
           dbError.message || 'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION,
+          PostgresErrorCode.UNIQUE_VIOLATION,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -30,10 +30,10 @@ export class TaskRepository implements ITaskRepository {
         );
       }
       
-      if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
+      if (dbError.code === PostgresErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          PostgresErrorCode.NOT_NULL_VIOLATION,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -41,10 +41,10 @@ export class TaskRepository implements ITaskRepository {
         );
       }
       
-      if (dbError.code === DataBaseErrorCode.INVALID_INPUT) {
+      if (dbError.code === PostgresErrorCode.INVALID_INPUT) {
         throw new DataBaseException(
           dbError.message || 'Invalid input',
-          DataBaseErrorCode.INVALID_INPUT,
+          PostgresErrorCode.INVALID_INPUT,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -54,7 +54,7 @@ export class TaskRepository implements ITaskRepository {
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR,
+        PostgresErrorCode.UNKNOWN_ERROR,
         {
           constraint: dbError.constraint,
           detail: dbError.detail
@@ -69,13 +69,13 @@ export class TaskRepository implements ITaskRepository {
       return result.rows || [];
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+      if (dbError.code === PostgresErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'No tasks found',
-          DataBaseErrorCode.NOT_FOUND
+          PostgresErrorCode.NOT_FOUND
         );
       }
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Unknown database error', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -85,13 +85,13 @@ export class TaskRepository implements ITaskRepository {
       return result.rows || [];
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+      if (dbError.code === PostgresErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'Task not found for user',
-          DataBaseErrorCode.NOT_FOUND
+          PostgresErrorCode.NOT_FOUND
         );
       }
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Unknown database error', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -101,13 +101,13 @@ export class TaskRepository implements ITaskRepository {
       return result.rows[0] || null;
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+      if (dbError.code === PostgresErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'The task does not exist',
-          DataBaseErrorCode.NOT_FOUND
+          PostgresErrorCode.NOT_FOUND
         );
       }
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Unknown database error', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -143,10 +143,10 @@ export class TaskRepository implements ITaskRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
       
-      if (dbError.code === DataBaseErrorCode.UNIQUE_VIOLATION) {
+      if (dbError.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw new DataBaseException(
           'Unique constraint violation',
-          DataBaseErrorCode.UNIQUE_VIOLATION,
+          PostgresErrorCode.UNIQUE_VIOLATION,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -154,10 +154,10 @@ export class TaskRepository implements ITaskRepository {
         );
       }
 
-      if (dbError.code === DataBaseErrorCode.NOT_NULL_VIOLATION) {
+      if (dbError.code === PostgresErrorCode.NOT_NULL_VIOLATION) {
         throw new DataBaseException(
           'Not null constraint violation',
-          DataBaseErrorCode.NOT_NULL_VIOLATION,
+          PostgresErrorCode.NOT_NULL_VIOLATION,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -167,7 +167,7 @@ export class TaskRepository implements ITaskRepository {
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR,
+        PostgresErrorCode.UNKNOWN_ERROR,
         {
           constraint: dbError.constraint,
           detail: dbError.detail
@@ -188,17 +188,17 @@ export class TaskRepository implements ITaskRepository {
       }
       throw new DataBaseException(
         'Cannot mark task as completed',
-        DataBaseErrorCode.UNKNOWN_ERROR
+        PostgresErrorCode.UNKNOWN_ERROR
       );
     } catch (error) {
       const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+      if (dbError.code === PostgresErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'The task does not exist',
-          DataBaseErrorCode.NOT_FOUND
+          PostgresErrorCode.NOT_FOUND
         );
       }
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      throw new DataBaseException('Unknown database error', PostgresErrorCode.UNKNOWN_ERROR);
     }
   }
 
@@ -212,10 +212,10 @@ export class TaskRepository implements ITaskRepository {
     } catch (error) {
       const dbError = error as IDatabaseError;
       
-      if (dbError.code === DataBaseErrorCode.FOREIGN_KEY_VIOLATION) {
+      if (dbError.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION) {
         throw new DataBaseException(
           'Cannot delete due to existing references',
-          DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
+          PostgresErrorCode.FOREIGN_KEY_VIOLATION,
           {
             constraint: dbError.constraint,
             detail: dbError.detail
@@ -223,16 +223,16 @@ export class TaskRepository implements ITaskRepository {
         );
       }
 
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
+      if (dbError.code === PostgresErrorCode.NOT_FOUND) {
         throw new DataBaseException(
           'Task not found',
-          DataBaseErrorCode.NOT_FOUND
+          PostgresErrorCode.NOT_FOUND
         );
       }
 
       throw new DataBaseException(
         'Unknown database error',
-        DataBaseErrorCode.UNKNOWN_ERROR,
+        PostgresErrorCode.UNKNOWN_ERROR,
         {
           constraint: dbError.constraint,
           detail: dbError.detail

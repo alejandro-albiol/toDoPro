@@ -14,7 +14,7 @@ export default {
       },
     ],
   },
-  setupFiles: ['<rootDir>/tests/__mocks__/setup-tests.ts'],
+  setupFiles: ['<rootDir>/tests/config/setup-tests.ts'],
   moduleDirectories: ['node_modules', 'src'],
   moduleFileExtensions: ['ts', 'js'],
   testMatch: ['**/tests/**/*.test.ts'],

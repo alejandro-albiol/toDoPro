@@ -1,4 +1,4 @@
-import { IDatabasePool } from '../shared/interfaces/database-pool.interface.js';
+import { IDatabasePool } from '../shared/models/interfaces/base/i-database-pool.js';
 import pg from 'pg';
 import dotenv from 'dotenv';
 

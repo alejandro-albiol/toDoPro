@@ -4,8 +4,8 @@ import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
 import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
-import { DataBaseException } from "../../shared/models/exceptions/database.exception.js";
-import { DataBaseErrorCode } from "../../shared/models/exceptions/enums/data-base-error-code.enum.js";
+import { DataBaseException } from "../../shared/database/exceptions/database.exception.js";
+import { PostgresErrorCode } from "../../shared/database/exceptions/enums/postgres-error-code.enum.js";
 import { TaskNotFoundException } from "../exceptions/task-not-found.exception.js";
 import { InvalidTaskDataException } from "../exceptions/invalid-task-data.exception.js";
 
@@ -20,10 +20,10 @@ export class TaskService implements ITaskService {
         try {
             return this.taskRepository.create(newTask);
         } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.INVALID_INPUT) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.INVALID_INPUT) {
                 throw new InvalidTaskDataException('Invalid task format');
             }
-            throw new DataBaseException('Error creating task', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error creating task', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }
 
@@ -31,10 +31,10 @@ export class TaskService implements ITaskService {
         try {
             return this.taskRepository.findAllByUserId(userId);
         } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException('No tasks found');
             }
-            throw new DataBaseException('Error finding tasks', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error finding tasks', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }   
 
@@ -42,10 +42,10 @@ export class TaskService implements ITaskService {
         try {
             return this.taskRepository.findById(id);
         } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException('No tasks found');
             }
-            throw new DataBaseException('Error finding task', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error finding task', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }
 
@@ -53,10 +53,10 @@ export class TaskService implements ITaskService {
         try {
             return this.taskRepository.update(updatedTask);
         } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException(updatedTask.id);
             }
-            throw new DataBaseException('Error updating task', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error updating task', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }
 
@@ -64,10 +64,10 @@ export class TaskService implements ITaskService {
         try {
             return this.taskRepository.toggleCompleted(id);
         } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException(id);
             }
-            throw new DataBaseException('Error toggling task', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error toggling task', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }   
 
@@ -76,10 +76,10 @@ export class TaskService implements ITaskService {
             await this.taskRepository.delete(id);
             return null;
         } catch (error) {
-            if(error instanceof DataBaseException && error.code === DataBaseErrorCode.NOT_FOUND) {
+            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
                 throw new TaskNotFoundException(id);
             }
-            throw new DataBaseException('Error deleting task', DataBaseErrorCode.UNKNOWN_ERROR);
+            throw new DataBaseException('Error deleting task', PostgresErrorCode.UNKNOWN_ERROR);
         }
     }
 }

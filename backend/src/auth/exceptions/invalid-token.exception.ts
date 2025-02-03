@@ -1,4 +1,4 @@
-import { BaseException } from "../../shared/models/exceptions/base.exception.js";
+import { BaseException } from "../../shared/models/interfaces/base/i-base.exception.js";
 import { AuthErrorCode } from "./enum/auth-error-codes.enum.js";
 
 export class InvalidTokenException extends BaseException {

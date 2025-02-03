@@ -1,69 +1,14 @@
 import { IUserRepository } from './i-user.repository.js';
 import { User } from '../models/entities/user.entity.js';
-import { pool } from '../../config/database.config.js';
 import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
-import { UpdatedUserDTO } from '../models/dtos/updated-user.dto.js';
-import { DataBaseException } from '../../shared/models/exceptions/database.exception.js';
-import { DataBaseErrorCode } from '../../shared/models/exceptions/enums/data-base-error-code.enum.js';
-import { IDatabaseError } from '../../shared/models/interfaces/i-database-error.js';
-import { IDatabasePool } from '../../shared/interfaces/database-pool.interface.js';
+import { DatabaseErrorHandlerService } from '../../shared/database/services/database-error-handler.service.js';
+import { IDatabasePool } from '../../shared/models/interfaces/base/i-database-pool.js';
+import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 
 export class UserRepository implements IUserRepository {
 
-  constructor(private pool: IDatabasePool) {}
-
-  private handleDatabaseError(error: any): never {
-    const dbError = error as IDatabaseError;
-    const metadata: any = {};
-    
-    if (dbError.constraint) metadata.constraint = dbError.constraint;
-    if (dbError.detail) metadata.detail = dbError.detail;
-
-    switch(dbError.code) {
-        case DataBaseErrorCode.UNIQUE_VIOLATION:
-            throw new DataBaseException(
-                'Duplicate entry',
-                DataBaseErrorCode.UNIQUE_VIOLATION,
-                metadata
-            );
-        
-        case DataBaseErrorCode.NOT_NULL_VIOLATION:
-            throw new DataBaseException(
-                'Not null violation',
-                DataBaseErrorCode.NOT_NULL_VIOLATION,
-                metadata
-            );
-
-        case DataBaseErrorCode.FOREIGN_KEY_VIOLATION:
-            throw new DataBaseException(
-                'Foreign key violation',
-                DataBaseErrorCode.FOREIGN_KEY_VIOLATION,
-                metadata
-            );
-
-        case DataBaseErrorCode.INVALID_INPUT:
-            throw new DataBaseException(
-                'Invalid input',
-                DataBaseErrorCode.INVALID_INPUT,
-                metadata
-            );
-
-        case DataBaseErrorCode.NOT_FOUND:
-            throw new DataBaseException(
-                'Resource not found',
-                DataBaseErrorCode.NOT_FOUND,
-                metadata
-            );
-
-        default:
-            throw new DataBaseException(
-                'Unknown database error',
-                DataBaseErrorCode.UNKNOWN_ERROR,
-                metadata
-            );
-    }
-  }
+  constructor(private pool: IDatabasePool, private errorHandler: DatabaseErrorHandlerService) {}
 
   async create(newUser: CreateUserDTO): Promise<User> {
     try {
@@ -73,7 +18,7 @@ export class UserRepository implements IUserRepository {
       );
       return result.rows[0];
     } catch (error) {
-      throw this.handleDatabaseError(error);
+      this.errorHandler.throwAsException(error);
     }
   }
 
@@ -82,19 +27,7 @@ export class UserRepository implements IUserRepository {
       const result = await this.pool.query('SELECT * FROM users');
       return result.rows || [];
     } catch (error) {
-      const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
-        throw new DataBaseException(
-          'No users found',
-          DataBaseErrorCode.NOT_FOUND,
-          {
-            constraint: dbError.constraint,
-            detail: dbError.detail
-          }
-        );
-      }
-
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      this.errorHandler.throwAsException(error);
     }
   }
 
@@ -103,147 +36,70 @@ export class UserRepository implements IUserRepository {
       const result = await this.pool.query('SELECT * FROM users WHERE id = $1', [id]);
       return result.rows[0] || null;
     } catch (error) {
-      throw this.handleDatabaseError(error);
+      this.errorHandler.throwAsException(error);
     }
   }
 
   async findByUsername(username: string): Promise<User | null> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM users WHERE username = $1',
-        [username],
-      );
-      if (result.rows.length === 0) {
-        return null;
-      }
-      return result.rows[0];
+      const result = await this.pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      return result.rows[0] || null;
     } catch (error) {
-      const dbError = error as IDatabaseError;
-
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
-        throw new DataBaseException(
-          'User not found',
-          DataBaseErrorCode.NOT_FOUND
-        );
-      }
-
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN,
-          {
-            constraint: dbError.constraint,
-            detail: dbError.detail
-          }
-        );
-      }
-
-      throw new DataBaseException(
-        'Error finding user',
-        DataBaseErrorCode.UNKNOWN_ERROR,
-        {
-          constraint: dbError.constraint,
-          detail: dbError.detail
-        }
-      );
+      this.errorHandler.throwAsException(error);
     }
   }
-
 
   async findByEmail(email: string): Promise<User | null> {
     try {
-      const result = await this.pool.query(
-        'SELECT * FROM users WHERE email = $1',
-        [email]
-      );
-
-      if (result.rows.length === 0) {
-        return null;
-      }
-    
-      return result.rows[0];
+      const result = await this.pool.query('SELECT * FROM users WHERE email = $1', [email]);
+      return result.rows[0] || null;
     } catch (error) {
-      const dbError = error as IDatabaseError;
-      
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
-        throw new DataBaseException(
-          'User not found',
-          DataBaseErrorCode.NOT_FOUND,
-          {
-            constraint: dbError.constraint,
-            detail: dbError.detail
-          }
-        );
-      }
-
-
-      if (dbError.code === DataBaseErrorCode.UNDEFINED_COLUMN) {
-        throw new DataBaseException(
-          'Invalid column reference',
-          DataBaseErrorCode.UNDEFINED_COLUMN,
-          {
-            constraint: dbError.constraint,
-            detail: dbError.detail
-          }
-        );
-      }
-
-      throw new DataBaseException(
-        'Error finding user',
-        DataBaseErrorCode.UNKNOWN_ERROR,
-        {
-          constraint: dbError.constraint,
-          detail: dbError.detail
-        }
-      );
+      this.errorHandler.throwAsException(error);
     }
   }
 
-  async update(user: UpdateUserDTO): Promise<User> {
+  async update(user: UpdateUserDTO): Promise<UpdateUserDTO> {
     try {
-        const checkUser = await this.pool.query(
-            'SELECT id FROM users WHERE id = $1',
-            [user.id]
-        );
+      // Check if the user exists
+      const existingUser = await this.findById(user.id);
+      if (!existingUser) {
+        throw new UserNotFoundException('User not found');
+      }
 
-        if (checkUser.rowCount === 0) {
-            throw new DataBaseException(
-                'User not found',
-                DataBaseErrorCode.NOT_FOUND,
-                { detail: `User with id ${user.id} not found` }
-            );
-        }
+      // Prepare the update query
+      const updates: string[] = [];
+      const values: (string | number)[] = [];
+      let parameterIndex = 1;
 
-        const updates: string[] = [];
-        const values: any[] = [];
-        let parameterIndex = 1;
+      if (user.username !== undefined && user.username !== null) {
+        updates.push(`username = $${parameterIndex}`);
+        values.push(user.username);
+        parameterIndex++;
+      }
+      if (user.email !== undefined && user.email !== null) {
+        updates.push(`email = $${parameterIndex}`);
+        values.push(user.email);
+        parameterIndex++;
+      }
 
-        if (user.username !== undefined) {
-            updates.push(`username = $${parameterIndex}`);
-            values.push(user.username);
-            parameterIndex++;
-        }
-        if (user.email !== undefined) {
-            updates.push(`email = $${parameterIndex}`);
-            values.push(user.email);
-            parameterIndex++;
-        }
+      // Ensure there are fields to update
+      if (updates.length === 0) {
+        throw new Error('No fields to update');
+      }
 
-        values.push(user.id);
-        const updateQuery = `
-            UPDATE users 
-            SET ${updates.join(', ')} 
-            WHERE id = $${parameterIndex} 
-            RETURNING *
-        `;
+      values.push(user.id);
+      const updateQuery = `UPDATE users SET ${updates.join(', ')} WHERE id = $${parameterIndex} RETURNING id, username, email`;
 
-        const result = await this.pool.query(updateQuery, values);
-        return result.rows[0];
+      // Execute the update query
+      const result = await this.pool.query(updateQuery, values);
+      if (result.rows.length === 0) {
+        throw new Error('Update failed');
+      }
+      return result.rows[0] as UpdateUserDTO;
+
     } catch (error) {
-        if (error instanceof DataBaseException) {
-            throw error;
-        }
-        throw this.handleDatabaseError(error);
+      console.error('Error updating user:', error);
+      this.errorHandler.throwAsException(error);
     }
   }
 
@@ -251,42 +107,22 @@ export class UserRepository implements IUserRepository {
     try {
       await this.pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHashedPassword, userId]);
     } catch (error) {
-      const dbError = error as IDatabaseError;
-      if (dbError.code === DataBaseErrorCode.NOT_FOUND) {
-        throw new DataBaseException(
-          'User not found',
-          DataBaseErrorCode.NOT_FOUND,
-          {
-            constraint: 'user_id',
-            detail: 'User not found'
-          }
-        );
-      }
-      throw new DataBaseException('Unknown database error', DataBaseErrorCode.UNKNOWN_ERROR);
+      this.errorHandler.throwAsException(error);
     }
   }
 
   async delete(id: string): Promise<boolean> {
     try {
-        const result = await this.pool.query(
-            'DELETE FROM users WHERE id = $1',
-            [id]
-        );
-        
-        if (result.rowCount === 0) {
-            throw new DataBaseException(
-                'User not found',
-                DataBaseErrorCode.NOT_FOUND,
-                { detail: `User with id ${id} not found` }
-            );
-        }
-        
-        return true;
+      const result = await this.pool.query('DELETE FROM users WHERE id = $1', [id]);
+
+      if (result.rowCount === 0) {
+        return false;
+      }
+
+
+      return true;
     } catch (error) {
-        if (error instanceof DataBaseException) {
-            throw error;
-        }
-        throw this.handleDatabaseError(error);
+      this.errorHandler.throwAsException(error);
     }
   }
 }
