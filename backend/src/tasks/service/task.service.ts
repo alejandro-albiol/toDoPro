@@ -5,7 +5,7 @@ import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
 import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
 import { DataBaseException } from "../../shared/database/exceptions/database.exception.js";
-import { PostgresErrorCode } from "../../shared/database/exceptions/enums/postgres-error-code.enum.js";
+import { PostgresErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
 import { TaskNotFoundException } from "../exceptions/task-not-found.exception.js";
 import { InvalidTaskDataException } from "../exceptions/invalid-task-data.exception.js";
 

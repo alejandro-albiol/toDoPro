@@ -1,8 +1,12 @@
+import { DbErrorCode } from '../../constants/db-error-code.enum.js';
+
 export interface IGenericDatabaseError {
-  code: string;
+  code: DbErrorCode;
   message: string;
   metadata?: {
     detail?: string;
+
+
     constraint?: string;
     column?: string;
     table?: string;

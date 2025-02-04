@@ -1,8 +1,8 @@
 import { ITaskRepository } from './i-task.repository.js';
 import { pool } from '../../config/configDataBase.js';
 import { DataBaseException } from '../../shared/database/exceptions/database.exception.js';
-import { PostgresErrorCode } from '../../shared/database/exceptions/enums/postgres-error-code.enum.js';
-import { IDatabaseError } from '../../shared/database/exceptions/i-database-error.js';
+import { PostgresErrorCode } from '../../shared/models/constants/db-error-code.enum.js';
+import { IDatabaseError } from '../../shared/models/interfaces/base/i-database-error.js';
 import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
 import { Task } from '../models/entities/task.entity.js';
 import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';
