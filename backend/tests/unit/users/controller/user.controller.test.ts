@@ -85,7 +85,6 @@ describe('UserController', () => {
                 .rejects
                 .toThrow(UserCreationFailedException);
 
-            // Verify error is logged
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 'Unexpected error during user creation:',
                 error
