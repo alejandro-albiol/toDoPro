@@ -95,4 +95,67 @@ describe('UserRepository', () => {
             }
         });
     });
+
+    describe('findAll', () => {
+        it('should return all users successfully', async () => {
+            const mockUsers: User[] = [
+                { id: '1', username: 'user1', email: 'user1@example.com', password: 'password1' },
+                { id: '2', username: 'user2', email: 'user2@example.com', password: 'password2' }
+            ];  
+
+            mockPool.query.mockResolvedValueOnce({
+                rows: mockUsers,
+                rowCount: 2
+            });
+
+            const result = await repository.findAll();
+
+            expect(result).toEqual(mockUsers);
+            expect(mockPool.query).toHaveBeenCalledWith(expect.any(String));
+        });
+
+        it('should handle unknown errors', async () => {
+            const unknownError = new Error('Unknown error');
+            mockPool.query.mockRejectedValueOnce(unknownError);
+
+            try {
+                await repository.findAll();
+                fail('Should have thrown an error');
+            } catch (error) {
+                const dbError = error as IGenericDatabaseError;
+                expect(dbError.code).toBe(DbErrorCode.UNKNOWN_ERROR);
+                expect(dbError.message).toBe('An unexpected error occurred while finding all users');
+            }
+        });
+    });
+
+    describe('findById', () => {
+        it('should return a user successfully', async () => {
+            const mockUser: User = { id: '1', username: 'user1', email: 'user1@example.com', password: 'password1' };
+
+            mockPool.query.mockResolvedValueOnce({
+                rows: [mockUser],
+                rowCount: 1
+            });
+
+            const result = await repository.findById('1');
+
+            expect(result).toEqual(mockUser);   
+            expect(mockPool.query).toHaveBeenCalledWith(expect.any(String), ['1']);
+        });
+
+        it('should handle unknown errors', async () => {
+            const unknownError = new Error('Unknown error');
+            mockPool.query.mockRejectedValueOnce(unknownError);
+
+            try {
+                await repository.findById('1');
+                fail('Should have thrown an error');
+            } catch (error) {
+                const dbError = error as IGenericDatabaseError;
+                expect(dbError.code).toBe(DbErrorCode.UNKNOWN_ERROR);
+                expect(dbError.message).toBe('An unexpected error occurred while finding user by id');
+            }
+        });
+    });
 });

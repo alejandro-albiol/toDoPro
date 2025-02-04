@@ -53,11 +53,47 @@ export class UserRepository implements IUserRepository {
   }
 
   async findAll(): Promise<User[]> {
-    throw new Error('Method not implemented.');
+    const query = `
+      SELECT id, username, email
+      FROM users
+    `;
+
+    try {
+      const result = await this.pool.query(query);
+      return result.rows;
+    } catch (error) {
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while finding all users',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 
-  async findById(id: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async findById(id: string): Promise<User | null> {
+    const query = `
+      SELECT id, username, email
+      FROM users
+      WHERE id = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [id]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        return user as User;
+      }
+      return null;
+    } catch (error) {
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+
+        message: 'An unexpected error occurred while finding user by id',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
+
+    
   }
 
   async findByUsername(username: string): Promise<User> {
