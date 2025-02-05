@@ -1,8 +1,6 @@
-import { IBaseController } from "../../shared/models/interfaces/base/i-controller.js";
-import { User } from "../models/entities/user.entity.js";
-import { CreateUserDTO } from "../models/dtos/create-user.dto.js";
-import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
+import { Request, Response } from 'express';
+import { IBaseController } from '../../shared/models/interfaces/base/i-controller.js';
 
-
-export interface IUserController extends IBaseController<User, CreateUserDTO, UpdateUserDTO> {
+export interface IUserController extends IBaseController {
+    updatePassword(req: Request, res: Response): Promise<void>;
 }
