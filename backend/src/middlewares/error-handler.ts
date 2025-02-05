@@ -11,12 +11,10 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    // If headers already sent, delegate to default Express error handler
     if (res.headersSent) {
         return next(error);
     }
 
-    // Handle JSON parsing errors
     if ((error as any).type === 'entity.parse.failed' || error.name === 'SyntaxError') {
         const apiError: IApiError = {
             code: ErrorCode.INVALID_JSON_FORMAT,
@@ -27,7 +25,6 @@ export const errorHandler = (
         );
     }
 
-    // Handle domain exceptions (User, Task, etc.)
     if (error instanceof UserException || error instanceof TaskException) {
         const apiError: IApiError = {
             code: error.errorCode,
@@ -38,7 +35,6 @@ export const errorHandler = (
         );
     }
 
-    // Handle validation errors (if using express-validator or similar)
     if (Array.isArray((error as any).errors)) {
         const validationErrors = (error as any).errors.map((err: any) => ({
             code: ErrorCode.INVALID_JSON_FORMAT,
@@ -53,21 +49,20 @@ export const errorHandler = (
         );
     }
 
-    // Log unexpected errors
     console.error('Unhandled error:', {
         name: error.name,
         message: error.message,
-        stack: error.stack,
         timestamp: new Date().toISOString(),
         path: req.path,
+
         method: req.method
     });
 
-    // Return generic error for unhandled cases
     const unknownError: IApiError = {
         code: ErrorCode.UNKNOWN_ERROR,
         message: 'Internal server error'
     };
+
     
     return res.status(500).json(
         new ApiResponse('error', 'Internal server error', null, [unknownError])

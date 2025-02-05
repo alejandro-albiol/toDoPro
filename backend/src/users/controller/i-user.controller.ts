@@ -2,7 +2,7 @@ import { IBaseController } from "../../shared/models/interfaces/base/i-controlle
 import { User } from "../models/entities/user.entity.js";
 import { CreateUserDTO } from "../models/dtos/create-user.dto.js";
 import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
-import { UpdatedUserDTO } from "../models/dtos/updated-user.dto.js";
 
-export interface IUserController extends IBaseController<User, CreateUserDTO, UpdateUserDTO, UpdatedUserDTO> {
+
+export interface IUserController extends IBaseController<User, CreateUserDTO, UpdateUserDTO> {
 }

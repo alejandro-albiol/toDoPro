@@ -128,4 +128,4 @@ describe('Error Handler Middleware', () => {
         expect(mockResponse.status).not.toHaveBeenCalled();
         expect(mockResponse.json).not.toHaveBeenCalled();
     });
-}); 
+});

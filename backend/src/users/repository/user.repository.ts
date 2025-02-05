@@ -1,5 +1,5 @@
 import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
-import { User } from "../models/entities/user.entity.js";
+import { User, UserWithoutPassword } from "../models/entities/user.entity.js";
 import { IUserRepository } from "./i-user.repository.js";
 import { HashService } from "../../shared/services/hash.service.js";
 import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
@@ -10,7 +10,7 @@ import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-dat
 export class UserRepository implements IUserRepository {
   constructor(private pool: IDatabasePool) {}
 
-  async create(user: User): Promise<User> {
+  async create(user: User): Promise<Partial<User>> {
     const query = `
       INSERT INTO users (username, email, password)
       VALUES ($1, $2, $3)
@@ -18,36 +18,39 @@ export class UserRepository implements IUserRepository {
     `;
 
     try {
-      const hashedPassword = await HashService.hashPassword(user.password);
-      const result = await this.pool.query(query, [user.username, user.email, hashedPassword]);
+      const result = await this.pool.query(query, [user.username, user.email, user.password]);
       
       return {
-        ...result.rows[0],
-        password: undefined
-      } as User;
-
+        ...result.rows[0]
+      } as Partial<User>;
+      
     } catch (error) {
       if (error instanceof DatabaseError) {
-        const dbError: IGenericDatabaseError = {
-          code: error.code as DbErrorCode,
+        const errorCode = error.code;
+        
+        throw {
+          code: errorCode,
           message: error.message,
           metadata: {
-            detail: 'detail' in error ? error.detail : undefined,
-            constraint: 'constraint' in error ? error.constraint : undefined,
-            table: 'table' in error ? error.table : undefined,
-            column: 'column' in error ? error.column : undefined
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
           }
-        };
-
-        throw dbError;
+        } as IGenericDatabaseError;
+      }
+      
+      if (typeof error === 'object' && error !== null && 'code' in error) {
+        throw {
+          code: (error as any).code,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        } as IGenericDatabaseError;
       }
       
       throw {
         code: DbErrorCode.UNKNOWN_ERROR,
         message: 'An unexpected error occurred while creating user',
-        metadata: {
-          detail: error instanceof Error ? error.message : 'Unknown error'
-        }
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
       } as IGenericDatabaseError;
     }
   }
@@ -62,6 +65,19 @@ export class UserRepository implements IUserRepository {
       const result = await this.pool.query(query);
       return result.rows;
     } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
       throw {
         code: DbErrorCode.UNKNOWN_ERROR,
         message: 'An unexpected error occurred while finding all users',
@@ -85,34 +101,216 @@ export class UserRepository implements IUserRepository {
       }
       return null;
     } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
       throw {
         code: DbErrorCode.UNKNOWN_ERROR,
-
         message: 'An unexpected error occurred while finding user by id',
         metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
       } as IGenericDatabaseError;
     }
-
-    
   }
 
-  async findByUsername(username: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async findByUsername(username: string): Promise<User | null> {
+    const query = `
+      SELECT id, username, email
+      FROM users
+      WHERE username = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [username]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        return user as User;
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while finding user by username',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 
-  async findByEmail(email: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async findByEmail(email: string): Promise<User | null> {
+    const query = `
+      SELECT id, username, email
+      FROM users
+      WHERE email = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [email]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        return user as User;
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while finding user by email',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 
   async updatePassword(id: string, password: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    const query = `
+      UPDATE users
+      SET password = $2
+      WHERE id = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [id, password]);
+      
+      if (result.rowCount === 0) {
+        throw {
+          code: DbErrorCode.NOT_FOUND,
+          message: 'User not found',
+          metadata: { detail: `User with id ${id} does not exist` }
+        } as IGenericDatabaseError;
+      }
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      if ((error as IGenericDatabaseError).code) {
+        throw error;
+      }
+
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while updating user password',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 
   async update(user: UpdateUserDTO): Promise<UpdateUserDTO> {
-    throw new Error('Method not implemented.');
+    const query = `
+      UPDATE users
+      SET username = $2, email = $3
+      WHERE id = $1
+      RETURNING id, username, email
+    `;
+
+    try {
+      const result = await this.pool.query(query, [user.id, user.username, user.email]);
+      
+      if (result.rows.length === 0) {
+        throw {
+          code: DbErrorCode.NOT_FOUND,
+          message: 'User not found',
+          metadata: { detail: `User with id ${user.id} does not exist` }
+        } as IGenericDatabaseError;
+      }
+
+      return result.rows[0] as UpdateUserDTO;
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      if ((error as IGenericDatabaseError).code) {
+        throw error;
+      }
+
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while updating user',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 
   async delete(id: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    const query = `
+      DELETE FROM users
+      WHERE id = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [id]);
+      return result.rowCount > 0;
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while deleting user',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
   }
 }

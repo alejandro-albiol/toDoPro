@@ -1,6 +1,6 @@
 export interface IBaseController<T, CreateDTO, UpdateDTO = Partial<T>> {
   findById(id: string): Promise<T | null>;
-  create(dto: CreateDTO): Promise<T>;
+  create(dto: CreateDTO): Promise<Partial<T>>;
   update(dto: UpdateDTO): Promise<UpdateDTO>;
   delete(id: string): Promise<boolean>;
 } 

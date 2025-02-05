@@ -4,5 +4,6 @@ export enum TaskErrorCodes {
     INVALID_TITLE = 'T3',
     INVALID_DESCRIPTION = 'T4',
     INVALID_USER_ID = 'T5',
-    TASK_CREATION_FAILED = 'T6'
+    TASK_CREATION_FAILED = 'T6',
+    UNKNOWN_ERROR = 'T7'
 }

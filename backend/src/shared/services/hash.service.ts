@@ -1,14 +1,27 @@
 import argon2 from 'argon2';
+import { IGenericDatabaseError } from '../models/interfaces/base/i-database-error.js';
+import { DbErrorCode } from '../models/constants/db-error-code.enum.js';
 
 export class HashService {
+
   static async hashPassword(password: string): Promise<string> {
-    return await argon2.hash(password);
+    try {
+      return await argon2.hash(password);
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      throw new Error('An unexpected error occurred while hashing password, please try again later');
+    }
   }
 
-  static async verifyPassword(
-    password: string,
-    hash: string,
-  ): Promise<boolean> {
-    return await argon2.verify(hash, password);
+
+
+  static async verifyPassword(password: string, hash: string): Promise<boolean> {
+    try {
+      return await argon2.verify(hash, password);
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      throw new Error('An unexpected error occurred while verifying password, please try again later');
+    }
   }
+
 }
