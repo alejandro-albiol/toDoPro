@@ -8,7 +8,7 @@ import { UserNotFoundException } from "../exceptions/user-not-found.exception.js
 import { EmailAlreadyExistsException } from "../exceptions/email-already-exists.exception.js";
 import { UsernameAlreadyExistsException } from "../exceptions/username-already-exists.exception.js";
 import { InvalidUserDataException } from "../exceptions/invalid-user-data.exception.js";
-import { DbErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
+import { DbErrorCode } from "../../shared/exceptions/enums/db-error-code.enum.js";
 import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 import { HashService } from "../../shared/services/hash.service.js";
 

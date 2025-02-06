@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { UserController } from '../../../../src/users/controller/user.controller.js';
 import { IUserService } from '../../../../src/users/service/i-user.service.js';
-import { UserException } from '../../../../src/users/exceptions/base-user.exception.js';
 import { UserNotFoundException } from '../../../../src/users/exceptions/user-not-found.exception.js';
 import { CreateUserDTO } from '../../../../src/users/models/dtos/create-user.dto.js';
 import { UpdateUserDTO } from '../../../../src/users/models/dtos/update-user.dto.js';
-import { User } from '../../../../src/users/models/entities/user.entity.js';
 import { UserErrorCodes } from '../../../../src/users/exceptions/enums/user-error-codes.enum.js';
+
 
 describe('UserController', () => {
     let controller: UserController;
@@ -80,10 +79,13 @@ describe('UserController', () => {
                 error: {
                     code: UserErrorCodes.USER_NOT_FOUND,
                     message: error.message,
-                    metadata: error.stack
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
                 }
             });
         });
+
 
         it('should handle unknown error', async () => {
             const error = new Error('Unknown error');
@@ -96,11 +98,15 @@ describe('UserController', () => {
                 success: false,
                 error: {
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'An unexpected error occurred',
-                    metadata: { detail: 'Unknown error' }
+                    message: error.message,
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
+
                 }
             });
         });
+
     });
 
     describe('findAll', () => {
@@ -133,8 +139,10 @@ describe('UserController', () => {
                 success: false,
                 error: {
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'An unexpected error occurred',
-                    metadata: { detail: 'Database error' }
+                    message: error.message,
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
                 }
             });
         });
@@ -193,11 +201,15 @@ describe('UserController', () => {
                 success: false,
                 error: {
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'An unexpected error occurred',
-                    metadata: { detail: 'Database error' }
+                    message: error.message,
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
+
                 }
             });
         });
+
     });
 
     describe('update', () => {
@@ -242,10 +254,13 @@ describe('UserController', () => {
                 error: {
                     code: UserErrorCodes.USER_NOT_FOUND,
                     message: error.message,
-                    metadata: error.stack
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
                 }
             });
         });
+
     });
 
     describe('updatePassword', () => {
@@ -281,10 +296,13 @@ describe('UserController', () => {
                 error: {
                     code: UserErrorCodes.USER_NOT_FOUND,
                     message: error.message,
-                    metadata: error.stack
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
                 }
             });
         });
+
     });
 
     describe('delete', () => {
@@ -333,10 +351,13 @@ describe('UserController', () => {
                 success: false,
                 error: {
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'An unexpected error occurred',
-                    metadata: { detail: 'Database error' }
+                    message: error.message,
+                    metadata: process.env.NODE_ENV === 'development' ? {
+                        stack: error.stack
+                    } : undefined
                 }
             });
         });
+
     });
 }); 

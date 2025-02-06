@@ -5,20 +5,13 @@ import { IUserController } from '../controller/i-user.controller.js';
 
 /**
  * Configures and returns a new Router instance with user routes
+ * Handles only user resource management operations for regular users
+ * Authentication operations are handled by the auth module
  * @param controller Implementation of IUserController to handle route logic
  * @returns Configured Express Router instance
  */
 export const configureUserRoutes = (controller: IUserController): Router => {
     const router = Router();
-
-    router.post('/', 
-        UserValidator.validateCreate(),
-        (req, res) => controller.create(req, res)
-    );
-    
-    router.get('/',
-        (req, res) => controller.findAll(req, res)
-    );
     
     router.get('/:id',
         IdValidator.validate('id'),
@@ -29,12 +22,6 @@ export const configureUserRoutes = (controller: IUserController): Router => {
         IdValidator.validate('id'),
         UserValidator.validateUpdate(),
         (req, res) => controller.update(req, res)
-    );
-    
-    router.patch('/:id/password',
-        IdValidator.validate('id'),
-        UserValidator.validatePassword(),
-        (req, res) => controller.updatePassword(req, res)
     );
     
     router.delete('/:id',

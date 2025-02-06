@@ -1,7 +1,9 @@
-import { LoginDTO } from "../models/dtos/login.dto.js";
-import { ChangePasswordDTO } from "../models/dtos/change-password.dto.js";
+import { Request, Response } from 'express';
 
-export interface IAuthController{
-    login(credentials: LoginDTO): Promise<{ token: string }>;
-    changePassword(token: string, changePasswordDTO: ChangePasswordDTO): Promise<void>;
+export interface IAuthController {
+    register(req: Request, res: Response): Promise<void>;
+    login(req: Request, res: Response): Promise<void>;
+    changePassword(req: Request, res: Response): Promise<void>;
+    initiatePasswordReset(req: Request, res: Response): Promise<void>;
+    resetPassword(req: Request, res: Response): Promise<void>;
 }

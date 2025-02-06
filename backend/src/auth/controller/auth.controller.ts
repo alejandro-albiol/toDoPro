@@ -1,52 +1,92 @@
+import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service.js';
-import { LoginDTO } from '../models/dtos/login.dto.js';
-import { ChangePasswordDTO } from '../models/dtos/change-password.dto.js';
+import { ApiResponse } from '../../shared/responses/api-response.js';
 import { AuthException } from '../exceptions/base-auth.exception.js';
-import { DataBaseException } from '../../shared/database/exceptions/database.exception.js';
+import { EmailService } from '../../shared/services/email.service.js';
+import { IAuthController } from './i-auth.controller.js';
+import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';
+import { EmailAlreadyExistsException } from '../../users/exceptions/email-already-exists.exception.js';
+import { UsernameAlreadyExistsException } from '../../users/exceptions/username-already-exists.exception.js';
+import { UserCreationFailedException } from '../../users/exceptions/user-creation-failed.exception.js';
 
-export class AuthController {
-    constructor(private authService: AuthService) {}
+export class AuthController implements IAuthController {
+    constructor(private readonly authService: AuthService) {}
 
-    async login(credentials: LoginDTO): Promise<{ token: string }> {
+    async register(req: Request, res: Response): Promise<void> {
         try {
-            if (!credentials) {
-                throw new InvalidCredentialsException('Credentials are required');
-            }
-            const loginDto = await this.toLoginDto(credentials);
-            const token = await this.authService.login(loginDto);
-            return { token };
+            await this.authService.register(req.body);
+            ApiResponse.created(res, { message: 'User registered successfully' });
         } catch (error) {
-            if (error instanceof AuthException || error instanceof DataBaseException) {
-                throw error;
+            if (error instanceof EmailAlreadyExistsException || 
+                error instanceof UsernameAlreadyExistsException) {
+                ApiResponse.badRequest(res, error.message, error.errorCode);
+            } else if (error instanceof UserCreationFailedException) {
+                ApiResponse.error(res, error, 400);
+            } else {
+                ApiResponse.error(res, error);
             }
-            throw new InvalidCredentialsException('An unknown error occurred during login');
         }
     }
 
-    async changePassword(token: string, changePasswordDTO: ChangePasswordDTO): Promise<void> {
+    async login(req: Request, res: Response): Promise<void> {
         try {
-            if (!changePasswordDTO) {
-                throw new InvalidCredentialsException('Password data is required');
-            }
-            await this.authService.changePassword(token, changePasswordDTO);
+            const token = await this.authService.login(req.body);
+            ApiResponse.success(res, { token });
         } catch (error) {
-            if (error instanceof AuthException || error instanceof DataBaseException) {
-                throw error;
+            if (error instanceof InvalidCredentialsException) {
+                ApiResponse.unauthorized(res, error.message, error.errorCode);
+            } else {
+                ApiResponse.error(res, error);
             }
-            console.error(error);
-            throw new InvalidCredentialsException('An unknown error occurred while changing password');
         }
     }
 
-    private async toLoginDto(credentials: LoginDTO): Promise<LoginDTO> {
+    async changePassword(req: Request, res: Response): Promise<void> {
         try {
-            return {
-                username: credentials.username.toLowerCase(),
-                password: credentials.password
-            };
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) {
+                throw new InvalidTokenException('No token provided');
+            }
+
+            await this.authService.changePassword(token, req.body);
+            ApiResponse.success(res, { message: 'Password changed successfully' });
         } catch (error) {
-            throw new InvalidCredentialsException('Invalid credentials format');
+            if (error instanceof InvalidTokenException) {
+                ApiResponse.unauthorized(res, error.message, error.errorCode);
+            } else if (error instanceof InvalidCredentialsException) {
+                ApiResponse.badRequest(res, error.message, error.errorCode);
+            } else {
+                ApiResponse.error(res, error);
+            }
+        }
+    }
+
+    async initiatePasswordReset(req: Request, res: Response): Promise<void> {
+        try {
+            const token = await this.authService.initiatePasswordReset(req.body);
+            await EmailService.sendPasswordResetEmail(req.body.email, token);
+            ApiResponse.success(res, { 
+                message: 'If an account exists with this email, you will receive password reset instructions'
+            });
+        } catch (error) {
+            ApiResponse.success(res, { 
+                message: 'If an account exists with this email, you will receive password reset instructions'
+            });
+            console.error('Password reset initiation error:', error);
+        }
+    }
+
+    async resetPassword(req: Request, res: Response): Promise<void> {
+        try {
+            await this.authService.resetPassword(req.body);
+            ApiResponse.success(res, { message: 'Password reset successfully' });
+        } catch (error) {
+            if (error instanceof InvalidTokenException) {
+                ApiResponse.unauthorized(res, error.message, error.errorCode);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 }

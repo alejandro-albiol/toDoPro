@@ -6,9 +6,10 @@ import { UserException } from '../exceptions/base-user.exception.js';
 import { IUserController } from './i-user.controller.js';
 import { ApiResponse } from '../../shared/responses/api-response.js';
 import { UserErrorCodes } from '../exceptions/enums/user-error-codes.enum.js';
+import { UserNotFoundException } from '../exceptions/user-not-found.exception.js';
 
 export class UserController implements IUserController {
-    constructor(private userService: IUserService) {}
+    constructor(private readonly userService: IUserService) {}
 
     async create(req: Request, res: Response): Promise<void> {
         try {
@@ -16,9 +17,9 @@ export class UserController implements IUserController {
             ApiResponse.created(res, newUser);
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }
@@ -29,9 +30,9 @@ export class UserController implements IUserController {
             ApiResponse.success(res, users);
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }
@@ -46,9 +47,9 @@ export class UserController implements IUserController {
             }
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }
@@ -63,9 +64,9 @@ export class UserController implements IUserController {
             ApiResponse.success(res, updatedUser);
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }
@@ -76,9 +77,9 @@ export class UserController implements IUserController {
             ApiResponse.success(res, { message: 'Password updated successfully' });
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }
@@ -93,9 +94,9 @@ export class UserController implements IUserController {
             }
         } catch (error) {
             if (error instanceof UserException) {
-                ApiResponse.error(res, error);
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
             } else {
-                ApiResponse.internalError(res, error);
+                ApiResponse.error(res, error);
             }
         }
     }

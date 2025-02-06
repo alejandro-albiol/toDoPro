@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { errorHandler } from '../../../src/middlewares/error-handler.js';
 import { ApiResponse } from '../../../src/shared/responses/api-response.js';
-import { ErrorCode } from '../../../src/shared/models/constants/error-code.enum.js';
+import { ErrorCode } from '../../../src/shared/exceptions/enums/error-code.enum.js';
 import { UserException } from '../../../src/users/exceptions/base-user.exception.js';
 import { UserErrorCodes } from '../../../src/users/exceptions/enums/user-error-codes.enum.js';
 

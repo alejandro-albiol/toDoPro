@@ -4,7 +4,7 @@ import { IUserRepository } from "./i-user.repository.js";
 import { HashService } from "../../shared/services/hash.service.js";
 import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
 import { DatabaseError } from "pg";
-import { DbErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
+import { DbErrorCode } from "../../shared/exceptions/enums/db-error-code.enum.js";
 import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 
 export class UserRepository implements IUserRepository {

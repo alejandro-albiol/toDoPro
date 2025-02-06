@@ -1,7 +1,7 @@
 import { IApiResponse } from '../models/interfaces/responses/i-api-response.js';
 import { IApiError } from '../models/interfaces/responses/i-api-error.js';
 import { Response } from 'express';
-import { BaseException } from '../models/interfaces/base/i-base.exception.js';
+import { BaseException } from '../exceptions/base.exception.js';
 
 export class ApiResponse<T = any> implements IApiResponse<T> {
   status: 'success' | 'error';
@@ -35,15 +35,41 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
     });
   }
 
-  static error(res: Response, error: BaseException): void {
-    res.status(error.statusCode).json({
-      success: false,
-      error: {
-        code: error.errorCode,
-        message: error.message,
-        metadata: error.stack
-      }
-    });
+  static error(res: Response, error: BaseException | Error | unknown, statusCode: number = 500): void {
+    if (error instanceof BaseException) {
+      res.status(statusCode).json({
+        success: false,
+        error: {
+          code: error.errorCode,
+          message: error.message,
+          metadata: process.env.NODE_ENV === 'development' ? {
+            stack: error.stack
+          } : undefined
+        }
+      });
+    } else if (error instanceof Error) {
+      res.status(statusCode).json({
+        success: false,
+        error: {
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message,
+          metadata: process.env.NODE_ENV === 'development' ? {
+            stack: error.stack
+          } : undefined
+        }
+      });
+    } else {
+      res.status(statusCode).json({
+        success: false,
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: 'An unexpected error occurred',
+          metadata: {
+            error: error instanceof Object ? JSON.stringify(error) : 'Unknown error'
+          }
+        }
+      });
+    }
   }
 
   static notFound(res: Response, message: string, errorCode: string = 'NOT_FOUND'): void {
@@ -56,13 +82,32 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
     });
   }
 
-  static internalError(res: Response, error: unknown): void {
-    res.status(500).json({
+  static badRequest(res: Response, message: string, errorCode: string = 'BAD_REQUEST'): void {
+    res.status(400).json({
       success: false,
       error: {
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred',
-        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+        code: errorCode,
+        message
+      }
+    });
+  }
+
+  static unauthorized(res: Response, message: string, errorCode: string = 'UNAUTHORIZED'): void {
+    res.status(401).json({
+      success: false,
+      error: {
+        code: errorCode,
+        message
+      }
+    });
+  }
+
+  static forbidden(res: Response, message: string, errorCode: string = 'FORBIDDEN'): void {
+    res.status(403).json({
+      success: false,
+      error: {
+        code: errorCode,
+        message
       }
     });
   }

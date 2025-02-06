@@ -1,7 +1,7 @@
 import { UserRepository } from '../../../../src/users/repository/user.repository.js';
 import { User } from '../../../../src/users/models/entities/user.entity.js';
 import { IDatabasePool } from '../../../../src/shared/models/interfaces/base/i-database-pool.js';
-import { DbErrorCode } from '../../../../src/shared/models/constants/db-error-code.enum.js';
+import { DbErrorCode } from '../../../../src/shared/exceptions/enums/db-error-code.enum.js';
 import { DatabaseError } from 'pg';
 import { UpdateUserDTO } from '../../../../src/users/models/dtos/update-user.dto.js';
 
