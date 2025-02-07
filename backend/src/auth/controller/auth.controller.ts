@@ -21,13 +21,12 @@ export class AuthController implements IAuthController {
             if (error instanceof EmailAlreadyExistsException || 
                 error instanceof UsernameAlreadyExistsException) {
                 ApiResponse.badRequest(res, error.message, error.errorCode);
-            } else if (error instanceof UserCreationFailedException) {
-                ApiResponse.error(res, error, 400);
             } else {
                 ApiResponse.error(res, error);
             }
         }
     }
+
 
     async login(req: Request, res: Response): Promise<void> {
         try {

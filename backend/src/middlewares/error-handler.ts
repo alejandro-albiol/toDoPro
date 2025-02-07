@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponse } from '../shared/responses/api-response.js';
 import { IApiError } from '../shared/models/interfaces/responses/i-api-error.js';
-import { ErrorCode } from '../shared/exceptions/enums/error-code.enum.js';
+import { ErrorCode } from '../shared/models/constants/error-code.enum.js';
 import { UserException } from '../users/exceptions/base-user.exception.js';
 import { TaskException } from '../tasks/exceptions/base-task.exception.js';
 

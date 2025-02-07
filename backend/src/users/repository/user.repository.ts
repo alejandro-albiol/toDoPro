@@ -4,7 +4,7 @@ import { IUserRepository } from "./i-user.repository.js";
 import { HashService } from "../../shared/services/hash.service.js";
 import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
 import { DatabaseError } from "pg";
-import { DbErrorCode } from "../../shared/exceptions/enums/db-error-code.enum.js";
+import { DbErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
 import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 
 export class UserRepository implements IUserRepository {
@@ -153,6 +153,41 @@ export class UserRepository implements IUserRepository {
       throw {
         code: DbErrorCode.UNKNOWN_ERROR,
         message: 'An unexpected error occurred while finding user by username',
+        metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
+      } as IGenericDatabaseError;
+    }
+  }
+
+  async getPasswordByUsername(username: string): Promise<string | null> {
+    const query = `
+      SELECT password
+      FROM users
+      WHERE username = $1
+    `;
+
+    try {
+      const result = await this.pool.query(query, [username]);
+      if (result.rows.length > 0) {
+        return result.rows[0].password;
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        throw {
+          code: error.code as DbErrorCode,
+          message: error.message,
+          metadata: { 
+            detail: error.detail,
+            constraint: error.constraint,
+            table: error.table,
+            column: error.column
+          }
+        } as IGenericDatabaseError;
+      }
+      
+      throw {
+        code: DbErrorCode.UNKNOWN_ERROR,
+        message: 'An unexpected error occurred while getting user password',
         metadata: { detail: error instanceof Error ? error.message : 'Unknown error' }
       } as IGenericDatabaseError;
     }

@@ -8,7 +8,7 @@ import { UserNotFoundException } from "../exceptions/user-not-found.exception.js
 import { EmailAlreadyExistsException } from "../exceptions/email-already-exists.exception.js";
 import { UsernameAlreadyExistsException } from "../exceptions/username-already-exists.exception.js";
 import { InvalidUserDataException } from "../exceptions/invalid-user-data.exception.js";
-import { DbErrorCode } from "../../shared/exceptions/enums/db-error-code.enum.js";
+import { DbErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
 import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 import { HashService } from "../../shared/services/hash.service.js";
 
@@ -106,13 +106,23 @@ export class UserService implements IUserService {
         try {
             const user = await this.userRepository.findByUsername(username);
             if (!user) return null;
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword as User;
+            return user;
         } catch (error) {
             if (this.isDatabaseError(error)) {
                 this.handleDatabaseError(error, 'finding user by username');
             }
             throw new InvalidUserDataException('Failed to find user by username: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        }
+    }
+
+    async getPasswordByUsername(username: string): Promise<string | null> {
+        try {
+            return await this.userRepository.getPasswordByUsername(username);
+        } catch (error) {
+            if (this.isDatabaseError(error)) {
+                this.handleDatabaseError(error, 'getting user password');
+            }
+            throw new InvalidUserDataException('Failed to get user password: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 

@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
 import { IGenericDatabaseError } from '../models/interfaces/base/i-database-error.js';
-import { DbErrorCode } from '../exceptions/enums/db-error-code.enum.js';
+import { DbErrorCode } from '../models/constants/db-error-code.enum.js';
 
 export class HashService {
 

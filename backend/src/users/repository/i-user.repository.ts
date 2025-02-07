@@ -8,4 +8,5 @@ export interface IUserRepository extends IBaseRepository<User, CreateUserDTO, Up
   findByUsername(username: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   updatePassword(id: string, password: string): Promise<void>;
+  getPasswordByUsername(username: string): Promise<string | null>;
 }

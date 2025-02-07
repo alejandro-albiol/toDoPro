@@ -1,7 +1,7 @@
 import { UserRepository } from '../../../../src/users/repository/user.repository.js';
 import { User } from '../../../../src/users/models/entities/user.entity.js';
 import { IDatabasePool } from '../../../../src/shared/models/interfaces/base/i-database-pool.js';
-import { DbErrorCode } from '../../../../src/shared/exceptions/enums/db-error-code.enum.js';
+import { DbErrorCode } from '../../../../src/shared/models/constants/db-error-code.enum.js';
 import { DatabaseError } from 'pg';
 import { UpdateUserDTO } from '../../../../src/users/models/dtos/update-user.dto.js';
 
@@ -40,7 +40,7 @@ describe('UserRepository', () => {
             const expectedUser = { ...mockUser };
             delete (expectedUser as any).password;
 
-            mockPool.query.mockResolvedValueOnce({
+            mockPool.query.mockResolvedValueOnce({ 
                 rows: [expectedUser],
                 rowCount: 1
             });
@@ -67,8 +67,8 @@ describe('UserRepository', () => {
                 code: DbErrorCode.UNIQUE_VIOLATION,
                 metadata: {
                     column: 'email',
-                    detail: 'Key (email)=(test@example.com) already exists',
-                    constraint: 'users_email_key',
+                detail: 'Key (email)=(test@example.com) already exists',
+                constraint: 'users_email_key',
                     table: 'users'
                 }
             });
@@ -361,7 +361,7 @@ describe('UserRepository', () => {
             });
 
             const result = await repository.findByUsername('user1');
-            expect(result).toEqual(mockUser);
+            expect(result).toEqual(mockUser);   
             expect(mockPool.query).toHaveBeenCalledWith(
                 expect.any(String),
                 ['user1']

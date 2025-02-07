@@ -33,7 +33,12 @@ export class AuthService {
             throw new InvalidCredentialsException('Invalid username or password');
         }
 
-        const isValidPassword = await HashService.verifyPassword(data.password, user.password);
+        const hashedPassword = await this.userService.getPasswordByUsername(data.username);
+        if (!hashedPassword) {
+            throw new InvalidCredentialsException('Invalid username or password');
+        }
+
+        const isValidPassword = await HashService.verifyPassword(data.password, hashedPassword);
         if (!isValidPassword) {
             throw new InvalidCredentialsException('Invalid username or password');
         }
@@ -54,7 +59,8 @@ export class AuthService {
             throw new InvalidCredentialsException('Current password is incorrect');
         }
 
-        await this.userService.updatePassword(user.id, data.newPassword);
+        const hashedPassword = await HashService.hashPassword(data.newPassword);
+        await this.userService.updatePassword(user.id, hashedPassword);
     }
 
     async initiatePasswordReset(data: InitiatePasswordResetDTO): Promise<string> {

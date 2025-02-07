@@ -1,0 +1,16 @@
+{
+    "entryPoints": ["src"],
+    "entryPointStrategy": "expand",
+    "out": "docs",
+    "name": "ToDoPro API Documentation",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "hideGenerator": true,
+    "categorizeByGroup": true,
+    "categoryOrder": ["Services", "Controllers", "Models", "*"],
+    "navigationLinks": {
+        "GitHub": "https://github.com/yourusername/todopro",
+        "API Docs": "/api-docs"
+    }
+} 
