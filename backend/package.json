@@ -14,7 +14,8 @@
     "test:watch": "jest --watch",
     "test:changed": "jest --onlyChanged",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "docs": "typedoc"
   },
   "keywords": [],
   "author": "",
