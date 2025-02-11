@@ -10,16 +10,6 @@ import { IBaseService } from "../../shared/models/interfaces/base/i-service.js";
  */
 export interface IUserService extends Omit<IBaseService<User, CreateUserDTO, UpdateUserDTO>, 'create'> {
     /**
-     * Creates a new user in the system
-     * @param {CreateUserDTO} dto - The data transfer object containing user creation data
-     * @returns {Promise<Partial<User>>} The created user without sensitive data
-     * @throws {EmailAlreadyExistsException} If email is already registered
-     * @throws {UsernameAlreadyExistsException} If username is already taken
-     * @throws {UserCreationFailedException} If user creation fails
-     */
-    create(dto: CreateUserDTO): Promise<Partial<User>>;
-
-    /**
      * Updates a user's password
      * @param {string} id - The user's unique identifier
      * @param {string} password - The new password (will be hashed before storage)
@@ -34,15 +24,15 @@ export interface IUserService extends Omit<IBaseService<User, CreateUserDTO, Upd
      * @returns {Promise<User | null>} The user if found, null otherwise
      * @throws {InvalidUserDataException} If the search operation fails
      */
-    findByEmail(email: string): Promise<User | null>;
+    findByEmail(email: string): Promise<Partial<User> | null>;
 
     /**
      * Finds a user by their username
      * @param {string} username - The username to search for
-     * @returns {Promise<User | null>} The user if found, null otherwise
+     * @returns {Promise<Partial<User> | null>} The user if found, null otherwise
      * @throws {InvalidUserDataException} If the search operation fails
      */
-    findByUsername(username: string): Promise<User | null>;
+    findByUsername(username: string): Promise<Partial<User> | null>;
 
     /**
      * Retrieves a user's hashed password by their username

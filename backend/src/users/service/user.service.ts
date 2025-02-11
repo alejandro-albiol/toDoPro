@@ -8,40 +8,11 @@ import { UserNotFoundException } from "../exceptions/user-not-found.exception.js
 import { EmailAlreadyExistsException } from "../exceptions/email-already-exists.exception.js";
 import { UsernameAlreadyExistsException } from "../exceptions/username-already-exists.exception.js";
 import { InvalidUserDataException } from "../exceptions/invalid-user-data.exception.js";
-import { DbErrorCode } from "../../shared/exceptions/database/enum/db-error-code.enum.js";
-import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 import { HashService } from "../../shared/services/hash.service.js";
+import { UniqueViolationException } from "../../shared/exceptions/database/unique-violation.exception.js";
 
 export class UserService implements IUserService {
     constructor(private userRepository: IUserRepository) {}
-
-    private handleDatabaseError(error: IGenericDatabaseError, operation: string): never {
-        if (error.code === DbErrorCode.NOT_FOUND) {
-            throw new UserNotFoundException(error.metadata?.id || 'unknown');
-        }
-
-        if (error.code === DbErrorCode.UNIQUE_VIOLATION) {
-            const field = error.metadata?.column;
-            const value = error.metadata?.detail?.match(/Key \((.*?)\)=\((.*?)\)/);
-            
-            if (field === 'email' && value) {
-                throw new EmailAlreadyExistsException(value[2]);
-            }
-            if (field === 'username' && value) {
-                throw new UsernameAlreadyExistsException(value[2]);
-            }
-        }
-        
-        throw new InvalidUserDataException(`Database error during ${operation}: ${error.message}`);
-    }
-
-    private async validateUserExists(id: string): Promise<User> {
-        const user = await this.userRepository.findById(id);
-        if (!user) {
-            throw new UserNotFoundException(id);
-        }
-        return user;
-    }
 
     async create(dto: CreateUserDTO): Promise<Partial<User>> {
         try {
@@ -49,13 +20,16 @@ export class UserService implements IUserService {
                 ...dto,
                 password: await HashService.hashPassword(dto.password)
             };
-            
             return await this.userRepository.create(user);
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'user creation');
+            if (error instanceof UniqueViolationException) {
+                if (error.message.includes('username')) {
+                    throw new UsernameAlreadyExistsException(dto.username);
+                }
+                if (error.message.includes('email')) {
+                    throw new EmailAlreadyExistsException(dto.email);
+                }
             }
-
             throw new UserCreationFailedException('Failed to create user: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
@@ -65,24 +39,17 @@ export class UserService implements IUserService {
             const users = await this.userRepository.findAll();
             return users.map(({ password, ...user }) => user) as User[];
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'fetching all users');
-            }
             throw new InvalidUserDataException('Failed to fetch users: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 
-    async findById(id: string): Promise<User | null> {
+    async findById(id: string): Promise<Partial<User> | null> {
         try {
-            const user = await this.validateUserExists(id);
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword as User;
+            const user = await this.userRepository.findById(id);
+            return user as Partial<User>;
         } catch (error) {
             if (error instanceof UserNotFoundException) {
                 return null;
-            }
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'finding user by id');
             }
             throw new InvalidUserDataException('Failed to find user: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
@@ -92,12 +59,8 @@ export class UserService implements IUserService {
         try {
             const user = await this.userRepository.findByEmail(email);
             if (!user) return null;
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword as Partial<User>;
+            return user as Partial<User>;
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'finding user by email');
-            }
             throw new InvalidUserDataException('Failed to find user by email: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
@@ -106,11 +69,8 @@ export class UserService implements IUserService {
         try {
             const user = await this.userRepository.findByUsername(username);
             if (!user) return null;
-            return user;
+            return user as Partial<User>;
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'finding user by username');
-            }
             throw new InvalidUserDataException('Failed to find user by username: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
@@ -119,22 +79,16 @@ export class UserService implements IUserService {
         try {
             return await this.userRepository.getPasswordByUsername(username);
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'getting user password');
-            }
             throw new InvalidUserDataException('Failed to get user password: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 
     async updatePassword(id: string, password: string): Promise<void> {
         try {
-            await this.validateUserExists(id);
+            await this.userRepository.findById(id);
             const hashedPassword = await HashService.hashPassword(password);
             await this.userRepository.updatePassword(id, hashedPassword);
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'updating password');
-            }
             if (error instanceof UserNotFoundException) {
                 throw error;
             }
@@ -144,14 +98,11 @@ export class UserService implements IUserService {
 
     async update(dto: UpdateUserDTO): Promise<Partial<User>> {
         try {
-            await this.validateUserExists(dto.id);
+            const user = await this.userRepository.findById(dto.id);
+            if (!user) throw new UserNotFoundException('User not found');
             const updatedUser = await this.userRepository.update(dto);
-            const { password, ...userWithoutPassword } = updatedUser;
-            return userWithoutPassword;
+            return updatedUser as Partial<User>;
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'updating user');
-            }
             if (error instanceof UserNotFoundException) {
                 throw error;
             }
@@ -161,25 +112,15 @@ export class UserService implements IUserService {
 
     async delete(id: string): Promise<boolean> {
         try {
-            await this.validateUserExists(id);
-            return await this.userRepository.delete(id);
+            const user = await this.userRepository.findById(id);
+            if (!user) throw new UserNotFoundException('User not found');
+            await this.userRepository.delete(id);
+            return true;
         } catch (error) {
-            if (this.isDatabaseError(error)) {
-                this.handleDatabaseError(error, 'deleting user');
-            }
             if (error instanceof UserNotFoundException) {
                 throw error;
             }
             throw new InvalidUserDataException('Failed to delete user: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
-    }
-
-    private isDatabaseError(error: unknown): error is IGenericDatabaseError {
-        return (
-            typeof error === 'object' &&
-            error !== null &&
-            'code' in error &&
-            'message' in error
-        );
     }
 }
