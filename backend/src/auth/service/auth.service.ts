@@ -62,44 +62,4 @@ export class AuthService {
         const hashedPassword = await HashService.hashPassword(data.newPassword);
         await this.userService.updatePassword(user.id, hashedPassword);
     }
-
-    async initiatePasswordReset(data: InitiatePasswordResetDTO): Promise<string> {
-        const user = await this.userService.findByEmail(data.email);
-        const token = this.generateResetToken();
-
-        if (user) {
-            this.resetTokens.set(token, {
-                userId: user.id,
-                expiresAt: Date.now() + this.resetTokenExpiration
-            });
-        }
-
-        return token;
-    }
-
-    async resetPassword(data: ResetPasswordDTO): Promise<void> {
-        const tokenData = this.resetTokens.get(data.token);
-        if (!tokenData) {
-            throw new InvalidTokenException('Invalid or expired reset token');
-        }
-
-        if (Date.now() > tokenData.expiresAt) {
-            this.resetTokens.delete(data.token);
-            throw new InvalidTokenException('Reset token has expired');
-        }
-
-        const user = await this.userService.findById(tokenData.userId);
-        if (!user) {
-            this.resetTokens.delete(data.token);
-            throw new InvalidTokenException('Invalid token: user not found');
-        }
-
-        await this.userService.updatePassword(user.id, data.newPassword);
-        this.resetTokens.delete(data.token);
-    }
-
-    private generateResetToken(): string {
-        return Math.random().toString(36).substring(2, 15) + 
-               Math.random().toString(36).substring(2, 15);
-    }
 } 

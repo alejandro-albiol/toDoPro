@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { AuthService } from '../service/auth.service.js';
 import { ApiResponse } from '../../shared/responses/api-response.js';
 import { AuthException } from '../exceptions/base-auth.exception.js';
-import { EmailService } from '../../shared/services/email.service.js';
 import { IAuthController } from './i-auth.controller.js';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';
@@ -55,34 +54,6 @@ export class AuthController implements IAuthController {
                 ApiResponse.unauthorized(res, error.message, error.errorCode);
             } else if (error instanceof InvalidCredentialsException) {
                 ApiResponse.badRequest(res, error.message, error.errorCode);
-            } else {
-                ApiResponse.error(res, error);
-            }
-        }
-    }
-
-    async initiatePasswordReset(req: Request, res: Response): Promise<void> {
-        try {
-            const token = await this.authService.initiatePasswordReset(req.body);
-            await EmailService.sendPasswordResetEmail(req.body.email, token);
-            ApiResponse.success(res, { 
-                message: 'If an account exists with this email, you will receive password reset instructions'
-            });
-        } catch (error) {
-            ApiResponse.success(res, { 
-                message: 'If an account exists with this email, you will receive password reset instructions'
-            });
-            console.error('Password reset initiation error:', error);
-        }
-    }
-
-    async resetPassword(req: Request, res: Response): Promise<void> {
-        try {
-            await this.authService.resetPassword(req.body);
-            ApiResponse.success(res, { message: 'Password reset successfully' });
-        } catch (error) {
-            if (error instanceof InvalidTokenException) {
-                ApiResponse.unauthorized(res, error.message, error.errorCode);
             } else {
                 ApiResponse.error(res, error);
             }

@@ -35,3 +35,6 @@ coverage/**/*.html
 coverage/
 !public/**/*.html
 
+# TypeDoc generated documentation
+backend/docs/
+

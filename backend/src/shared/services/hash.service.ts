@@ -1,6 +1,4 @@
 import argon2 from 'argon2';
-import { IGenericDatabaseError } from '../models/interfaces/base/i-database-error.js';
-import { DbErrorCode } from '../models/constants/db-error-code.enum.js';
 
 export class HashService {
 
@@ -13,8 +11,6 @@ export class HashService {
     }
   }
 
-
-
   static async verifyPassword(password: string, hash: string): Promise<boolean> {
     try {
       return await argon2.verify(hash, password);
@@ -23,5 +19,4 @@ export class HashService {
       throw new Error('An unexpected error occurred while verifying password, please try again later');
     }
   }
-
 }

@@ -1,4 +1,4 @@
-import { DbErrorCode } from '../../constants/db-error-code.enum.js';
+import { DbErrorCode } from '../../../exceptions/database/enum/db-error-code.enum.js';
 
 export interface IGenericDatabaseError {
   code: DbErrorCode;

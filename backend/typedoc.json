@@ -12,5 +12,7 @@
     "navigationLinks": {
         "GitHub": "https://github.com/yourusername/todopro",
         "API Docs": "/api-docs"
-    }
+    },
+    "skipErrorChecking": true,
+    "tsconfig": "tsconfig.json"
 } 

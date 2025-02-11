@@ -18,17 +18,7 @@ export const configureAuthRoutes = (
         UserValidator.validateLogin(),
         (req, res) => controller.login(req, res)
     );
-
-    router.post('/password-reset/initiate',
-        UserValidator.validateEmail(),
-        (req, res) => controller.initiatePasswordReset(req, res)
-    );
-
-    router.post('/password-reset/complete',
-        UserValidator.validatePasswordReset(),
-        (req, res) => controller.resetPassword(req, res)
-    );
-
+    
     router.post('/password/change',
         authMiddleware.authenticate,
         UserValidator.validatePasswordChange(),

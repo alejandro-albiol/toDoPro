@@ -8,7 +8,7 @@ import { UserNotFoundException } from "../exceptions/user-not-found.exception.js
 import { EmailAlreadyExistsException } from "../exceptions/email-already-exists.exception.js";
 import { UsernameAlreadyExistsException } from "../exceptions/username-already-exists.exception.js";
 import { InvalidUserDataException } from "../exceptions/invalid-user-data.exception.js";
-import { DbErrorCode } from "../../shared/models/constants/db-error-code.enum.js";
+import { DbErrorCode } from "../../shared/exceptions/database/enum/db-error-code.enum.js";
 import { IGenericDatabaseError } from "../../shared/models/interfaces/base/i-database-error.js";
 import { HashService } from "../../shared/services/hash.service.js";
 
@@ -88,12 +88,12 @@ export class UserService implements IUserService {
         }
     }
 
-    async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<Partial<User> | null> {
         try {
             const user = await this.userRepository.findByEmail(email);
             if (!user) return null;
             const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword as User;
+            return userWithoutPassword as Partial<User>;
         } catch (error) {
             if (this.isDatabaseError(error)) {
                 this.handleDatabaseError(error, 'finding user by email');
@@ -102,7 +102,7 @@ export class UserService implements IUserService {
         }
     }
 
-    async findByUsername(username: string): Promise<User | null> {
+    async findByUsername(username: string): Promise<Partial<User> | null> {
         try {
             const user = await this.userRepository.findByUsername(username);
             if (!user) return null;
@@ -142,10 +142,12 @@ export class UserService implements IUserService {
         }
     }
 
-    async update(dto: UpdateUserDTO): Promise<UpdateUserDTO> {
+    async update(dto: UpdateUserDTO): Promise<Partial<User>> {
         try {
             await this.validateUserExists(dto.id);
-            return await this.userRepository.update(dto);
+            const updatedUser = await this.userRepository.update(dto);
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
         } catch (error) {
             if (this.isDatabaseError(error)) {
                 this.handleDatabaseError(error, 'updating user');
