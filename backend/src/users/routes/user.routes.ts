@@ -26,7 +26,9 @@ export const configureUserRoutes = (controller: IUserController): Router => {
     
     router.delete('/:id',
         IdValidator.validate('id'),
-        (req, res) => controller.delete(req, res)
+        (req, res) => {
+            controller.delete(req, res);
+        }
     );
     
     return router;

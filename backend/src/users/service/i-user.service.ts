@@ -8,7 +8,7 @@ import { IBaseService } from "../../shared/models/interfaces/base/i-service.js";
  * Handles user CRUD operations and authentication-related user data.
  * @interface
  */
-export interface IUserService extends Omit<IBaseService<User, CreateUserDTO, UpdateUserDTO>, 'create'> {
+export interface IUserService extends IBaseService<User, CreateUserDTO, UpdateUserDTO> {
     /**
      * Updates a user's password
      * @param {string} id - The user's unique identifier

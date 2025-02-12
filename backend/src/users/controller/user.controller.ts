@@ -13,14 +13,11 @@ export class UserController implements IUserController {
 
     async create(req: Request, res: Response): Promise<void> {
         try {
-            const newUser = await this.userService.create(req.body as CreateUserDTO);
+            const dto: CreateUserDTO = req.body;
+            const newUser = await this.userService.create(dto);
             ApiResponse.created(res, newUser);
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
         }
     }
 
@@ -29,11 +26,7 @@ export class UserController implements IUserController {
             const users = await this.userService.findAll();
             ApiResponse.success(res, users);
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
         }
     }
 
@@ -46,11 +39,7 @@ export class UserController implements IUserController {
                 ApiResponse.notFound(res, `User with id ${req.params.id} not found`, UserErrorCodes.USER_NOT_FOUND);
             }
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
         }
     }
 
@@ -63,41 +52,35 @@ export class UserController implements IUserController {
             const updatedUser = await this.userService.update(updateDto);
             ApiResponse.success(res, updatedUser);
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
         }
     }
 
     async updatePassword(req: Request, res: Response): Promise<void> {
         try {
-            await this.userService.updatePassword(req.params.id, req.body.password);
+            const { password } = req.body;
+            const result = await this.userService.updatePassword(req.params.id, password);
+            console.log(result)
             ApiResponse.success(res, { message: 'Password updated successfully' });
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
         }
     }
 
     async delete(req: Request, res: Response): Promise<void> {
         try {
-            const deleted = await this.userService.delete(req.params.id);
-            if (deleted) {
-                ApiResponse.success(res, { message: 'User deleted successfully' });
-            } else {
-                ApiResponse.notFound(res, `User with id ${req.params.id} not found`, UserErrorCodes.USER_NOT_FOUND);
-            }
+            await this.userService.delete(req.params.id);
+            ApiResponse.success(res, { message: 'User deleted successfully' });
         } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
+            this.handleError(res, error);
+        }
+    }
+
+    private handleError(res: Response, error: unknown): void {
+        if (error instanceof UserException) {
+            ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+        } else {
+            ApiResponse.error(res, error);
         }
     }
 }

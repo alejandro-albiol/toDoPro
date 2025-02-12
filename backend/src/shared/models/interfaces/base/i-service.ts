@@ -44,5 +44,5 @@ export interface IBaseService<T, CreateDTO, UpdateDTO = Partial<T>> {
    * @param id - The ID of the entity to delete.
    * @returns A promise that resolves to a boolean indicating whether the deletion was successful.
    */
-  delete(id: string): Promise<boolean>;
+  delete(id: string): Promise<void>;
 }

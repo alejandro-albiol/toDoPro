@@ -85,7 +85,10 @@ export class UserService implements IUserService {
 
     async updatePassword(id: string, password: string): Promise<void> {
         try {
-            await this.userRepository.findById(id);
+            const user = await this.userRepository.findById(id);
+            if (!user) {
+                throw new UserNotFoundException(`User with id ${id} not found`);
+            }
             const hashedPassword = await HashService.hashPassword(password);
             await this.userRepository.updatePassword(id, hashedPassword);
         } catch (error) {
@@ -110,12 +113,11 @@ export class UserService implements IUserService {
         }
     }
 
-    async delete(id: string): Promise<boolean> {
+    async delete(id: string): Promise<void> {
         try {
             const user = await this.userRepository.findById(id);
             if (!user) throw new UserNotFoundException('User not found');
             await this.userRepository.delete(id);
-            return true;
         } catch (error) {
             if (error instanceof UserNotFoundException) {
                 throw error;
