@@ -2,7 +2,7 @@ import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
 import { User } from "../models/entities/user.entity.js";
 import { IUserRepository } from "./i-user.repository.js";
 import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
-import { DatabaseError } from "pg";
+import { DatabaseError } from "pg-protocol";
 import { CreateUserDTO } from "../models/dtos/create-user.dto.js";
 import { UniqueViolationException } from "../../shared/exceptions/database/unique-violation.exception.js";
 import { NotFoundException } from "../../shared/exceptions/database/not-found.exception.js";

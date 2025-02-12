@@ -6,8 +6,9 @@ import { LoginDTO } from '../models/dtos/login.dto.js';
 import { ChangePasswordDTO } from '../models/dtos/change-password.dto.js';
 import { JwtService } from './jwt.service.js';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
-import { InitiatePasswordResetDTO, ResetPasswordDTO } from '../models/dtos/reset-password.dto.js';
-
+import { UserCreationFailedException } from '../../users/exceptions/user-creation-failed.exception.js';
+import { UsernameAlreadyExistsException } from '../../users/exceptions/username-already-exists.exception.js';
+import { EmailAlreadyExistsException } from '../../users/exceptions/email-already-exists.exception.js';
 
 interface ResetTokenData {
     userId: string;
@@ -20,11 +21,19 @@ export class AuthService {
 
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
     ) {}
 
     async register(data: CreateUserDTO): Promise<void> {
-        await this.userService.create(data);
+        try {
+            await this.userService.create(data);
+        } catch (error) {
+            if (error instanceof UsernameAlreadyExistsException || error instanceof EmailAlreadyExistsException) {
+                throw error;
+            } else {
+                throw new UserCreationFailedException('User creation failed');
+            }
+        }
     }
 
     async login(data: LoginDTO): Promise<string> {
@@ -43,23 +52,23 @@ export class AuthService {
             throw new InvalidCredentialsException('Invalid username or password');
         }
 
-        return this.jwtService.generateToken(user.id, user.username);
+        return this.jwtService.generateToken(user.id!, user.username!);
     }
 
     async changePassword(token: string, data: ChangePasswordDTO): Promise<void> {
         const decodedToken = this.jwtService.verifyToken(token);
-        const user = await this.userService.findById(decodedToken.userId);
+        const password = await this.userService.getPasswordByUsername(decodedToken.username);
         
-        if (!user) {
+        if (!password) {
             throw new InvalidTokenException('Invalid token: user not found');
         }
 
-        const isValidPassword = await HashService.verifyPassword(data.oldPassword, user.password);
+        const isValidPassword = await HashService.verifyPassword(data.oldPassword, password);
         if (!isValidPassword) {
             throw new InvalidCredentialsException('Current password is incorrect');
         }
 
         const hashedPassword = await HashService.hashPassword(data.newPassword);
-        await this.userService.updatePassword(user.id, hashedPassword);
+        await this.userService.updatePassword(decodedToken.userId, hashedPassword);
     }
-} 
+}

@@ -6,14 +6,18 @@
     "backend"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "dev": "npm run dev -w backend",
     "test": "concurrently \"npm run test -w frontend\" \"npm run test -w backend\"",
     "test:fast": "npm run test:unit -w backend",
     "test:backend": "npm run test -w backend",
     "test:frontend": "npm run test -w frontend",
     "lint": "concurrently \"npm run lint -w frontend\" \"npm run lint -w backend\"",
     "format": "concurrently \"npm run format -w frontend\" \"npm run format -w backend\"",
-    "build": "concurrently \"npm run build -w frontend\" \"npm run build -w backend\""
+    "build": "concurrently \"npm run build -w frontend\" \"npm run build -w backend\"",
+    "docs:backend": "npm run docs -w backend",
+    "docs:frontend": "npm run docs -w frontend",
+    "docs": "concurrently \"npm run docs:backend\" \"npm run docs:frontend\"",
+    "start": "concurrently \"npm run start -w backend\""
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -37,8 +41,7 @@
   },
   "dependencies": {
     "groq-sdk": "^0.9.1",
-    "nodemailer": "^6.10.0",
-    "swagger-jsdoc": "^6.2.8",
+        "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   }
 }

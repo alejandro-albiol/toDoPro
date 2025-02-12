@@ -10,7 +10,7 @@
     "categorizeByGroup": true,
     "categoryOrder": ["Services", "Controllers", "Models", "*"],
     "navigationLinks": {
-        "GitHub": "https://github.com/yourusername/todopro",
+        "GitHub": "https://github.com/alejandro-albiol/todopro",
         "API Docs": "/api-docs"
     },
     "skipErrorChecking": true,

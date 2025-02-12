@@ -7,7 +7,6 @@ import { InvalidTokenException } from '../exceptions/invalid-token.exception.js'
 import { InvalidCredentialsException } from '../exceptions/invalid-credentials.exception.js';
 import { EmailAlreadyExistsException } from '../../users/exceptions/email-already-exists.exception.js';
 import { UsernameAlreadyExistsException } from '../../users/exceptions/username-already-exists.exception.js';
-import { UserCreationFailedException } from '../../users/exceptions/user-creation-failed.exception.js';
 
 export class AuthController implements IAuthController {
     constructor(private readonly authService: AuthService) {}
@@ -17,6 +16,7 @@ export class AuthController implements IAuthController {
             await this.authService.register(req.body);
             ApiResponse.created(res, { message: 'User registered successfully' });
         } catch (error) {
+            console.log('Error:', error);
             if (error instanceof EmailAlreadyExistsException || 
                 error instanceof UsernameAlreadyExistsException) {
                 ApiResponse.badRequest(res, error.message, error.errorCode);
