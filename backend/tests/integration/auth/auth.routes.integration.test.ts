@@ -66,7 +66,7 @@ describe('Auth Routes', () => {
         .post('/auth/register')
         .send(newUser);
 
-      console.log('POST /auth/register (existing email) response:', response.body, response.status, ApiResponse);
+      console.log('POST /auth/register (existing email) response:', response.body, response.status);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('message', 'Email already exists');
