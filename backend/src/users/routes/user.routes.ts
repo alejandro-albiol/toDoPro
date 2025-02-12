@@ -12,6 +12,11 @@ import { IUserController } from '../controller/i-user.controller.js';
  */
 export const configureUserRoutes = (controller: IUserController): Router => {
     const router = Router();
+
+    router.post('/',
+        UserValidator.validateCreate(),
+        (req, res) => controller.create(req, res)
+    );
     
     router.get('/:id',
         IdValidator.validate('id'),

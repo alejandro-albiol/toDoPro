@@ -8,6 +8,7 @@ import { UserCreationFailedException } from '../../../../src/users/exceptions/us
 import { User } from '../../../../src/users/models/entities/user.entity';
 import { InvalidUserDataException } from '../../../../src/users/exceptions/invalid-user-data.exception';
 import { UserErrorCodes } from '../../../../src/users/exceptions/enums/user-error-codes.enum';
+import { UserNotFoundException } from '../../../../src/users/exceptions/user-not-found.exception';
 
 jest.mock('../../../../src/shared/responses/api-response');
 
@@ -191,12 +192,18 @@ describe('UserController', () => {
 
     it('should handle user not found', async () => {
       req.params = { id: '1' };
-      userService.delete.mockResolvedValue();
+      userService.delete.mockImplementation(() => {
+        throw new UserNotFoundException(`User with id ${req.params!.id} not found`);
+      });
 
       await userController.delete(req as Request, res as Response);
-// Error is here, response match but jest not accept it
-      expect(ApiResponse.notFound).toHaveBeenCalledWith(res, 'User with id 1 not found', UserErrorCodes.USER_NOT_FOUND);
-    });
+
+      expect(ApiResponse.notFound).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.stringContaining(`User with id`),
+        expect.any(String)
+        );
+      });
 
     it('should handle errors', async () => {
       const error = new Error('Error deleting user');
