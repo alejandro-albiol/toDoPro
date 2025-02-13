@@ -3,8 +3,6 @@ import { TaskController } from '../../../../src/tasks/controller/task.controller
 import { ITaskService } from '../../../../src/tasks/service/i-task.service';
 import { CreateTaskDTO } from '../../../../src/tasks/models/dtos/create-task.dto';
 import { UpdateTaskDTO } from '../../../../src/tasks/models/dtos/update-task.dto';
-import { TaskException } from '../../../../src/tasks/exceptions/base-task.exception';
-import { TaskNotFoundException } from '../../../../src/tasks/exceptions/task-not-found.exception';
 import { ApiResponse } from '../../../../src/shared/responses/api-response';
 
 jest.mock('../../../../src/shared/responses/api-response');
