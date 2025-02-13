@@ -24,7 +24,7 @@ export interface ITaskRepository extends IBaseRepository<Task, CreateTaskDTO, Up
    * @param {string} userId - The ID of the user whose tasks are to be retrieved.
    * @returns {Promise<Task[]>} A promise that resolves to an array of tasks.
    */
-  findAllByUserId(userId: string): Promise<Task[]>;
+  findAllByUserId(userId: string): Promise<Task[] | null>;
 
   /**
    * Finds all completed tasks associated with a specific user.
@@ -32,5 +32,5 @@ export interface ITaskRepository extends IBaseRepository<Task, CreateTaskDTO, Up
    * @param {string} userId - The ID of the user whose completed tasks are to be retrieved.
    * @returns {Promise<Task[]>} A promise that resolves to an array of completed tasks.
    */
-  findAllCompletedByUserId(userId: string): Promise<Task[]>;
+  findAllCompletedByUserId(userId: string): Promise<Task[] | null>;
 }

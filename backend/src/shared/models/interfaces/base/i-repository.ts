@@ -19,7 +19,7 @@ export interface IBaseRepository<T, CreateDTO, UpdateDTO> {
    *
    * @returns A promise that resolves to an array of entities or an empty array if none are found.
    */
-  findAll(): Promise<T[] | []>;
+  findAll(): Promise<T[] | null>;
 
   /**
    * Creates a new entity.

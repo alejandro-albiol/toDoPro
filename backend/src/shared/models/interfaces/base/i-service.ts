@@ -20,7 +20,7 @@ export interface IBaseService<T, CreateDTO, UpdateDTO = Partial<T>> {
    *
    * @returns A promise that resolves to an array of entities.
    */
-  findAll(): Promise<T[] | []>;
+  findAll(): Promise<T[] | null>;
 
   /**
    * Creates a new entity.

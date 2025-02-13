@@ -1,17 +1,15 @@
-import { UserService } from '../../../src/users/service/user.service';
-import { IUserRepository } from '../../../src/users/repository/i-user.repository';
-import { CreateUserDTO } from '../../../src/users/models/dtos/create-user.dto';
-import { UpdateUserDTO } from '../../../src/users/models/dtos/update-user.dto';
-import { User } from '../../../src/users/models/entities/user.entity';
-import { UniqueViolationException } from '../../../src/shared/exceptions/database/unique-violation.exception';
-import { UsernameAlreadyExistsException } from '../../../src/users/exceptions/username-already-exists.exception';
-import { EmailAlreadyExistsException } from '../../../src/users/exceptions/email-already-exists.exception';
-import { UserCreationFailedException } from '../../../src/users/exceptions/user-creation-failed.exception';
-import { InvalidUserDataException } from '../../../src/users/exceptions/invalid-user-data.exception';
-import { UserNotFoundException } from '../../../src/users/exceptions/user-not-found.exception';
-import { HashService } from '../../../src/shared/services/hash.service';
-
-jest.mock('../../../src/shared/services/hash.service');
+import { UserService } from '../../../../src/users/service/user.service';
+import { IUserRepository } from '../../../../src/users/repository/i-user.repository';
+import { CreateUserDTO } from '../../../../src/users/models/dtos/create-user.dto';
+import { UpdateUserDTO } from '../../../../src/users/models/dtos/update-user.dto';
+import { User } from '../../../../src/users/models/entities/user.entity';
+import { UniqueViolationException } from '../../../../src/shared/exceptions/database/unique-violation.exception';
+import { UsernameAlreadyExistsException } from '../../../../src/users/exceptions/username-already-exists.exception';
+import { EmailAlreadyExistsException } from '../../../../src/users/exceptions/email-already-exists.exception';
+import { UserCreationFailedException } from '../../../../src/users/exceptions/user-creation-failed.exception';
+import { InvalidUserDataException } from '../../../../src/users/exceptions/invalid-user-data.exception';
+import { UserNotFoundException } from '../../../../src/users/exceptions/user-not-found.exception';
+import { HashService } from '../../../../src/shared/services/hash.service';
 
 describe('UserService', () => {
   let userService: UserService;

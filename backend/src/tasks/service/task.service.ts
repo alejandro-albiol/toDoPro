@@ -3,83 +3,102 @@ import { ITaskService } from "./i-task.service.js";
 import { Task } from "../models/entities/task.entity.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
-import { UpdatedTaskDTO } from "../models/dtos/updated-task.dto.js";
-import { DataBaseException } from "../../shared/database/exceptions/database.exception.js";
-import { PostgresErrorCode } from "../../shared/exceptions/database/enum/db-error-code.enum.js";
 import { TaskNotFoundException } from "../exceptions/task-not-found.exception.js";
 import { InvalidTaskDataException } from "../exceptions/invalid-task-data.exception.js";
+import { TaskCreationFailedException } from "../exceptions/task-creation-failed.exception.js";
 
 export class TaskService implements ITaskService {
-    private taskRepository: ITaskRepository;
+    constructor(private taskRepository: ITaskRepository) {}
 
-    constructor(taskRepository: ITaskRepository) {
-        this.taskRepository = taskRepository;
-    }
-
-    async create(newTask: CreateTaskDTO): Promise<Task> {
+    async create(dto: CreateTaskDTO): Promise<Partial<Task>> {
         try {
-            return this.taskRepository.create(newTask);
-        } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.INVALID_INPUT) {
+            return await this.taskRepository.create(dto);
+        } catch (error) {
+            if (error instanceof InvalidTaskDataException) {
                 throw new InvalidTaskDataException('Invalid task format');
             }
-            throw new DataBaseException('Error creating task', PostgresErrorCode.UNKNOWN_ERROR);
+            throw new TaskCreationFailedException('Error creating task: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 
-    async findAllByUserId(userId: string): Promise<Task[]> {
+    async findAll(): Promise<Task[] | null> {
         try {
-            return this.taskRepository.findAllByUserId(userId);
-        } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
-                throw new TaskNotFoundException('No tasks found');
+            return await this.taskRepository.findAll();
+        } catch (error) {
+            throw new InvalidTaskDataException('Error finding tasks: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        }
+    }
+
+    async findAllByUserId(userId: string): Promise<Task[] | null> {
+        try {
+            const tasks = await this.taskRepository.findAllByUserId(userId);
+            return tasks ? tasks : null;
+        } catch (error) {
+            if (error instanceof TaskNotFoundException) {
+                return null;
             }
-            throw new DataBaseException('Error finding tasks', PostgresErrorCode.UNKNOWN_ERROR);
+            throw new InvalidTaskDataException('Error finding tasks: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }   
 
-    async findById(id: string): Promise<Task | null> {
+    async findAllCompletedByUserId(userId: string): Promise<Task[] | null> {
         try {
-            return this.taskRepository.findById(id);
-        } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
-                throw new TaskNotFoundException('No tasks found');
+            const tasks = await this.taskRepository.findAllCompletedByUserId(userId);
+            return tasks ? tasks : null;
+        } catch (error) {
+            if (error instanceof TaskNotFoundException) {
+                return null;
             }
-            throw new DataBaseException('Error finding task', PostgresErrorCode.UNKNOWN_ERROR);
+            throw new InvalidTaskDataException('Error finding completed tasks: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 
-    async update(updatedTask: UpdateTaskDTO): Promise<UpdatedTaskDTO> {
+    async findById(id: string): Promise<Partial<Task> | null> {
         try {
-            return this.taskRepository.update(updatedTask);
-        } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
+            const task = await this.taskRepository.findById(id);
+            return task ? task : null;
+        } catch (error) {
+            if (error instanceof TaskNotFoundException) {
+                return null;
+            }
+            throw new InvalidTaskDataException('Error finding task: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        }
+    }
+
+    async update(updatedTask: UpdateTaskDTO): Promise<Partial<Task>> {
+        try {
+            const task = await this.taskRepository.findById(updatedTask.id);
+            if (!task) {
                 throw new TaskNotFoundException(updatedTask.id);
             }
-            throw new DataBaseException('Error updating task', PostgresErrorCode.UNKNOWN_ERROR);
+            const updatedTaskResult = await this.taskRepository.update(updatedTask);
+            return updatedTaskResult;
+        } catch (error) {
+            if(error instanceof TaskNotFoundException){
+                throw error
+            }
+            throw new InvalidTaskDataException('Error updating task: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }
 
-    async toggleCompleted(id: string): Promise<Task> {
+    async toggleCompleted(id: string): Promise<void> {
         try {
-            return this.taskRepository.toggleCompleted(id);
-        } catch (error: any) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
-                throw new TaskNotFoundException(id);
+            await this.taskRepository.toggleCompleted(id);
+        } catch (error) {
+            if (error instanceof TaskNotFoundException) {
+                throw error;
             }
-            throw new DataBaseException('Error toggling task', PostgresErrorCode.UNKNOWN_ERROR);
+            throw new InvalidTaskDataException('Error toggling task completion: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
     }   
 
-    async delete(id: string): Promise<null> {
+    async delete(id: string): Promise<void> {
         try {
             await this.taskRepository.delete(id);
-            return null;
         } catch (error) {
-            if(error instanceof DataBaseException && error.code === PostgresErrorCode.NOT_FOUND) {
+            if (error instanceof TaskNotFoundException) {
                 throw new TaskNotFoundException(id);
             }
-            throw new DataBaseException('Error deleting task', PostgresErrorCode.UNKNOWN_ERROR);
-        }
+            throw new InvalidTaskDataException('Error deleting task: ' + (error instanceof Error ? error.message : 'Unknown error'));}
     }
 }

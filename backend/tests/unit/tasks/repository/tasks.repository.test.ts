@@ -100,7 +100,7 @@ describe("TasksRepository", () => {
   test("should return empty array when no tasks are found by user id", async () => {
     mockPool.query.mockResolvedValue({ rows: [] });
     const result = await tasksRepository.findAllByUserId("nonexistent-user-id");
-    expect(result).toEqual([]);
+    expect(result).toEqual(null);
   });
 
   test("should update task title", async () => {

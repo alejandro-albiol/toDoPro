@@ -4,7 +4,7 @@ import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
 import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';
 
 export interface ITaskService extends IBaseService<Task, CreateTaskDTO, UpdateTaskDTO> {
-  findAllByUserId(userId: string): Promise<Task[]>;
+  findAllByUserId(userId: string): Promise<Task[] | null>;
   toggleCompleted(id: string): Promise<void>;
-  findAllCompletedByUserId(userId: string): Promise<Task[]>;
+  findAllCompletedByUserId(userId: string): Promise<Task[] | null>;
 }

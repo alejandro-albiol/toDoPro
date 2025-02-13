@@ -40,7 +40,7 @@ export class TaskRepository implements ITaskRepository {
     throw error;
   }
 
-  async create(task: CreateTaskDTO): Promise<Task> {
+  async create(task: CreateTaskDTO): Promise<Partial<Task>> {
     const query = `
       INSERT INTO tasks (title, description, user_id)
       VALUES ($1, $2, $3)
@@ -49,7 +49,7 @@ export class TaskRepository implements ITaskRepository {
 
     try {
       const result = await this.pool.query(query, [task.title, task.description, task.user_id]);
-      return result.rows[0] as Task;
+      return result.rows[0] as Partial<Task>;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -68,12 +68,12 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async findAllByUserId(userId: string): Promise<Task[]> {
+  async findAllByUserId(userId: string): Promise<Task[] | null> {
     const query = `SELECT * FROM tasks WHERE user_id = $1`;
 
     try {
       const result = await this.pool.query(query, [userId]);
-      return result.rows as Task[];
+      return result.rows.length ? result.rows as Task[] : null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;

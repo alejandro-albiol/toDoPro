@@ -34,10 +34,10 @@ export class UserService implements IUserService {
         }
     }
 
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<User[] | null> {
         try {
             const users = await this.userRepository.findAll();
-            return users.map(({ password, ...user }) => user) as User[];
+            return users ? users.map(({ password, ...user }) => user) as User[] : null;
         } catch (error) {
             throw new InvalidUserDataException('Failed to fetch users: ' + (error instanceof Error ? error.message : 'Unknown error'));
         }
