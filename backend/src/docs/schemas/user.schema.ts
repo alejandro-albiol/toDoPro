@@ -7,15 +7,22 @@ export const userSchema = {
                 example: '55',
                 description: 'Unique identifier'
             },
-            username: { type: 'string' },
-            email: { type: 'string' },
-            password: { type: 'string' },
-            creation_date: { 
+            username: { 
                 type: 'string',
-                format: 'date-time'
+                example: 'john_doe',
+                description: 'User username' 
+            },
+            email: { 
+                type: 'string',
+                example: 'john@example.com',
+                description: 'User email address'
+            },
+            password: { 
+                type: 'string',
+                example: 'Password123!',
+                description: "User password" 
             }
-        },
-        required: ['id', 'username', 'email', 'password']
+        }
     },
     CreateUserDTO: {
         type: 'object',
@@ -49,14 +56,5 @@ export const userSchema = {
             email: { type: 'string' }
         },
         required: ['id']
-    },
-    UpdatedUserDTO: {
-        type: 'object',
-        properties: {
-            id: { type: 'string' },
-            username: { type: 'string' },
-            email: { type: 'string' }
-        },
-        required: ['id', 'username', 'email']
     }
 }

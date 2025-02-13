@@ -33,10 +33,34 @@ describe("TasksRepository", () => {
     expect(mockPool.query).toHaveBeenCalledWith(expect.any(String), [taskId]);
   });
 
+  test("find all completed tasks by user id", async () => {
+    const userId = "1";
+    const dbResponse = { rows: [
+      { id: "1", title: "TaskTitle", description: "wojdbfoqjebf", completed: true, user_id: "1", creation_date: new Date(), completed_at: new Date() },
+      { id: "2", title: "TaskTitle", description: "wojdbfoqjebf", completed: true, user_id: "1", creation_date: new Date(), completed_at: new Date() }
+    ]};
+    mockPool.query.mockResolvedValue(dbResponse);
+
+    const result = await tasksRepository.findAllCompletedByUserId(userId);
+    expect(result).toEqual(dbResponse.rows);
+    expect(mockPool.query).toHaveBeenCalledWith(expect.any(String), [userId]);
+  });
+
   test("should return null when task is not found by ID", async () => {
     mockPool.query.mockResolvedValue({ rows: [] });
     const result = await tasksRepository.findById("99");
     expect(result).toBeNull();
+  });
+
+  test("should toggle task completion status", async () => {
+    const taskId = "1";
+    const dbResponse = { id: "1", title: "TaskTitle", description: "wojdbfoqjebf", completed: true, user_id: "1", creation_date: new Date(), completed_at: new Date() };
+    mockPool.query.mockResolvedValue(dbResponse);
+
+
+    const result = await tasksRepository.toggleCompleted(taskId);
+    expect(result).toEqual(void 0);
+    expect(mockPool.query).toHaveBeenCalledWith(expect.any(String), [taskId]);
   });
 
   test("should delete a task", async () => {

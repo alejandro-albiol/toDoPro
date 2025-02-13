@@ -80,6 +80,18 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
+  async findAllCompletedByUserId(userId: string): Promise<Task[]> {
+    const query = `SELECT * FROM tasks WHERE user_id = $1 AND completed = true`;
+
+    try {
+      const result = await this.pool.query(query, [userId]);
+      return result.rows as Task[];
+    } catch (error) {
+      this.handleQueryError(error);
+      throw error;
+    }
+  }
+
   async findById(id: string): Promise<Task | null> {
     const query = `SELECT * FROM tasks WHERE id = $1`;
 
@@ -130,15 +142,14 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async toggleCompleted(id: string): Promise<Task> {
+  async toggleCompleted(id: string): Promise<void> {
     const query = `UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *`;
 
     try {
       const result = await this.pool.query(query, [id]);
-      if (result.rows.length === 0) {
+      if (result.rowCount === 0) {
         throw new NotFoundException(`Task not found with id: ${id}`);
       }
-      return result.rows[0] as Task;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
