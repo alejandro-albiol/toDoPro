@@ -1,11 +1,11 @@
 import request from 'supertest';
 import express from 'express';
-import { UserRepository } from '../../../../src/users/repository/user.repository';
-import { UserService } from '../../../../src/users/service/user.service';
-import { UserController } from '../../../../src/users/controller/user.controller';
-import { configureUserRoutes } from '../../../../src/users/routes/user.routes';
-import { ApiResponse } from '../../../../src/shared/responses/api-response';
-import { CreateUserDTO } from '../../../../src/users/models/dtos/create-user.dto';
+import { UserRepository } from '../../../src/users/repository/user.repository';
+import { UserService } from '../../../src/users/service/user.service';
+import { UserController } from '../../../src/users/controller/user.controller';
+import { configureUserRoutes } from '../../../src/users/routes/user.routes';
+import { ApiResponse } from '../../../src/shared/responses/api-response';
+import { CreateUserDTO } from '../../../src/users/models/dtos/create-user.dto';
 
 describe('User Routes', () => {
   let app: express.Application;

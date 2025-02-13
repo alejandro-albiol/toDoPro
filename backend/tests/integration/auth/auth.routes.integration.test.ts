@@ -50,8 +50,6 @@ describe('Auth Routes', () => {
         .post('/auth/register')
         .send(newUser);
 
-      console.log('POST /auth/register response:', response.body);
-
       expect(response.status).toBe(201);
       expect(response.body).toEqual({ message: 'User registered successfully' });
     });
@@ -59,17 +57,15 @@ describe('Auth Routes', () => {
     it('should return 400 for existing email', async () => {
       const newUser = { username: 'testuser', email: 'test@example.com', password: 'ValidPassword123' };
       authService.register.mockImplementation(() => {
-        throw new Error('Email already exists');
+        throw new EmailAlreadyExistsException('test@example.com');
       });
 
       const response = await request(app)
         .post('/auth/register')
         .send(newUser);
 
-      console.log('POST /auth/register (existing email) response:', response.body, response.status);
-
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'Email already exists');
+      expect(response.body).toHaveProperty('errorCode', 'U6');
     });
   });
 
@@ -82,13 +78,8 @@ describe('Auth Routes', () => {
         .post('/auth/login')
         .send(credentials);
 
-      console.log('POST /auth/login response:', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ token: 'fake-jwt-token' });
-
-      // Log the token for further use
-      console.log('Token:', response.body.token);
     });
 
     it('should return 400 for invalid credentials', async () => {
@@ -100,8 +91,6 @@ describe('Auth Routes', () => {
       const response = await request(app)
         .post('/auth/login')
         .send(credentials);
-
-      console.log('POST /auth/login (invalid credentials) response:', response.body);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('message', 'Validation failed');
@@ -118,8 +107,6 @@ describe('Auth Routes', () => {
         .set('Authorization', 'Bearer fake-jwt-token')
         .send(changePasswordDto);
 
-      console.log('POST /auth/password/change response:', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'Password changed successfully' });
     });
@@ -133,8 +120,6 @@ describe('Auth Routes', () => {
       const response = await request(app)
         .post('/auth/password/change')
         .send(changePasswordDto);
-
-      console.log('POST /auth/password/change (invalid token) response:', response.body);
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message', 'Invalid token');
