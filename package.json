@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "npm run dev -w backend",
     "test": "concurrently \"npm run test -w frontend\" \"npm run test -w backend\"",
-    "test:fast": "npm run test:unit -w backend",
+    "test:fast": "npm run test:integration -w backend",
     "test:backend": "npm run test -w backend",
     "test:frontend": "npm run test -w frontend",
     "lint": "concurrently \"npm run lint -w frontend\" \"npm run lint -w backend\"",

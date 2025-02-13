@@ -115,6 +115,7 @@ describe('Auth Routes', () => {
 
       const response = await request(app)
         .post('/auth/password/change')
+        .set('Authorization', 'Bearer fake-jwt-token')
         .send(changePasswordDto);
 
       console.log('POST /auth/password/change response:', response.body);
