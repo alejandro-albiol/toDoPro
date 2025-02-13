@@ -1,5 +1,5 @@
 import express from 'express';
-import { TaskController } from '../tasks/controller/task-controller.js';
+import { TaskController } from '../tasks/controller/task.controller.js';
 import { TaskValidator } from '../middlewares/validators/task-validator.js';
 import { IdValidator } from '../middlewares/validators/id-validator.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
