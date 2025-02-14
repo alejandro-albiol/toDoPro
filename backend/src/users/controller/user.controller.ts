@@ -17,7 +17,11 @@ export class UserController implements IUserController {
             const newUser = await this.userService.create(dto);
             ApiResponse.created(res, newUser);
         } catch (error) {
-            this.handleError(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 
@@ -26,7 +30,11 @@ export class UserController implements IUserController {
             const users = await this.userService.findAll();
             ApiResponse.success(res, users);
         } catch (error) {
-            this.handleError(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 
@@ -39,7 +47,11 @@ export class UserController implements IUserController {
                 ApiResponse.notFound(res, `User with id ${req.params.id} not found`, UserErrorCodes.USER_NOT_FOUND);
             }
         } catch (error) {
-            this.handleError(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 
@@ -52,17 +64,25 @@ export class UserController implements IUserController {
             const updatedUser = await this.userService.update(updateDto);
             ApiResponse.success(res, updatedUser);
         } catch (error) {
-            this.handleError(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 
     async updatePassword(req: Request, res: Response): Promise<void> {
         try {
             const { password } = req.body;
-            const result = await this.userService.updatePassword(req.params.id, password);
+            await this.userService.updatePassword(req.params.id, password);
             ApiResponse.success(res, { message: 'Password updated successfully' });
         } catch (error) {
-            this.handleError(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 
@@ -71,15 +91,11 @@ export class UserController implements IUserController {
             await this.userService.delete(req.params.id);
             ApiResponse.success(res, { message: 'User deleted successfully' });
         } catch (error) {
-            this.handleError(res, error);
-        }
-    }
-
-    private handleError(res: Response, error: unknown): void {
-        if (error instanceof UserException) {
-            ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-        } else {
-            ApiResponse.error(res, error);
+            if (error instanceof UserException) {
+                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
+            } else {
+                ApiResponse.error(res, error);
+            }
         }
     }
 }
