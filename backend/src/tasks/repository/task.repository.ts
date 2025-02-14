@@ -1,4 +1,4 @@
-import { DatabaseError } from "pg";
+import { DatabaseError } from "pg-protocol";
 import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
 import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
 import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";

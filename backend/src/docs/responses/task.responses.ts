@@ -100,10 +100,10 @@ export const taskResponses = {
           message: 'Task creation failed',
           data: null,
           errors: [
-            { code: 'T5', message: 'Task creation failed' }
+            { code: 'T6', message: 'Task creation failed' }
           ]
         }
       }
     }
   }
-}; 
+};

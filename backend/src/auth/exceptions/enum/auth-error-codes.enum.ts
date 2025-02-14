@@ -5,5 +5,4 @@ export enum AuthErrorCode {
     UNAUTHORIZED = 'AUTH4',
     INVALID_JWT_SECRET = 'AUTH5',
     UNKNOWN_ERROR = 'AUTH6',
-    INVALID_EMAIL_CONFIG = 'AUTH7'
 }

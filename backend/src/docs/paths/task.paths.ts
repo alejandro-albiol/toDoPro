@@ -3,6 +3,7 @@ export const TaskPaths = {
     post: {
       tags: ['Tasks'],
       summary: 'Create a new task',
+      security: [{ BearerAuth: [] }],
       requestBody: {
         required: true,
         content: {
@@ -14,29 +15,28 @@ export const TaskPaths = {
         }
       },
       responses: {
-        201: {
-          description: 'Task created successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
-          }
-        },
-        400: {
-          $ref: '#/components/responses/BadRequest'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
-        }
+        201: { $ref: '#/components/responses/TaskCreated' },
+        400: { $ref: '#/components/responses/InvalidTaskData' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' }
+      }
+    },
+    get: {
+      tags: ['Tasks'],
+      summary: 'Get all tasks',
+      security: [{ BearerAuth: [] }],
+      responses: {
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   },
   '/tasks/user/{userId}': {
     get: {
       tags: ['Tasks'],
-      summary: 'Get all tasks for a specific user',
+      summary: 'Get tasks by user ID',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           in: 'path',
@@ -48,22 +48,33 @@ export const TaskPaths = {
         }
       ],
       responses: {
-        200: {
-          description: 'Tasks found successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
+      }
+    }
+  },
+  '/tasks/user/{userId}/completed': {
+    get: {
+      tags: ['Tasks'],
+      summary: 'Get completed tasks by user ID',
+      security: [{ BearerAuth: [] }],
+      parameters: [
+        {
+          in: 'path',
+          name: 'userId',
+          required: true,
+          schema: {
+            type: 'string'
           }
-        },
-        404: {
-          $ref: '#/components/responses/TaskNotFound'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
         }
+      ],
+      responses: {
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   },
@@ -71,6 +82,7 @@ export const TaskPaths = {
     get: {
       tags: ['Tasks'],
       summary: 'Get task by ID',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           in: 'path',
@@ -82,27 +94,16 @@ export const TaskPaths = {
         }
       ],
       responses: {
-        200: {
-          description: 'Task found successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
-          }
-        },
-        404: {
-          $ref: '#/components/responses/TaskNotFound'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
-        }
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     },
     put: {
       tags: ['Tasks'],
       summary: 'Update a task',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           in: 'path',
@@ -124,27 +125,16 @@ export const TaskPaths = {
         }
       },
       responses: {
-        200: {
-          description: 'Task updated successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
-          }
-        },
-        404: {
-          $ref: '#/components/responses/TaskNotFound'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
-        }
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     },
     delete: {
       tags: ['Tasks'],
       summary: 'Delete a task',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           in: 'path',
@@ -156,22 +146,12 @@ export const TaskPaths = {
         }
       ],
       responses: {
-        200: {
-          description: 'Task deleted successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
-          }
+        204: {
+          description: 'Task deleted successfully'
         },
-        404: {
-          $ref: '#/components/responses/TaskNotFound'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
-        }
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   },
@@ -179,6 +159,7 @@ export const TaskPaths = {
     put: {
       tags: ['Tasks'],
       summary: 'Toggle task completion status',
+      security: [{ BearerAuth: [] }],
       parameters: [
         {
           in: 'path',
@@ -190,23 +171,11 @@ export const TaskPaths = {
         }
       ],
       responses: {
-        200: {
-          description: 'Task completed status toggled successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/ApiResponse'
-              }
-            }
-          }
-        },
-        404: {
-          $ref: '#/components/responses/TaskNotFound'
-        },
-        500: {
-          $ref: '#/components/responses/InternalServerError'
-        }
+        200: { $ref: '#/components/responses/TaskResponse' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/TaskNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   }
-}; 
+};

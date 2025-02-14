@@ -1,26 +1,4 @@
 export const UserPaths = {
-  '/users': {
-    post: {
-      tags: ['Users'],
-      summary: 'Create a new user',
-      requestBody: {
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/CreateUserDTO'
-            }
-          }
-        }
-      },
-      responses: {
-        201: { $ref: '#/components/responses/UserCreated' },
-        400: { $ref: '#/components/responses/InvalidUserData' },
-        409: { $ref: '#/components/responses/UserConflict' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
-  },
   '/users/{id}': {
     get: {
       tags: ['Users'],
@@ -35,7 +13,8 @@ export const UserPaths = {
       ],
       responses: {
         200: { $ref: '#/components/responses/UserResponse' },
-        404: { $ref: '#/components/responses/UserNotFound' }
+        404: { $ref: '#/components/responses/UserNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     },
     put: {
@@ -49,9 +28,20 @@ export const UserPaths = {
           schema: { type: 'string' }
         }
       ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/UpdateUserDTO'
+            }
+          }
+        }
+      },
       responses: {
         200: { $ref: '#/components/responses/UserResponse' },
-        404: { $ref: '#/components/responses/UserNotFound' }
+        404: { $ref: '#/components/responses/UserNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     },
     delete: {
@@ -69,8 +59,9 @@ export const UserPaths = {
         204: {
           description: 'User deleted successfully'
         },
-        404: { $ref: '#/components/responses/UserNotFound' }
+        404: { $ref: '#/components/responses/UserNotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' }
       }
     }
   }
-}; 
+};
