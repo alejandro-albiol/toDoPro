@@ -52,8 +52,6 @@ describe('User Routes', () => {
         .post('/users')
         .send(newUser);
 
-      console.log('POST /users response:', response.body);
-
       expect(response.status).toBe(201);
       expect(response.body).toEqual({ id: '1', ...newUser });
     });
@@ -63,8 +61,6 @@ describe('User Routes', () => {
       const response = await request(app)
         .post('/users')
         .send(newUser);
-
-      console.log('POST /users (missing password) response:', response.body);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('status', 'error');
@@ -79,16 +75,12 @@ describe('User Routes', () => {
 
       const response = await request(app).get('/users/1');
 
-      console.log('GET /users/1 response:', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual(user);
     });
 
     it('should return 400 for invalid ID', async () => {
       const response = await request(app).get('/users/invalid-id');
-
-      console.log('GET /users/invalid-id response:', response.body);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('status', 'error');
@@ -106,18 +98,34 @@ describe('User Routes', () => {
         .put('/users/1')
         .send({ username: 'updateduser', email: 'updated@example.com' });
 
-      console.log('PUT /users/1 response:', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual(updatedUser);
+    });
+
+    it('should return 400 for invalid username', async () => {
+      const response = await request(app)
+        .put('/users/1')
+        .send({ username: ' ', email: 'updated@example.com' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('status', 'error');
+      expect(response.body).toHaveProperty('message', 'Validation failed');
+    });
+
+    it('should return 404 for non existing user', async () => {
+      userRepository.findById.mockResolvedValue(null);
+
+      const response = await request(app)
+      .put('/users/1')
+      .send({ username: 'updateduser', email: 'updated@example.com' });
+
+      expect(response.status).toBe(404);
     });
 
     it('should return 400 for invalid ID', async () => {
       const response = await request(app)
         .put('/users/invalid-id')
         .send({ username: 'updateduser', email: 'updated@example.com' });
-
-      console.log('PUT /users/invalid-id response:', response.body);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('status', 'error');
@@ -132,16 +140,12 @@ describe('User Routes', () => {
 
       const response = await request(app).delete('/users/1');
 
-      console.log('DELETE /users/1 response:', response.body);
-
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'User deleted successfully' });
     });
 
     it('should return 400 for invalid ID', async () => {
       const response = await request(app).delete('/users/invalid-id');
-
-      console.log('DELETE /users/invalid-id response:', response.body);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('status', 'error');

@@ -7,7 +7,6 @@ import { TaskValidator } from '../../middlewares/validators/task-validator.js';
 /**
  * Configures and returns a new Router instance with task routes
  * Handles only task resource management operations for regular users
- * Authentication operations are handled by the auth module
  * @param controller Implementation of ITaskController to handle route logic
  * @returns Configured Express Router instance
  */

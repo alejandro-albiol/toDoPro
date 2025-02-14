@@ -132,7 +132,6 @@ export class UserRepository implements IUserRepository {
 
     try {
       const result = await this.pool.query(query, [id, password]);
-      console.log(result.rows);
       if (result.rowCount === 0) {
         throw new NotFoundException(`User not found with id: ${id}`);
       }

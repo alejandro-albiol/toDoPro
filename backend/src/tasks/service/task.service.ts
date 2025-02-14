@@ -93,12 +93,18 @@ export class TaskService implements ITaskService {
     }   
 
     async delete(id: string): Promise<void> {
+        const task = await this.findById(id);
+        if (!task) {
+            throw new TaskNotFoundException(id);
+        }
+
         try {
             await this.taskRepository.delete(id);
         } catch (error) {
             if (error instanceof TaskNotFoundException) {
                 throw new TaskNotFoundException(id);
             }
-            throw new InvalidTaskDataException('Error deleting task: ' + (error instanceof Error ? error.message : 'Unknown error'));}
+            throw new InvalidTaskDataException('Error deleting task: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        }
     }
 }

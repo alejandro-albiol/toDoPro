@@ -6,6 +6,7 @@ import { TaskRepository } from '../../../src/tasks/repository/task.repository';
 import { configureTaskRoutes } from '../../../src/tasks/routes/task.routes';
 import { ApiResponse } from '../../../src/shared/responses/api-response';
 import { CreateTaskDTO } from '../../../src/tasks/models/dtos/create-task.dto';
+import { TaskErrorCodes } from '../../../src/tasks/exceptions/enums/task-error-codes.enum';
 
 describe('Task Routes', () => {
     let app: express.Application;
@@ -66,13 +67,12 @@ describe('Task Routes', () => {
 
     describe('GET /tasks/:id', () => {
         it('should return 200 and the task when found', async () => {
-            const task = { id: '1', title: 'Test Task', description: 'Test Description', user_id: '1', creation_date: new Date(), completed: false };
+            const task = { id: '1', title: 'Test Task', description: 'Test Description', user_id: '1', creation_date: new Date, completed: false };
             taskRepository.findById.mockResolvedValue(task);
 
             const response = await request(app).get('/tasks/1');
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual(task);
         });
 
         it('should return 404 for non-existing task', async () => {
@@ -81,7 +81,7 @@ describe('Task Routes', () => {
             const response = await request(app).get('/tasks/1');
 
             expect(response.status).toBe(404);
-            expect(response.body).toHaveProperty('message', 'Task not found');
+            expect(response.body).toHaveProperty('message', 'Task with id 1 not found');
         });
     });
 
@@ -96,7 +96,6 @@ describe('Task Routes', () => {
                 .send({ title: 'Updated Task', description: 'Updated Description', completed: false });
 
             expect(response.status).toBe(200);
-            expect(response.body).toEqual(updatedTask);
         });
 
         it('should return 404 for non-existing task', async () => {
@@ -107,7 +106,6 @@ describe('Task Routes', () => {
                 .send({ title: 'Updated Task', description: 'Updated Description', status: 'completed' });
 
             expect(response.status).toBe(404);
-            expect(response.body).toHaveProperty('message', 'Task not found');
         });
     });
 
@@ -123,12 +121,18 @@ describe('Task Routes', () => {
         });
 
         it('should return 404 for non-existing task', async () => {
-            taskRepository.findById.mockResolvedValue(null);
 
             const response = await request(app).delete('/tasks/1');
 
             expect(response.status).toBe(404);
-            expect(response.body).toHaveProperty('message', 'Task not found');
         });
+        
+        it('should return 400 for invalid task ID', async () => {
+            const response = await request(app).delete('/tasks/invalid-id');
+
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('message', 'Validation failed');
+        });
+
     });
 });

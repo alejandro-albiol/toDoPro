@@ -60,7 +60,6 @@ export class UserController implements IUserController {
         try {
             const { password } = req.body;
             const result = await this.userService.updatePassword(req.params.id, password);
-            console.log(result)
             ApiResponse.success(res, { message: 'Password updated successfully' });
         } catch (error) {
             this.handleError(res, error);
