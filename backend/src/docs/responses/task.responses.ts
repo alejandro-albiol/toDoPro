@@ -105,5 +105,25 @@ export const taskResponses = {
         }
       }
     }
-  }
+  },
+  TaskResponse: {
+    description: 'Response for a singular task',
+    content: {
+      'application/json': {
+        schema: { $ref: '#/components/schemas/ApiResponse' },
+        example: {
+          status: 'success',
+          message: 'Task retrieved successfully',
+          data: {
+            id: '123',
+            title: 'Example task',
+            description: 'Task description',
+            user_id: '456',
+            completed: false,
+            creation_date: '2024-01-24T22:10:44.041Z'
+          }
+        }
+      }
+    }
+  },
 };

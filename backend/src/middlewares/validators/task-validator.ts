@@ -25,16 +25,6 @@ export class TaskValidator extends BaseValidator {
                     };
                 }
                 return null;
-            },
-            (req: Request) => {
-                const { user_id } = req.body;
-                if (!this.isValidId(user_id)) {
-                    return {
-                        code: TaskErrorCodes.INVALID_USER_ID,
-                        message: 'Invalid user ID'
-                    };
-                }
-                return null;
             }
         ]);
     }

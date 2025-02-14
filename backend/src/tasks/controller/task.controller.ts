@@ -11,8 +11,11 @@ export class TaskController implements ITaskController {
     constructor(private readonly taskService: ITaskService) {}
 
     async create(req: Request, res: Response): Promise<void> {
+        
+        const taskWithoutUserId = req.body;
+        const userId = req.user?.userId;
         try {
-            const createDto: CreateTaskDTO = req.body;
+            const createDto: CreateTaskDTO = {...taskWithoutUserId, user_id: userId};
             const task = await this.taskService.create(createDto);
             ApiResponse.created(res, task);
         } catch (error) {

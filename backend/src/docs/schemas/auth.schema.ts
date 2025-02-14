@@ -9,10 +9,10 @@ export const authSchema = {
   LoginDTO: {
     type: 'object',
     properties: {
-      email: { type: 'string' },
+      username: { type: 'string' },
       password: { type: 'string' }
     },
-    required: ['email', 'password']
+    required: ['username', 'password']
   },
   ChangePasswordDTO: {
     type: 'object',
@@ -21,5 +21,14 @@ export const authSchema = {
       newPassword: { type: 'string' }
     },
     required: ['oldPassword', 'newPassword']
+  },
+  RegisterDTO: {
+    type: 'object',
+    properties: {
+      username: { type: 'string' },
+      email: { type: 'string' },
+      password: { type: 'string' }
+    },
+    required: ['username', 'email', 'password']
   }
 };

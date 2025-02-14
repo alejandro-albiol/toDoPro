@@ -20,16 +20,6 @@ export const TaskPaths = {
         401: { $ref: '#/components/responses/Unauthorized' },
         500: { $ref: '#/components/responses/InternalServerError' }
       }
-    },
-    get: {
-      tags: ['Tasks'],
-      summary: 'Get all tasks',
-      security: [{ BearerAuth: [] }],
-      responses: {
-        200: { $ref: '#/components/responses/TaskResponse' },
-        401: { $ref: '#/components/responses/Unauthorized' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
     }
   },
   '/tasks/user/{userId}': {

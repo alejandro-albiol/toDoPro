@@ -42,22 +42,30 @@ export const AuthPaths = {
       }
     }
   },
-  '/auth/protected-route': {
-    get: {
+  '/auth/password/change': {
+    post: {
       tags: ['Auth'],
-      summary: 'Protected route example',
+      summary: 'Update user password',
       security: [{ BearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ChangePasswordDTO' }
+          }
+        }
+      },
       responses: {
         200: {
-          description: 'Protected route accessed successfully',
+          description: 'Password updated successfully',
           content: {
             'application/json': {
               schema: { $ref: '#/components/schemas/ApiResponse' },
               example: {
                 status: 'success',
-                message: 'Protected route accessed successfully',
+                message: 'Password updated successfully',
                 data: {
-                  example: 'This is a protected route'
+                  example: 'Password updated successfully'
                 }
               }
             }

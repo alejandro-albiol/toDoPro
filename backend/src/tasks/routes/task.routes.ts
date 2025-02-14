@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { UserValidator } from '../../middlewares/validators/user-validator.js';
 import { IdValidator } from '../../middlewares/validators/id-validator.js';
 import { ITaskController } from '../controller/i-task.controller.js';
 import { TaskValidator } from '../../middlewares/validators/task-validator.js';
