@@ -14,12 +14,6 @@ interface Task {
   user_id: number;
 }
 
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  data?: T;
-  message?: string;
-}
-
 class HomeHandler {
   static async loadTasks() {
     try {
