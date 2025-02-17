@@ -3,8 +3,8 @@
     "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "outDir": "../../public/js",
+    "moduleResolution": "node",
+    "outDir": "../public/js",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
@@ -12,8 +12,8 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
-} 
+}

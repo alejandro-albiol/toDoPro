@@ -158,7 +158,7 @@ export default class ProfileHandler {
 
     try {
       const response = await fetch(
-        `/api/v1/users/${this.userId}/change-password`,
+        `/api/v1/auth/${this.userId}/change-password`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },

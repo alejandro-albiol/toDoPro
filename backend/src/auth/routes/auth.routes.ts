@@ -15,7 +15,6 @@ export const configureAuthRoutes = (
     );
 
     router.post('/login',
-        UserValidator.validateLogin(),
         (req, res) => controller.login(req, res)
     );
     

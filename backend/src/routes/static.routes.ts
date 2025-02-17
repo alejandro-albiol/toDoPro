@@ -19,7 +19,7 @@ export const configureStaticRoutes = (): Router => {
 
     function sendHtml(filename: string) {
         return (req: Request, res: Response) => {
-            res.sendFile(path.join(process.cwd(), 'public', filename));
+            res.sendFile(path.join(process.cwd(), '..', 'public', filename));
         };
     }
 

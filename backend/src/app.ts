@@ -19,7 +19,7 @@ app.use(configureStaticRoutes());
 
 // API documentation
 app.use('/api-docs', swaggerUi.serve as unknown as express.RequestHandler[]);
-app.use('/api-docs', swaggerUi.setup(swaggerConfig, { explorer: true }) as unknown as express.RequestHandler);
+app.use('/api-docs', swaggerUi.setup(swaggerConfig, { explorer: true }) as unknown as express.RequestHandler[]);
 
 // Error handling
 app.use(errorHandler);

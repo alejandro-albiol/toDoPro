@@ -17,19 +17,22 @@ interface Task {
 class HomeHandler {
   static async loadTasks() {
     try {
-      const userStr = localStorage.getItem('user');
-      if (!userStr) {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
         window.location.href = '/login';
         return;
       }
 
-      const user = JSON.parse(userStr) as TaskUser;
-      if (!user?.id) {
+
+      const userStr = atob(token.split('.')[1]);
+      const user = JSON.parse(userStr);
+      if (!user?.userId) {
         window.location.href = '/login';
         return;
       }
 
-      const response = await fetch(`/api/v1/tasks/user/${user.id}`);
+      const response = await fetch(`/api/v1/tasks/user/${user.userId}`);
       const result = (await response.json()) as ApiResponse<Task[]>;
       const container = document.getElementById('taskContainer');
       if (!container) {
