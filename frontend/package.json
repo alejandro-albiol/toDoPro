@@ -2,13 +2,9 @@
   "name": "frontend",
   "version": "1.0.0",
   "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "npm run build",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +17,7 @@
     "@typescript-eslint/parser": "^8.18.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
   }
 }

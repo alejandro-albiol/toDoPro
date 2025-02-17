@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerConfig } from './docs/swagger.config.js';
 import path from 'path';
 import apiRouter from './routes/api.routes.js';
+import configureStaticRoutes from './routes/static.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -14,13 +15,7 @@ app.use(express.static(path.join(process.cwd(), '..', 'public')));
 app.use('/api/v1', apiRouter);
 
 // Static routes
-app.use('/', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
-        next();
-        return;
-    }
-    res.sendFile(path.join(process.cwd(), '..', 'public', 'index.html'));
-});
+app.use(configureStaticRoutes());
 
 // API documentation
 app.use('/api-docs', swaggerUi.serve as unknown as express.RequestHandler[]);
