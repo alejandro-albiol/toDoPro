@@ -10,6 +10,7 @@ node_modules
 /build
 /backend/dist
 /frontend/dist
+/public/js
 
 # Environment files
 .env

@@ -1,24 +1,109 @@
-# Todo Pro
-Todo Pro es una aplicación de lista de tareas desarrollada con Node.js, Express, TypeScript, JavaScript, HTML y CSS. Utiliza PSQL para la gestión de la base de datos y la autenticación de usuarios. Este proyecto está diseñado para ayudar a los usuarios a gestionar sus tareas de manera eficiente y segura.
+# toDoPro
 
-Este es mi primer proyecto personal a modo de reto de programación. Para validar y reforzar mis habilidades en el desarrollo de aplicaciones con herramientas web.
+toDoPro is a simple yet powerful task manager that leverages AI to help you prioritize and manage your tasks effectively. This is my first full-stack application, built with a hexagonal architecture and organized as a monorepo. It includes a backend, frontend, and database integration.
+## Features
 
-Para probar la aplicación se debe instalar PostgreSQL.
+- Task Management: Create, read, update, and delete tasks with ease.
 
-### Creación de la base de datos
+- User Authentication: Secure user registration and login with hashed passwords.
 
-A continuación estos son los comandos para crear a base de datos:
+- AI-Powered Prioritization: Integrates with GROQ AI to provide intelligent task recommendations.
 
-    -- Crear la base de datos toDoPro
+- Responsive Design: A modern and user-friendly interface that works across devices.
 
-    CREATE DATABASE toDoPro;
+- Validation: Robust data validation on both the frontend and backend.
 
-    -- Conectarse a la base de datos toDoPro
+- SOLID Architecture: Follows SOLID principles for maintainable and scalable code.
 
-    \c toDoPro
+## Technologies Used
+- Backend
 
-    -- Crear la tabla users
+- Node.js
+
+- Express
+
+- TypeScript
+
+## Frontend
+
+- TypeScript
+
+- HTML5
+
+- CSS3
+
+## Database
+
+- PostgreSQL
+
+## Tools
+
+- ESLint
+
+- Prettier
+
+## AI Integration
+
+- GROQ API
+
+## Project Structure
+
+    todopro/
+    ├── backend/
+    │   ├── src/
+    │   │   ├── auth/           # Authentication module
+    │   │   ├── config/         # App configuration
+    │   │   ├── docs/           # Swagger documentation
+    │   │   ├── middlewares/    # Middlewares and validators
+    │   │   ├── routes/         # Static and api routes
+    │   │   ├── shared/         # Shared services and models
+    │   │   ├── tasks/          # Tasks related services
+    │   │   └── users/          # Users related services
+    │   └── tests/
+    │       ├── config/         # Tests configuration
+    │       ├── integration/    # Integration tests
+    │       └── unit/           # Unitary tests
+    ├── frontend/
+    │   └── src/                # Frontend Typescript handlers
+    └── public/
+        ├── styles/             # CSS files
+        └── js/                 # Compiled JavaScript
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+
+- PostgreSQL (v12 or higher)
+
+- GROQ API Key (Get it from GROQ Console)
+
+### Installation
+
+Clone the repository:
+
+    git clone:
     
+        https://github.com/alejandro-albiol/toDoPro.git
+
+        
+
+Navigate to the project directory:
+
+    cd toDoPro
+
+Install dependencies:
+
+    npm install
+
+Set up the database:
+
+Create a PostgreSQL database named todopro.
+
+Run the following SQL commands to create the required tables:
+
+
     CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(50) NOT NULL UNIQUE,
@@ -26,7 +111,6 @@ A continuación estos son los comandos para crear a base de datos:
         password VARCHAR(255) NOT NULL
     );
 
-    -- Crear la tabla tasks
 
     CREATE TABLE tasks (
         id SERIAL PRIMARY KEY,
@@ -36,119 +120,73 @@ A continuación estos son los comandos para crear a base de datos:
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
+Configure environment variables:
+Create a .env file in the backend directory and add the following variables:
 
-### Ejecución de la Aplicación
+    DB_USER=your_db_user
+    DB_HOST=your_db_host
+    DB_NAME=your_db_name
+    DB_PASSWORD=your_db_password
+    DB_PORT=5432
+    GROQ_API_KEY=your_groq_api_key
 
-1. Clona el repositorio:
+Run the application:
 
-    (SSH)
-    ```bash
-    git clone <git@github.com:alejandro-albiol/toDoPro.git>
-    ```
-    (HTTP)
-    ```bash
-    git clone <https://github.com/alejandro-albiol/toDoPro.git>
-    ```
-
-2. Navega hasta el directorio del proyecto.
-
-    ```bash
-    cd toDoPro
-    ```
-3. Instala las dependencias:
-
-    ```bash
-    npm install
-    ```
-
-4. Configura las variables de entorno para la conexión a la base de datos en el archivo .env en la raiz del proyecto. Asegúrate de tener la configuración correcta para PostgreSQL.
-
-    ```bash
-    DB_USER=exampleuser    
-    DB_HOST=examplehost
-    DB_NAME=exampledb
-    DB_PASSWORD=examplepassword
-    DB_PORT=exampleport
-    ```
-
-5. Inicia la aplicación:
-
-    ```bash
     npm start
-    ```
 
-### Configuración de Variables de Entorno
+Available Scripts
 
-Para que la aplicación funcione correctamente, asegúrate de configurar las siguientes variables de entorno en un archivo `.env` en la raíz del proyecto:
+    npm run dev: Builds and start the project in development mode.
 
-```plaintext
-DB_USER=your_db_user
-DB_HOST=your_db_host
-DB_NAME=your_db_name
-DB_PASSWORD=your_db_password
-DB_PORT=5432
-GROQ_API_KEY=your_groq_api_key
-```
+    npm run build: Builds the project.
 
-- `DB_USER`, `DB_HOST`, `DB_NAME`, `DB_PASSWORD`, `DB_PORT`: Configuración de la base de datos PostgreSQL.
-- `GROQ_API_KEY`: Clave API para la integración con GROQ.
+    npm run lint: Runs the linter to check for code issues.
 
-### Integración con GROQ AI
+    npm run format: Formats the code using Prettier.
 
-Esta aplicación utiliza GROQ AI para proporcionar recomendaciones inteligentes en la gestión de tareas. Para configurar la integración:
+### AI Integration (GROQ)
 
-1. Obtén una API key de GROQ en https://console.groq.com
-2. Añade tu GROQ_API_KEY al archivo .env
-3. Las recomendaciones de IA estarán disponibles en el panel de tareas
+toDoPro uses GROQ AI to provide intelligent task recommendations. To enable this feature:
 
-### Seguridad
+- Obtain an API key from [GROQ].
 
-- Todas las contraseñas se almacenan hasheadas usando bcrypt
-- Las variables de entorno sensibles nunca deben compartirse o subirse al repositorio
-- El archivo .env está incluido en .gitignore para prevenir exposición de credenciales
+- Add the GROQ_API_KEY to your .env file.
 
-### Estructura del Proyecto
+AI recommendations will be available in the task management interface.
 
-```
-todopro/
-├── src/
-│   ├── backend/
-│   │   ├── configuration/   # Configuración de DB y servidor
-│   │   ├── controllers/     # Lógica de controladores
-│   │   ├── middlewares/     # Validadores y middleware
-│   │   ├── models/         # DTOs y modelos
-│   │   ├── routes/        # Rutas de la API
-│   │   └── services/      # Lógica de negocio
-│   └── frontend/
-│       ├── handlers/      # Manejadores de eventos
-│       └── services/     # Servicios del cliente
-├── public/
-│   ├── styles/          # Archivos CSS
-│   └── scripts/        # JavaScript compilado
-└── build/             # Código compilado
-```
+### Security
 
-### Características Principales
+Password Hashing: All passwords are hashed using argon2.
 
-- CRUD completo de usuarios y tareas
-- Autenticación básica con contraseñas hasheadas
-- Interfaz responsive y moderna
-- Validación de datos en frontend y backend
-- Integración con GROQ AI para recomendaciones
-- Arquitectura en capas siguiendo principios SOLID
+Environment Variables: Sensitive credentials are stored in .env, which is excluded from version control via .gitignore.
 
-### Scripts Disponibles
+Validation: Input validation is implemented on both the frontend and backend to prevent malicious data.
 
-- `npm start`: Inicia la aplicación
-- `npm run dev`: Inicia el servidor en modo desarrollo con hot-reload
-- `npm run build`: Compila el proyecto completo
-- `npm run lint`: Ejecuta el linter
-- `npm run format`: Formatea el código
 
-### Tecnologías Utilizadas
+### Contributing
 
-- Backend: Node.js, Express, TypeScript
-- Frontend: TypeScript, HTML5, CSS3
-- Base de datos: PostgreSQL
-- Herramientas: ESLint, Prettier
-- IA: GROQ API
+Contributions are welcome! If you'd like to contribute, please follow these steps:
+
+Fork the repository.
+
+Create a new branch for your feature or bugfix.
+
+Commit your changes and push the branch.
+
+Submit a pull request with a detailed description of your changes.
+
+### License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+### Acknowledgments
+
+- GROQ: For providing the AI API used in this project.
+
+- Node.js and Express: For enabling a robust backend.
+
+- PostgreSQL: For reliable and scalable database management.
+
+Thank you for checking out toDoPro! If you have any questions or feedback, feel free to reach out.
+
+[GROQ]: https://console.groq.com/keys
