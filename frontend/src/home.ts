@@ -40,8 +40,14 @@ class HomeHandler {
             return;
         }
 
-        const response = await fetch(`/api/v1/tasks/user/${user.userId}`);
-        
+        const response = await fetch(`/api/v1/tasks/user/${user.userId}`, {
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          }
+      });
+      
         if (!response.ok) {
             throw new Error(`Error fetching tasks: ${response.status} ${response.statusText}`);
         }
@@ -55,7 +61,7 @@ class HomeHandler {
 
         container.innerHTML = '';
 
-        if (!result.isSuccess) {
+        if (!result.success) {
             container.innerHTML = `<p class="error-message">${this.escapeHtml(result.message || '')}</p>`;
             return;
         }
@@ -139,17 +145,21 @@ private static updateRecommendation(text: string): void {
 
   static async completeTask(taskId: number): Promise<void> {
     try {
+
+      const token = this.getToken();
       const response = await fetch(
         `/api/v1/tasks/${taskId}/toggle-completion`,
         {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',},
         },
       );
 
       const result = (await response.json()) as ApiResponse<Task>;
 
-      if (result.isSuccess && result.data) {
+      if (result.success && result.data) {
         const taskCard = document.querySelector(
           `.task-card[data-task-id="${taskId}"]`,
         );
@@ -190,17 +200,22 @@ private static updateRecommendation(text: string): void {
   }
 
   static async deleteTask(taskId: number): Promise<void> {
-    const response = await fetch(`/api/v1/tasks/${taskId}`, {
-      method: 'DELETE',
-    });
+    try{
+      const token = this.getToken()
+      const response = await fetch(`/api/v1/tasks/${taskId}`, {
+      method: 'DELETE',          
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',}
+      });
 
-    if (response.ok) {
+    if (response) {
       await this.loadTasks();
-    } else {
-      console.error('Error deleting task:', response.statusText);
-    }
+      }
+   }catch(error: unknown){
+    console.log("Error deleting task:", error)
+   }
   }
-
   private static escapeHtml(unsafe: string): string {
     return unsafe
       .replace(/&/g, '&amp;')
@@ -347,6 +362,11 @@ private static updateRecommendation(text: string): void {
       container.appendChild(noResults);
     }
   }
+
+  private static getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {

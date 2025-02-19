@@ -6,10 +6,7 @@ node_modules
 /frontend/node_modules
 
 # Build outputs
-/dist
-/build
 /backend/dist
-/frontend/dist
 /public/js
 
 # Environment files

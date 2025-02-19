@@ -7,7 +7,6 @@ class HomeHandler {
                 window.location.href = '/login';
                 return;
             }
-            // Decode JWT safely
             let user;
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
@@ -22,8 +21,13 @@ class HomeHandler {
                 window.location.href = '/login';
                 return;
             }
-            // Fetch tasks
-            const response = await fetch(`/api/v1/tasks/user/${user.userId}`);
+            const response = await fetch(`/api/v1/tasks/user/${user.userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) {
                 throw new Error(`Error fetching tasks: ${response.status} ${response.statusText}`);
             }
@@ -33,7 +37,7 @@ class HomeHandler {
                 throw new Error('Task container not found');
             }
             container.innerHTML = '';
-            if (!result.isSuccess) {
+            if (!result.success) {
                 container.innerHTML = `<p class="error-message">${this.escapeHtml(result.message || '')}</p>`;
                 return;
             }
@@ -45,7 +49,6 @@ class HomeHandler {
             let completedCount = 0;
             let pendingCount = 0;
             let latestTaskTitle = "";
-            // Populate tasks
             result.data.forEach((task) => {
                 const card = document.createElement('div');
                 card.className = `task-card ${task.completed ? 'completed' : ''}`;
@@ -65,7 +68,6 @@ class HomeHandler {
                 });
                 container.appendChild(card);
             });
-            // Generate recommendation
             let recommendation = "Keep up the great work!";
             if (pendingCount > completedCount) {
                 recommendation = `You have ${pendingCount} pending tasks. Try completing "${latestTaskTitle}" today!`;
@@ -83,9 +85,6 @@ class HomeHandler {
             }
         }
     }
-    /**
-     * Updates the recommendation section dynamically.
-     */
     static updateRecommendation(text) {
         const recommendationText = document.querySelector('.recommendation-text');
         if (recommendationText) {
@@ -112,12 +111,16 @@ class HomeHandler {
     }
     static async completeTask(taskId) {
         try {
+            const token = this.getToken();
             const response = await fetch(`/api/v1/tasks/${taskId}/toggle-completion`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
             });
             const result = (await response.json());
-            if (result.isSuccess && result.data) {
+            if (result.success && result.data) {
                 const taskCard = document.querySelector(`.task-card[data-task-id="${taskId}"]`);
                 if (!taskCard)
                     return;
@@ -153,14 +156,21 @@ class HomeHandler {
         }
     }
     static async deleteTask(taskId) {
-        const response = await fetch(`/api/v1/tasks/${taskId}`, {
-            method: 'DELETE',
-        });
-        if (response.ok) {
-            await this.loadTasks();
+        try {
+            const token = this.getToken();
+            const response = await fetch(`/api/v1/tasks/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response) {
+                await this.loadTasks();
+            }
         }
-        else {
-            console.error('Error deleting task:', response.statusText);
+        catch (error) {
+            console.log("Error deleting task:", error);
         }
     }
     static escapeHtml(unsafe) {
@@ -284,6 +294,9 @@ class HomeHandler {
             noResults.textContent = `No tasks found matching "${searchTerm}"`;
             container.appendChild(noResults);
         }
+    }
+    static getToken() {
+        return localStorage.getItem('token');
     }
 }
 HomeHandler.handleProfileClick = () => {

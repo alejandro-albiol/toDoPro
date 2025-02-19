@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '../auth/service/jwt.service.js';
 import { InvalidTokenException } from '../auth/exceptions/invalid-token.exception.js';
 import { ApiResponse } from '../shared/responses/api-response.js';
+import { TokenExpiredException } from '../auth/exceptions/token-expired.exception.js';
 
 declare global {
     namespace Express {
@@ -28,7 +29,7 @@ export class AuthMiddleware {
             req.user = decoded;
             next();
         } catch (error) {
-            if (error instanceof InvalidTokenException) {
+            if (error instanceof InvalidTokenException || error instanceof TokenExpiredException) {
                 ApiResponse.unauthorized(res, error.message, error.errorCode);
             } else {
                 ApiResponse.error(res, error);

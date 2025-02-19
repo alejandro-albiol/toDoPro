@@ -4,6 +4,7 @@ import { IApiError } from '../shared/models/interfaces/responses/i-api-error.js'
 import { ErrorCode } from '../shared/models/constants/error-code.enum.js';
 import { UserException } from '../users/exceptions/base-user.exception.js';
 import { TaskException } from '../tasks/exceptions/base-task.exception.js';
+import { AuthException } from '../auth/exceptions/base-auth.exception.js';
 
 export const errorHandler = (
     error: Error,
@@ -25,7 +26,7 @@ export const errorHandler = (
         );
     }
 
-    if (error instanceof UserException || error instanceof TaskException) {
+    if (error instanceof UserException || error instanceof TaskException || error instanceof AuthException) {
         const apiError: IApiError = {
             code: error.errorCode,
             message: error.message
