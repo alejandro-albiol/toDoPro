@@ -148,9 +148,9 @@ private static updateRecommendation(text: string): void {
 
       const token = this.getToken();
       const response = await fetch(
-        `/api/v1/tasks/${taskId}/toggle-completion`,
+        `/api/v1/tasks/${taskId}/completed`,
         {
-          method: 'PATCH',
+          method: 'PUT',
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',},
@@ -193,10 +193,12 @@ private static updateRecommendation(text: string): void {
             completeBtn.textContent = 'Complete';
           }
         }
-      }
-    } catch (error: unknown) {
-      console.error('Error completing task:', error);
-    }
+      }if (response) {
+        await this.loadTasks();
+        }
+     }catch(error: unknown){
+      console.log("Error deleting task:", error)
+     }
   }
 
   static async deleteTask(taskId: number): Promise<void> {
@@ -209,7 +211,7 @@ private static updateRecommendation(text: string): void {
         'Content-Type': 'application/json',}
       });
 
-    if (response) {
+    if (response.status!= 400 && response.status!= 500) {
       await this.loadTasks();
       }
    }catch(error: unknown){
@@ -237,28 +239,47 @@ private static updateRecommendation(text: string): void {
   }
 
   private static setupAddTaskButton(): void {
-    const addTaskButton = document.getElementById('addTaskButton');
-    if (addTaskButton) {
-      addTaskButton.addEventListener('click', () => {
-        window.location.href = '/tasks/new';
-      });
+      const addTaskButton = document.getElementById('addTaskButton');
+      if (addTaskButton) {
+        addTaskButton.addEventListener('click', () => {
+          window.location.href = '/tasks/new';
+        });
+      }
+    }
+
+    private static setupProfileButton(): void {
+      const profileButton = document.getElementById('profile-button');
+      if (profileButton) {
+        profileButton.removeEventListener('click', this.handleProfileClick);
+        profileButton.addEventListener('click', this.handleProfileClick);
+      }
+    }
+
+    private static handleProfileClick = (): void => {
+      try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        let user;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            user = payload;
+        } catch (error) {
+            console.error("Invalid token format:", error);
+            window.location.href = '/login';
+            return;
+        }
+      if (user?.userId) {
+        window.location.href = `/profile/${user.id}`;
+      }
+    }catch(error:unknown){
+      console.log("Error getting token:", error)
     }
   }
-
-  private static setupProfileButton(): void {
-    const profileButton = document.getElementById('profile-button');
-    if (profileButton) {
-      profileButton.removeEventListener('click', this.handleProfileClick);
-      profileButton.addEventListener('click', this.handleProfileClick);
-    }
-  }
-
-  private static handleProfileClick = (): void => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}') as TaskUser;
-    if (user?.id) {
-      window.location.href = `/profile/${user.id}`;
-    }
-  };
 
   private static setupTaskLoadingEvent(): void {
     window.addEventListener('load', () => {

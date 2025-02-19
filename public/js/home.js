@@ -112,8 +112,8 @@ class HomeHandler {
     static async completeTask(taskId) {
         try {
             const token = this.getToken();
-            const response = await fetch(`/api/v1/tasks/${taskId}/toggle-completion`, {
-                method: 'PATCH',
+            const response = await fetch(`/api/v1/tasks/${taskId}/completed`, {
+                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -150,9 +150,12 @@ class HomeHandler {
                     }
                 }
             }
+            if (response) {
+                await this.loadTasks();
+            }
         }
         catch (error) {
-            console.error('Error completing task:', error);
+            console.log("Error deleting task:", error);
         }
     }
     static async deleteTask(taskId) {
@@ -165,7 +168,7 @@ class HomeHandler {
                     'Content-Type': 'application/json',
                 }
             });
-            if (response) {
+            if (response.status != 400 && response.status != 500) {
                 await this.loadTasks();
             }
         }
@@ -300,9 +303,28 @@ class HomeHandler {
     }
 }
 HomeHandler.handleProfileClick = () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user?.id) {
-        window.location.href = `/profile/${user.id}`;
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+        let user;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            user = payload;
+        }
+        catch (error) {
+            console.error("Invalid token format:", error);
+            window.location.href = '/login';
+            return;
+        }
+        if (user?.userId) {
+            window.location.href = `/profile/${user.id}`;
+        }
+    }
+    catch (error) {
+        console.log("Error getting token:", error);
     }
 };
 document.addEventListener('DOMContentLoaded', () => {

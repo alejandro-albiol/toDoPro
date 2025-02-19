@@ -25,15 +25,7 @@ export default class ProfileHandler {
   private static userId: string;
 
   static initialize(): void {
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}') as User;
 
-    if (!storedUser || !storedUser.id) {
-      console.error('No valid user found in localStorage');
-      window.location.href = '/login';
-      return;
-    }
-
-    this.userId = storedUser.id;
     this.setupEventListeners();
     void this.loadProfile();
     void this.loadStats();
