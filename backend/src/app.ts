@@ -5,6 +5,12 @@ import { swaggerConfig } from './docs/swagger.config.js';
 import path from 'path';
 import apiRouter from './routes/api.routes.js';
 import configureStaticRoutes from './routes/static.routes.js';
+import { AiReccomendationController } from './ai/controller/ai-recommendation.controller.js';
+import { configureAiRoutes } from './ai/routes/ai.routes.js';
+import { AiRecommendationService } from './ai/service/ai-recommendation.service.js';
+
+const aiService = new AiRecommendationService();
+const aiController = new AiReccomendationController(aiService);
 
 const app = express();
 app.use(express.json());
@@ -13,6 +19,7 @@ app.use(express.static(path.join(process.cwd(), '..', 'public')));
 
 // API routes
 app.use('/api/v1', apiRouter);
+app.use("/recommendation", configureAiRoutes(aiController));
 
 // Static routes
 app.use(configureStaticRoutes());

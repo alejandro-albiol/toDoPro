@@ -7,53 +7,89 @@ class HomeHandler {
                 window.location.href = '/login';
                 return;
             }
-            const userStr = atob(token.split('.')[1]);
-            const user = JSON.parse(userStr);
+            // Decode JWT safely
+            let user;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                user = payload;
+            }
+            catch (error) {
+                console.error("Invalid token format:", error);
+                window.location.href = '/login';
+                return;
+            }
             if (!user?.userId) {
                 window.location.href = '/login';
                 return;
             }
+            // Fetch tasks
             const response = await fetch(`/api/v1/tasks/user/${user.userId}`);
+            if (!response.ok) {
+                throw new Error(`Error fetching tasks: ${response.status} ${response.statusText}`);
+            }
             const result = (await response.json());
             const container = document.getElementById('taskContainer');
             if (!container) {
                 throw new Error('Task container not found');
             }
             container.innerHTML = '';
-            if (result.isSuccess &&
-                Array.isArray(result.data) &&
-                result.data.length === 0) {
-                container.innerHTML =
-                    '<p class="no-tasks">No tasks yet. Create your first task!</p>';
-                return;
-            }
             if (!result.isSuccess) {
-                container.innerHTML = `<p class="error-message">${result.message}</p>`;
+                container.innerHTML = `<p class="error-message">${this.escapeHtml(result.message || '')}</p>`;
                 return;
             }
-            if (result.isSuccess && result.data) {
-                result.data.forEach((task) => {
-                    const card = document.createElement('div');
-                    card.className = `task-card ${task.completed ? 'completed' : ''}`;
-                    card.setAttribute('data-task-id', task.id.toString());
-                    card.innerHTML = this.createTaskCardHTML(task);
-                    card.addEventListener('click', (e) => {
-                        if (!e.target.closest('.task-actions')) {
-                            window.location.href = `/tasks/${task.id}`;
-                        }
-                    });
-                    container.appendChild(card);
-                });
+            if (!Array.isArray(result.data) || result.data.length === 0) {
+                container.innerHTML = '<p class="no-tasks">No tasks yet. Create your first task!</p>';
+                this.updateRecommendation("You have no tasks yet. Try adding one to stay productive!");
+                return;
             }
-            await this.loadRecommendation();
+            let completedCount = 0;
+            let pendingCount = 0;
+            let latestTaskTitle = "";
+            // Populate tasks
+            result.data.forEach((task) => {
+                const card = document.createElement('div');
+                card.className = `task-card ${task.completed ? 'completed' : ''}`;
+                card.setAttribute('data-task-id', task.id.toString());
+                card.innerHTML = this.createTaskCardHTML(task);
+                if (task.completed) {
+                    completedCount++;
+                }
+                else {
+                    pendingCount++;
+                    latestTaskTitle = task.title;
+                }
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.task-actions')) {
+                        window.location.href = `/tasks/${task.id}`;
+                    }
+                });
+                container.appendChild(card);
+            });
+            // Generate recommendation
+            let recommendation = "Keep up the great work!";
+            if (pendingCount > completedCount) {
+                recommendation = `You have ${pendingCount} pending tasks. Try completing "${latestTaskTitle}" today!`;
+            }
+            else if (completedCount > 0) {
+                recommendation = `Awesome! You've completed ${completedCount} tasks. Consider creating a new goal!`;
+            }
+            this.updateRecommendation(recommendation);
         }
         catch (error) {
+            console.error('Error loading tasks:', error);
             const container = document.getElementById('taskContainer');
             if (container) {
-                container.innerHTML =
-                    '<p class="error-message">Error loading tasks. Please try again later.</p>';
+                container.innerHTML = '<p class="error-message">Error loading tasks. Please try again later.</p>';
             }
-            console.error('Error loading tasks:', error);
+        }
+    }
+    /**
+     * Updates the recommendation section dynamically.
+     */
+    static updateRecommendation(text) {
+        const recommendationText = document.querySelector('.recommendation-text');
+        if (recommendationText) {
+            recommendationText.textContent = text;
         }
     }
     static createTaskCardHTML(task) {
@@ -144,7 +180,6 @@ class HomeHandler {
         this.setupLogoutButton();
         this.setupPopStateEvent();
         this.setupSearchInput();
-        void this.loadRecommendation();
     }
     static setupAddTaskButton() {
         const addTaskButton = document.getElementById('addTaskButton');
@@ -248,24 +283,6 @@ class HomeHandler {
             noResults.className = 'no-tasks';
             noResults.textContent = `No tasks found matching "${searchTerm}"`;
             container.appendChild(noResults);
-        }
-    }
-    static async loadRecommendation() {
-        try {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (!user?.id)
-                return;
-            const response = await fetch(`/api/v1/ai/recommendation/${user.id}`);
-            const result = (await response.json());
-            if (result.isSuccess && result.data) {
-                const recommendationText = document.querySelector('.recommendation-text');
-                if (recommendationText) {
-                    recommendationText.textContent = result.data;
-                }
-            }
-        }
-        catch (error) {
-            console.error('Error loading recommendation:', error);
         }
     }
 }

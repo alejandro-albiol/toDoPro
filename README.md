@@ -144,6 +144,8 @@ Available Scripts
 
     npm run format: Formats the code using Prettier.
 
+    npm run typedoc: Generate backend docs
+
 ### AI Integration (GROQ)
 
 toDoPro uses GROQ AI to provide intelligent task recommendations. To enable this feature:

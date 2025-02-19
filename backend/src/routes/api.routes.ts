@@ -13,7 +13,6 @@ import { UserRepository } from '../users/repository/user.repository.js';
 import { TaskRepository } from '../tasks/repository/task.repository.js';
 import { pool } from '../config/database.config.js';
 import { AuthMiddleware } from '../middlewares/auth.middleware.js';
-import aiRouter from './ai.router.js';
 
 const apiRouter = Express.Router();
 
@@ -35,6 +34,5 @@ const authMiddleware = new AuthMiddleware(jwtService);
 apiRouter.use('/auth', configureAuthRoutes(authController, authMiddleware));
 apiRouter.use('/users', authMiddleware.authenticate, configureUserRoutes(userController));
 apiRouter.use('/tasks', authMiddleware.authenticate, configureTaskRoutes(taskController));
-apiRouter.use('/ai', aiRouter);
 
 export default apiRouter;
