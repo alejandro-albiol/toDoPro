@@ -45,7 +45,7 @@ class RegisterHandler {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('regusterForm') as HTMLFormElement;
+  const loginForm = document.getElementById('registerForm') as HTMLFormElement;
   if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
           e.preventDefault();

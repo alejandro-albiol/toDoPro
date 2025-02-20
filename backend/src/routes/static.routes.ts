@@ -15,6 +15,7 @@ export const configureStaticRoutes = (): Router => {
     router.get('/profile/:userId', sendHtml('profile.html'));
     router.get('/login', sendHtml('logIn.html'));
     router.get('/register', sendHtml('register.html'));
+    router.get('/HttpError', sendHtml('httpError.html'))
     router.get('/', sendHtml('index.html'));
 
     function sendHtml(filename: string) {

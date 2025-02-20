@@ -3,7 +3,6 @@ const originalFetch = window.fetch;
 window.fetch = async (url, options = {}) => {
   const token = localStorage.getItem("token");
 
-  // Add Authorization header if token exists
   if (token) {
     options.headers = {
       ...options.headers,
@@ -15,26 +14,23 @@ window.fetch = async (url, options = {}) => {
   try {
     const response = await originalFetch(url, options);
 
-    // Get the current page path
     const currentPath = window.location.pathname;
 
-    // List of pages where we should NOT auto-redirect
-    const excludedPaths = ["/login", "/signup", "/register"];
+    const excludedPaths = ["/login", "/register"];
     const isExcluded = excludedPaths.some((path) => currentPath.startsWith(path));
 
-    // Redirect only if we're NOT on an excluded page and the response is an error
-    if (!isExcluded && response.status >= 400 && response.status < 600) {
-      console.error(`Error ${response.status}: Redirecting to index`);
-      window.location.href = "/index.html"; // Adjust this as needed
+    if (!isExcluded && response.status > 400 && response.status < 600) {
+      localStorage.setItem('error', `${response.status}`)
+      window.alert(`Error ${response.status}`)
+      window.location.href = "/httpError.html";
     }
 
     return response;
   } catch (error) {
     console.error("Network error:", error);
 
-    // Only redirect if NOT on login/signup pages
     const currentPath = window.location.pathname;
-    const excludedPaths = ["/login", "/signup", "/register"];
+    const excludedPaths = ["/login", "/register"];
     const isExcluded = excludedPaths.some((path) => currentPath.startsWith(path));
 
     if (!isExcluded) {
@@ -45,7 +41,6 @@ window.fetch = async (url, options = {}) => {
   }
 };
 
-// Ensure the script runs on every page
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Global fetch interceptor loaded!");
+  console.log("Global fetch interceptor");
 });

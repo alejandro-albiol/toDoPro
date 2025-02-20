@@ -17,18 +17,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), '..', 'public')));
 
-// API routes
 app.use('/api/v1', apiRouter);
 app.use("/recommendation", configureAiRoutes(aiController));
 
-// Static routes
 app.use(configureStaticRoutes());
 
-// API documentation
 app.use('/api-docs', swaggerUi.serve as unknown as express.RequestHandler[]);
 app.use('/api-docs', swaggerUi.setup(swaggerConfig, { explorer: true }) as unknown as express.RequestHandler[]);
 
-// Error handling
 app.use(errorHandler);
 
 export default app;

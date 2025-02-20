@@ -1,0 +1,54 @@
+:root {
+    --error-primary: #ff4d4d;
+    --error-secondary: #ffb3b3;
+    --error-bg: #fff0f0;
+    --error-text: #660000;
+}
+
+body {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    text-align: center;
+    font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.error-container {
+    max-width: 600px;
+    margin: 10% auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#error-number {
+    font-size: 3rem;
+    color: var(--error-primary);
+}
+
+#error-message {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+}
+
+.error-btn {
+    background-color: var(--error-primary);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.error-btn:hover {
+    background-color: var(--error-secondary);
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .error-container {
+        width: 90%;
+    }
+}
