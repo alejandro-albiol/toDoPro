@@ -39,7 +39,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
     if (error instanceof BaseException) {
       res.status(statusCode).json({
         success: false,
-        error: {
+        errors: {
           code: error.errorCode,
           message: error.message,
           metadata: process.env.NODE_ENV === 'development' ? {
@@ -50,7 +50,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
     } else if (error instanceof Error) {
       res.status(statusCode).json({
         success: false,
-        error: {
+        errors: {
           code: 'INTERNAL_SERVER_ERROR',
           message: error.message,
           metadata: process.env.NODE_ENV === 'development' ? {
@@ -61,7 +61,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
     } else {
       res.status(statusCode).json({
         success: false,
-        error: {
+        errors: {
           code: 'UNKNOWN_ERROR',
           message: 'An unexpected error occurred',
           metadata: {
@@ -75,7 +75,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   static notFound(res: Response, message: string, errorCode: string = 'NOT_FOUND'): void {
     res.status(404).json({
       success: false,
-      error: {
+      errors: {
         code: errorCode,
         message
       }
@@ -85,7 +85,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   static badRequest(res: Response, message: string, errorCode: string = 'BAD_REQUEST'): void {
     res.status(400).json({
       success: false,
-      error: {
+      errors: {
         code: errorCode,
         message
       }
@@ -95,7 +95,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   static unauthorized(res: Response, message: string, errorCode: string = 'UNAUTHORIZED'): void {
     res.status(401).json({
       success: false,
-      error: {
+      errors: {
         code: errorCode,
         message
       }
@@ -105,7 +105,7 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   static forbidden(res: Response, message: string, errorCode: string = 'FORBIDDEN'): void {
     res.status(403).json({
       success: false,
-      error: {
+      errors: {
         code: errorCode,
         message
       }

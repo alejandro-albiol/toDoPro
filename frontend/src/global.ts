@@ -21,7 +21,6 @@ window.fetch = async (url, options = {}) => {
 
     if (!isExcluded && response.status > 400 && response.status < 600) {
       localStorage.setItem('error', `${response.status}`)
-      window.alert(`Error ${response.status}`)
       window.location.href = "/httpError.html";
     }
 

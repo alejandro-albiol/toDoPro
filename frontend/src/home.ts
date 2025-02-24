@@ -16,6 +16,26 @@ interface Task {
 
 class HomeHandler {
 
+  private static getUserFromToken(): { userId: number } | null {
+    const token = this.getToken();
+    if (!token) {
+      window.location.href = '/login';
+      return null;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload?.userId) {
+        throw new Error('Invalid token payload');
+      }
+      return payload;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      window.location.href = '/login';
+      return null;
+    }
+  } 
+
   static async loadTasks() {
     try {
         const token = localStorage.getItem('token');
@@ -257,24 +277,9 @@ private static updateRecommendation(text: string): void {
 
     private static handleProfileClick = (): void => {
       try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            window.location.href = '/login';
-            return;
-        }
-
-        let user;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            user = payload;
-        } catch (error) {
-            console.error("Invalid token format:", error);
-            window.location.href = '/login';
-            return;
-        }
+        const user = this.getUserFromToken()
       if (user?.userId) {
-        window.location.href = `/profile/${user.id}`;
+        window.location.href = `/profile/${user.userId}`;
       }
     }catch(error:unknown){
       console.log("Error getting token:", error)

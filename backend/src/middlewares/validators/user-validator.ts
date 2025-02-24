@@ -104,40 +104,14 @@ export class UserValidator extends BaseValidator {
         ]);
     }
 
-    static validatePasswordReset() {
-        return this.validateRules([
-            (req: Request) => {
-                const { token } = req.body;
-                if (!this.isValidString(token, 10, 200)) {
-                    return {
-                        code: UserErrorCodes.INVALID_TOKEN,
-                        message: 'Invalid reset token'
-                    };
-
-                }
-                return null;
-            },
-            (req: Request) => {
-                const { newPassword } = req.body;
-                if (!this.isValidPassword(newPassword)) {
-                    return {
-                        code: UserErrorCodes.INVALID_PASSWORD,
-                        message: 'New password must be at least 8 characters and contain letters and numbers'
-                    };
-                }
-                return null;
-            }
-        ]);
-    }
-
     static validatePasswordChange() {
         return this.validateRules([
             (req: Request) => {
-                const { oldPassword } = req.body;
-                if (!this.isValidPassword(oldPassword)) {
+                const { oldPassword: newPassword } = req.body;
+                if (!this.isValidPassword(newPassword)) {
                     return {
                         code: UserErrorCodes.INVALID_PASSWORD,
-                        message: 'Current password must be at least 8 characters and contain letters and numbers'
+                        message: 'Password must be at least 8 characters and contain letters and numbers'
                     };
                 }
                 return null;

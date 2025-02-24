@@ -1,229 +1,103 @@
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
+class ProfileManager {
+  private updateProfileApiUrl: string;
+  private updatePasswordApiUrl: string;
+  private token: string | null;
 
-interface Profile {
-  username: string;
-  email: string;
-}
-
-interface TaskStats {
-  total: number;
-  completed: number;
-  pending: number;
-}
-
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  data?: T;
-  message?: string;
-}
-
-export default class ProfileHandler {
-  private static userId: string;
-
-  static initialize(): void {
-
-    this.setupEventListeners();
-    void this.loadProfile();
-    void this.loadStats();
+  constructor(updatePasswordUrl: string, updateProfileUrl: string) {
+      this.token = localStorage.getItem('token');
+      this.updatePasswordApiUrl = updatePasswordUrl;
+      this.updateProfileApiUrl = updateProfileUrl.replace('UserID', this.getUserIdFromPath());
+      this.initEventListeners();
   }
 
-  private static async loadProfile(): Promise<void> {
-    try {
-      const response = await fetch(`/api/v1/users/${this.userId}`);
-      const result = (await response.json()) as ApiResponse<Profile>;
+  private getUserIdFromPath(): string {
+      const pathSegments = window.location.pathname.split('/');
+      return pathSegments[pathSegments.length - 1];
+  }
 
-      if (result.isSuccess && result.data) {
-        this.updateProfileView(result.data);
+  private initEventListeners(): void {
+      document.getElementById("edit-profile-button")?.addEventListener("click", () => this.toggleEditMode());
+      document.getElementById("profile-edit-form")?.addEventListener("submit", (event) => this.updateProfile(event));
+      document.getElementById("password-form")?.addEventListener("submit", (event) => this.updatePassword(event));
+      document.getElementById("back-button")?.addEventListener("click", () => this.navigateHome());
+  }
+
+  private toggleEditMode(): void {
+      document.querySelector(".view-mode")?.classList.toggle("hidden");
+      document.getElementById("profile-edit-form")?.classList.toggle("hidden");
+  }
+
+  private async updateProfile(event: Event): Promise<void> {
+    event.preventDefault();
+    
+    const username = (document.getElementById("username") as HTMLInputElement).value;
+    const email = (document.getElementById("email") as HTMLInputElement).value;
+
+    const response = await fetch(`${this.updateProfileApiUrl}`, {
+        method: "PUT",
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ username, email })
+    });
+
+    const messageElement = document.getElementById("profile-message");
+
+    try {
+        const data = await response.json();
+
+        if (response.ok) {
+            messageElement!.textContent = "Profile updated successfully!";
+            this.toggleEditMode();
+        } else {
+            messageElement!.textContent = data.errors?.[0]?.message || "Error updating profile.";
+        }
+    } catch (error) {
+        messageElement!.textContent = "Unexpected error occurred.";
+    }
+}
+
+
+  private async updatePassword(event: Event): Promise<void> {
+      event.preventDefault();
+
+      const oldPassword = (document.getElementById("currentPassword") as HTMLInputElement).value;
+      const newPassword = (document.getElementById("newPassword") as HTMLInputElement).value;
+      const confirmPassword = (document.getElementById("confirmPassword") as HTMLInputElement).value;
+
+      if (newPassword !== confirmPassword) {
+          document.getElementById("password-message")!.textContent = "New passwords do not match.";
+          return;
       }
-    } catch (error: unknown) {
-      console.error('Error loading profile:', error);
-    }
-  }
 
-  private static async loadStats(): Promise<void> {
-    try {
-      const response = await fetch(`/api/v1/tasks/stats/${this.userId}`);
-      const result = (await response.json()) as ApiResponse<TaskStats>;
-
-      if (result.isSuccess && result.data) {
-        this.updateStatsView(result.data);
-      } else {
-        console.error('Failed to load stats:', result.message);
-      }
-    } catch (error: unknown) {
-      console.error('Error loading stats:', error);
-    }
-  }
-
-  private static setupEventListeners(): void {
-    const editButton = document.getElementById('edit-profile-button');
-    const profileForm = document.getElementById('profile-edit-form');
-    const passwordForm = document.getElementById('password-form');
-    const backButton = document.getElementById('back-button');
-
-    editButton?.addEventListener('click', () => this.toggleEditMode());
-
-    profileForm?.addEventListener('submit', (e: Event) => {
-      e.preventDefault();
-      void this.handleProfileUpdate(e);
-    });
-
-    passwordForm?.addEventListener('submit', (e: Event) => {
-      e.preventDefault();
-      void this.handlePasswordUpdate(e);
-    });
-
-    backButton?.addEventListener('click', () => {
-      window.location.href = `/home/${this.userId}`;
-    });
-  }
-
-  private static toggleEditMode(): void {
-    const viewMode = document.querySelector('.view-mode');
-    const editForm = document.getElementById('profile-edit-form');
-    const editButton = document.getElementById('edit-profile-button');
-
-    if (!viewMode || !editForm || !editButton) {
-      console.error('Required elements not found');
-      return;
-    }
-
-    const isEditing = viewMode.classList.contains('hidden');
-
-    if (isEditing) {
-      viewMode.classList.remove('hidden');
-      editForm.classList.add('hidden');
-      editButton.textContent = 'Edit Profile';
-    } else {
-      viewMode.classList.add('hidden');
-      editForm.classList.remove('hidden');
-      editButton.textContent = 'Cancel';
-    }
-  }
-
-  private static async handleProfileUpdate(e: Event): Promise<void> {
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch(`/api/v1/users/profile/${this.userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.get('username'),
-          email: formData.get('email'),
-        }),
+      const response = await fetch(`${this.updatePasswordApiUrl}`, {
+          method: "POST",
+          headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.token}`
+          },
+          body: JSON.stringify({ oldPassword, newPassword })
       });
 
-      const result = (await response.json()) as ApiResponse<Profile>;
+      const messageElement = document.getElementById("password-message");
+      try {
+        const data = await response.json();
 
-      if (result.isSuccess && result.data) {
-        this.showMessage(
-          'profile-message',
-          'Profile updated successfully',
-          'success',
-        );
-        this.updateProfileView(result.data);
-        this.toggleEditMode();
-      } else {
-        this.showMessage(
-          'profile-message',
-          result.message || 'Update failed',
-          'error',
-        );
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Error updating profile:', error.message);
-      }
-      this.showMessage('profile-message', 'Error updating profile', 'error');
+        if (response.ok) {
+            messageElement!.textContent = "Password updated successfully!";
+        } else {
+            messageElement!.textContent = data.errors?.[0]?.message || "Error updating password.";
+        }
+    } catch (error) {
+        messageElement!.textContent = "Unexpected error occurred.";
     }
   }
 
-  private static async handlePasswordUpdate(e: Event): Promise<void> {
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch(
-        `/api/v1/auth/${this.userId}/change-password`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            currentPassword: formData.get('currentPassword'),
-            newPassword: formData.get('newPassword'),
-          }),
-        },
-      );
-
-      const result = (await response.json()) as ApiResponse<void>;
-
-      if (result.isSuccess) {
-        this.showMessage(
-          'password-message',
-          'Password updated successfully',
-          'success',
-        );
-        form.reset();
-      } else {
-        this.showMessage(
-          'password-message',
-          result.message || 'Update failed',
-          'error',
-        );
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Error updating password:', error.message);
-      }
-      this.showMessage('password-message', 'Error updating password', 'error');
-    }
-  }
-
-  private static updateProfileView(profile: Profile): void {
-    const usernameSpan = document.querySelector('.view-mode .username');
-    const emailSpan = document.querySelector('.view-mode .email');
-
-    if (usernameSpan) usernameSpan.textContent = profile.username;
-    if (emailSpan) emailSpan.textContent = profile.email;
-
-    const usernameInput = document.getElementById(
-      'username',
-    ) as HTMLInputElement;
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-
-    if (usernameInput) usernameInput.value = profile.username;
-    if (emailInput) emailInput.value = profile.email;
-  }
-
-  private static updateStatsView(stats: TaskStats): void {
-    const totalTasks = document.getElementById('total-tasks');
-    const completedTasks = document.getElementById('completed-tasks');
-    const pendingTasks = document.getElementById('pending-tasks');
-
-    if (totalTasks) totalTasks.textContent = stats.total.toString();
-    if (completedTasks) completedTasks.textContent = stats.completed.toString();
-    if (pendingTasks) pendingTasks.textContent = stats.pending.toString();
-  }
-
-  private static showMessage(
-    elementId: string,
-    message: string,
-    type: 'error' | 'success' | 'info' | 'warning',
-  ): void {
-    const element = document.getElementById(elementId);
-    if (element) {
-      element.textContent = message;
-      element.className = `message ${type}`;
-    }
+  private navigateHome(): void {
+    const userId = this.getUserIdFromPath()
+      window.location.href = `/home/${userId}`;
   }
 }
 
-document.addEventListener('DOMContentLoaded', () =>
-  ProfileHandler.initialize(),
-);
+const profileManager = new ProfileManager('http://localhost:3000/api/v1/auth/password/change', 'http://localhost:3000/api/v1/users/UserID');

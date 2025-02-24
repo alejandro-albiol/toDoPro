@@ -72,20 +72,6 @@ export class UserController implements IUserController {
         }
     }
 
-    async updatePassword(req: Request, res: Response): Promise<void> {
-        try {
-            const { password } = req.body;
-            await this.userService.updatePassword(req.params.id, password);
-            ApiResponse.success(res, { message: 'Password updated successfully' });
-        } catch (error) {
-            if (error instanceof UserException) {
-                ApiResponse.error(res, error, error instanceof UserNotFoundException ? 404 : 400);
-            } else {
-                ApiResponse.error(res, error);
-            }
-        }
-    }
-
     async delete(req: Request, res: Response): Promise<void> {
         try {
             await this.userService.delete(req.params.id);
