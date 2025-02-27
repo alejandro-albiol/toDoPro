@@ -15,33 +15,32 @@ class RegisterHandler {
       };
   }
 
-  static async handleLogin(event: Event) {
+  static async handleRegister(event: Event) {
       event.preventDefault();
       const form = event.target as HTMLFormElement;
-      const loginData = this.getFormData(form);
-      const validationError = this.validateInputs(loginData);
+      const registerData = this.getFormData(form);
+      const validationError = this.validateInputs(registerData);
       if (validationError) {
           alert(validationError);
           return;
       }
       try {
-          const response = await fetch('/api/v1/auth/login', {
+          const response = await fetch('/api/v1/auth/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(loginData),
+              body: JSON.stringify(registerData),
           });
           const result = await response.json();
           if (result.success) {
               return;
-          } else {
-              console.error(result.error.code || 'An unknown error occurred');
-              alert(result.error.message || 'An unknown error occurred');
-          }
-      } catch (error) {
-          console.error('Error during login:', error);
-          alert('Error during login. Please try again.');
+          }   
+          console.error(result.errors.code || 'An unknown error occurred');
+          alert(result.errors.message || 'An unknown error occurred');
+        } catch (errors) {
+          console.error(errors);
+          alert(errors);
+        }
       }
-  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
           e.preventDefault();
-          RegisterHandler.handleLogin(e);
+          RegisterHandler.handleRegister(e);
       });
   }
 });

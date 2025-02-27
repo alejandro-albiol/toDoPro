@@ -28,11 +28,7 @@ export class AuthService {
         try {
             await this.userService.create(data);
         } catch (error) {
-            if (error instanceof UsernameAlreadyExistsException || error instanceof EmailAlreadyExistsException) {
-                throw error;
-            } else {
-                throw new UserCreationFailedException('User creation failed');
-            }
+            throw error;
         }
     }
 

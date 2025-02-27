@@ -66,11 +66,11 @@ class LoginHandler {
           return;
         }
   
-        console.error(result.error.code || 'An unknown error occurred');
-        alert(result.error.message || 'An unknown error occurred');
-      } catch (error) {
-        console.error('Error during login:', error);
-        alert('Error during login. Please try again.');
+        console.error(result.errors.code || 'An unknown error occurred');
+        alert(result.errors.message || 'An unknown error occurred');
+      } catch (errors) {
+        console.error(errors);
+        alert(errors);
       }
     }
   }

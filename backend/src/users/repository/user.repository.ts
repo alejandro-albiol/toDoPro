@@ -21,11 +21,11 @@ export class UserRepository implements IUserRepository {
     switch (error.code) {
       case DbErrorCode.UNIQUE_VIOLATION:
         if (context) {
-          if (error.detail?.includes("username")) {
-            throw new UniqueViolationException(`Username ${context.username} already exists`);
+          if (error.detail?.includes("Key (username)")) {
+            throw new UniqueViolationException(`username ${context.username} already exists`);
           }
-          if (error.detail?.includes("email")) {
-            throw new UniqueViolationException(`Email ${context.email} already exists`);
+          if (error.detail?.includes("Key (email)")) {
+            throw new UniqueViolationException(`email ${context.email} already exists`);
           }
         }
         throw new UniqueViolationException(`Unique constraint violation: ${error.detail}`);
@@ -62,8 +62,7 @@ export class UserRepository implements IUserRepository {
       const result = await this.pool.query(query, [user.username, user.email, user.password]);
       return result.rows[0] as Partial<User>;
     } catch (error) {
-      this.handleQueryError(error, { username: user.username ?? undefined, email: user.email ?? undefined });
-      throw error;
+      throw this.handleQueryError(error, { username: user.username ?? undefined, email: user.email ?? undefined });
     }
   }
 
