@@ -32,7 +32,8 @@ class RegisterHandler {
           });
           const result = await response.json();
           if (result.success) {
-              return;
+            window.location.href = '/login';
+            return;
           }   
           console.error(result.errors.code || 'An unknown error occurred');
           alert(result.errors.message || 'An unknown error occurred');
