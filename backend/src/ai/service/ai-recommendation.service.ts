@@ -12,16 +12,24 @@ export class AiRecommendationService implements IAiRecommendationService {
 
     async recommend(tasks: Task[]): Promise<string> {
         try {
-            const formattedTasks = tasks.map(task => `Title: ${task.title}, Description: ${task.description}`).join("\n");
-
+            if (tasks.length === 0) {
+                return "No tasks available. Try adding one to get a recommendation!";
+            }
+            const formattedTasks = tasks.map(task => `- ${task.title}: ${task.description}`).join("\n");
+        
             const response = await this.groq.chat.completions.create({
                 messages: [
-                    { role: "system", content: "You are an AI assistant that helps prioritize tasks." },
-                    { role: "user", content: `Given the following tasks, suggest how to prioritize them:\n${formattedTasks}. Always send plain text response under 100 characters.` }
+                    { role: "system", content: "You are an AI assistant that helps users prioritize tasks effectively." },
+                    { 
+                        role: "user", 
+                        content: `Here are my pending tasks:\n${formattedTasks}\n
+                        Based on deadlines, priority, and task descriptions, suggest the best order to complete them.
+                        Your response should be concise (under 100 characters) and practical.` 
+                    }
                 ],
                 model: "llama-3.3-70b-versatile"
             });
-
+    
             return response.choices[0]?.message?.content || "No recommendation available.";
         } catch (error) {
             console.error("Error getting AI recommendation:", error);

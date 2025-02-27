@@ -125,7 +125,7 @@ class HomeHandler {
             recommendation = `Awesome! You've completed ${completedCount} tasks. Consider creating a new goal!`;
         }
 
-        this.updateRecommendation(recommendation);
+        await this.fetchAiRecommendation(result.data);
 
     } catch (error) {
         console.error('Error loading tasks:', error);
@@ -392,6 +392,32 @@ private static updateRecommendation(text: string): void {
   private static getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  private static async fetchAiRecommendation(tasks: Task[]): Promise<void> {
+    try {
+        const token = this.getToken();
+
+        const response = await fetch('/recommendation/recommend', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tasks)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching AI recommendation: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (data.recommendation) {
+            this.updateRecommendation(data.recommendation);
+        }
+    } catch (error) {
+        console.error('Error fetching AI recommendation:', error);
+    }
+}
 
 }
 
