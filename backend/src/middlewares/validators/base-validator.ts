@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { ApiResponse } from '../../shared/responses/api-response.js';
 import { IApiError } from '../../shared/models/interfaces/responses/i-api-error.js';
-import { ErrorCode } from '../../shared/models/constants/error-code.enum.js';
 
 export abstract class BaseValidator {
   protected static validateRules(

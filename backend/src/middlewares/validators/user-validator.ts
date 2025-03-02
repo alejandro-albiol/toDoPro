@@ -1,7 +1,6 @@
 import { Request } from 'express';
 import { BaseValidator } from './base-validator.js';
 import { UserErrorCodes } from '../../users/exceptions/enums/user-error-codes.enum.js';
-import { AuthErrorCode } from '../../auth/exceptions/enum/auth-error-codes.enum.js';
 
 export class UserValidator extends BaseValidator {
   static validateCreate() {
