@@ -1,6 +1,7 @@
 # toDoPro
 
-toDoPro is a simple yet powerful task manager that leverages AI to help you prioritize and manage your tasks effectively. This is my first full-stack application, built with a hexagonal architecture and organized as a monorepo. It includes a backend, frontend, and database integration.
+toDoPro is a simple yet powerful task manager that leverages AI to help you prioritize and manage your tasks effectively. This is my first full-stack application, organized as a monorepo. It includes a backend, frontend, and database integration.
+
 ## Features
 
 - Task Management: Create, read, update, and delete tasks with ease.
@@ -51,6 +52,7 @@ toDoPro is a simple yet powerful task manager that leverages AI to help you prio
     todopro/
     ├── backend/
     │   ├── src/
+    │   │   ├── ai/             # Artificial intelligence module
     │   │   ├── auth/           # Authentication module
     │   │   ├── config/         # App configuration
     │   │   ├── docs/           # Swagger documentation
