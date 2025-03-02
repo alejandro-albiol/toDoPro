@@ -138,11 +138,8 @@ class TaskDetail {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${this.token}` },
       });
-
-      if (!response.ok) throw new Error('Failed to delete task');
-
       this.showMessage('Task deleted successfully!', 'success');
-      setTimeout(() => (window.location.href = `/home`), 1000);
+      setTimeout(() => (window.location.href = `/home/${this.decodeToken(this.token!)?.userId}`), 1000);
     } catch (error) {
       console.error('Error deleting task:', error);
       this.showMessage('Failed to delete task. Please try again.', 'error');

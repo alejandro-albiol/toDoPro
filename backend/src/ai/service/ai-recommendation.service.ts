@@ -1,5 +1,6 @@
 import { Task } from "../../tasks/models/entities/task.entity.js";
 import { AiProcessingException } from "../exceptions/ai-processing-exception.js";
+import { AiConnectionError } from "../exceptions/ai-connection.exception.js";
 import { IAiRecommendationService } from "./i-ai-recommendation.service.js";
 import Groq from "groq-sdk";
 
@@ -15,16 +16,19 @@ export class AiRecommendationService implements IAiRecommendationService {
             if (tasks.length === 0) {
                 return "No tasks available. Try adding one to get a recommendation!";
             }
-            const formattedTasks = tasks.map(task => `- ${task.title}: ${task.description}`).join("\n");
+
+            const formattedTasks = tasks.map(task => 
+                `- ${task.title}: ${task.description} (Completed: ${task.completed})`
+            ).join("\n");
         
             const response = await this.groq.chat.completions.create({
                 messages: [
                     { role: "system", content: "You are an AI assistant that helps users prioritize tasks effectively." },
                     { 
                         role: "user", 
-                        content: `Here are my pending tasks:\n${formattedTasks}\n
+                        content: `Here are my tasks:\n${formattedTasks}\n
                         Based on deadlines, priority, and task descriptions, suggest the best order to complete them.
-                        Your response should be concise (under 100 characters) and practical.` 
+                        Your response should be concise (under 100 characters) and practical. If all tasks are completed, suggest a new task to add.` 
                     }
                 ],
                 model: "llama-3.3-70b-versatile"
@@ -32,7 +36,9 @@ export class AiRecommendationService implements IAiRecommendationService {
     
             return response.choices[0]?.message?.content || "No recommendation available.";
         } catch (error) {
-            console.error("Error getting AI recommendation:", error);
+            if ((error as any).code === 'ENOTFOUND') {
+                throw new AiConnectionError("Failed to connect to AI service.");
+            }
             throw new AiProcessingException("Failed to fetch AI recommendation.");
         }
     }

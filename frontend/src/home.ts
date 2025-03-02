@@ -118,12 +118,6 @@ class HomeHandler {
             container.appendChild(card);
         });
 
-        let recommendation = "Keep up the great work!";
-        if (pendingCount > completedCount) {
-            recommendation = `You have ${pendingCount} pending tasks. Try completing "${latestTaskTitle}" today!`;
-        } else if (completedCount > 0) {
-            recommendation = `Awesome! You've completed ${completedCount} tasks. Consider creating a new goal!`;
-        }
 
         await this.fetchAiRecommendation(result.data);
 
@@ -405,14 +399,9 @@ private static updateRecommendation(text: string): void {
             },
             body: JSON.stringify(tasks)
         });
-
-        if (!response.ok) {
-            throw new Error(`Error fetching AI recommendation: ${response.status} ${response.statusText}`);
-        }
-
         const data = await response.json();
-        if (data.recommendation) {
-            this.updateRecommendation(data.recommendation);
+        if (data.data) {
+            this.updateRecommendation(data.data);
         }
     } catch (error) {
         console.error('Error fetching AI recommendation:', error);

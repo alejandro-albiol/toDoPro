@@ -5,6 +5,7 @@ import { ErrorCode } from '../shared/models/constants/error-code.enum.js';
 import { UserException } from '../users/exceptions/base-user.exception.js';
 import { TaskException } from '../tasks/exceptions/base-task.exception.js';
 import { AuthException } from '../auth/exceptions/base-auth.exception.js';
+import { AiException } from '../ai/exceptions/ai-base.exception.js';
 
 export const errorHandler = (
     error: Error,
@@ -26,7 +27,7 @@ export const errorHandler = (
         );
     }
 
-    if (error instanceof UserException || error instanceof TaskException || error instanceof AuthException) {
+    if (error instanceof UserException || error instanceof TaskException || error instanceof AuthException || error instanceof AiException) {
         const apiError: IApiError = {
             code: error.errorCode,
             message: error.message
@@ -55,7 +56,6 @@ export const errorHandler = (
         message: error.message,
         timestamp: new Date().toISOString(),
         path: req.path,
-
         method: req.method
     });
 
@@ -64,7 +64,6 @@ export const errorHandler = (
         message: 'Internal server error'
     };
 
-    
     return res.status(500).json(
         new ApiResponse('error', 'Internal server error', null, [unknownError])
     );

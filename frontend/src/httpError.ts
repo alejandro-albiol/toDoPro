@@ -11,18 +11,27 @@ class ErrorCodeHandler {
     };
 
     private getStatusCode(): number | null {
-        const statusCode = localStorage.getItem('error');
+        const statusCode = localStorage.getItem('http-error');
         return statusCode ? Number(statusCode) : null;
     }
 
     private buildMessage(): void {
         const httpCode = this.getStatusCode();
+        const errorCode = localStorage.getItem('error-code');
+        const errorMessage = localStorage.getItem('error-message');
         const message = httpCode && this.errorMessages[httpCode]
             ? this.errorMessages[httpCode]
-            : "no carga el code 🤯";
+            : errorMessage || "An unexpected error occurred.";
 
         document.getElementById('number-error')!.textContent = `Error ${httpCode || "Unknown"}`;
         document.getElementById('message-error')!.textContent = message;
+
+        if (errorCode) {
+            const errorCodeElement = document.createElement('p');
+            errorCodeElement.id = 'error-code';
+            errorCodeElement.textContent = `Internal Error Code: ${errorCode}`;
+            document.querySelector('.error-container')!.appendChild(errorCodeElement);
+        }
     }
 
     private addGoBackButton(): void {
@@ -30,7 +39,9 @@ class ErrorCodeHandler {
         button.textContent = "Go Back";
         button.classList.add('error-btn');
         button.onclick = () => {
-            localStorage.removeItem('error');
+            localStorage.removeItem('http-error');
+            localStorage.removeItem('error-code');
+            localStorage.removeItem('error-message');
             window.location.href = "/index.html";
         };
 

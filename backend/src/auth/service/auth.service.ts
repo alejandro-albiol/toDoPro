@@ -6,9 +6,6 @@ import { LoginDTO } from '../models/dtos/login.dto.js';
 import { ChangePasswordDTO } from '../models/dtos/change-password.dto.js';
 import { JwtService } from './jwt.service.js';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
-import { UserCreationFailedException } from '../../users/exceptions/user-creation-failed.exception.js';
-import { UsernameAlreadyExistsException } from '../../users/exceptions/username-already-exists.exception.js';
-import { EmailAlreadyExistsException } from '../../users/exceptions/email-already-exists.exception.js';
 
 interface ResetTokenData {
     userId: string;
@@ -64,7 +61,6 @@ export class AuthService {
             throw new InvalidCredentialsException('Current password is incorrect');
         }
 
-        const hashedPassword = await HashService.hashPassword(data.newPassword);
-        await this.userService.updatePassword(decodedToken.userId, hashedPassword);
+        await this.userService.updatePassword(decodedToken.userId, data.newPassword);
     }
 }

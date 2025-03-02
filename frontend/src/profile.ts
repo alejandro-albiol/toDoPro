@@ -98,8 +98,20 @@ class ProfileManager {
       const newPassword = (document.getElementById("newPassword") as HTMLInputElement).value;
       const confirmPassword = (document.getElementById("confirmPassword") as HTMLInputElement).value;
   
+      const messageElement = document.getElementById("password-message");
+  
+      if (!this.isValidPassword(oldPassword)) {
+        messageElement!.textContent = "Old password must be at least 8 characters and contain letters and numbers.";
+        return;
+      }
+  
+      if (!this.isValidPassword(newPassword)) {
+        messageElement!.textContent = "New password must be at least 8 characters and contain letters and numbers.";
+        return;
+      }
+  
       if (newPassword !== confirmPassword) {
-        document.getElementById("password-message")!.textContent = "New passwords do not match.";
+        messageElement!.textContent = "New passwords do not match.";
         return;
       }
   
@@ -113,17 +125,23 @@ class ProfileManager {
           body: JSON.stringify({ oldPassword, newPassword }),
         });
   
-        const messageElement = document.getElementById("password-message");
-  
         if (response.ok) {
           messageElement!.textContent = "Password updated successfully!";
+          (document.getElementById("currentPassword") as HTMLInputElement).value = "";
+          (document.getElementById("newPassword") as HTMLInputElement).value = "";
+          (document.getElementById("confirmPassword") as HTMLInputElement).value = "";
         } else {
           const data = await response.json();
           messageElement!.textContent = data.errors?.[0]?.message || "Error updating password.";
         }
       } catch (error) {
-        document.getElementById("password-message")!.textContent = "Unexpected error occurred.";
+        console.error("Error updating password:", error);
+        messageElement!.textContent = "Unexpected error occurred.";
       }
+    }
+  
+    private isValidPassword(password: string): boolean {
+      return password.length >= 8 && /[A-Za-z]/.test(password) && /[0-9]/.test(password);
     }
   
     private navigateHome(): void {
@@ -141,11 +159,17 @@ class ProfileManager {
             },
           });
     
-          if (!response.ok) throw new Error("Failed to load tasks");
-    
           const result = await response.json();
           const tasks = result.data;
+
+          if (!tasks) {
+            document.getElementById("total-tasks")!.textContent = "0";
     
+            document.getElementById("completed-tasks")!.textContent = "0";
+            document.getElementById("pending-tasks")!.textContent = "0";
+            return;
+          }
+
           const completedTasks = tasks.filter((task: any) => task.completed === true);
           const pendingTasks = tasks.filter((task: any) => task.completed === false);
     
@@ -167,4 +191,3 @@ class ProfileManager {
     "http://localhost:3000/api/v1/users/UserID",
     "http://localhost:3000/api/v1/tasks/user/UserID"
   );
-  
