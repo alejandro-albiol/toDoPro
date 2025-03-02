@@ -1,38 +1,51 @@
-import { UpdateUserDTO } from "../models/dtos/update-user.dto.js";
-import { User } from "../models/entities/user.entity.js";
-import { IUserRepository } from "./i-user.repository.js";
-import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
-import { DatabaseError } from "pg-protocol";
-import { CreateUserDTO } from "../models/dtos/create-user.dto.js";
-import { UniqueViolationException } from "../../shared/exceptions/database/unique-violation.exception.js";
-import { NotFoundException } from "../../shared/exceptions/database/not-found.exception.js";
-import { ForeignKeyViolationException } from "../../shared/exceptions/database/foreign-key-violation.exception.js";
-import { NotNullViolationException } from "../../shared/exceptions/database/not-null-violation.exception.js";
-import { InvalidInputException } from "../../shared/exceptions/database/invalid-input.exception.js";
-import { UndefinedColumnException } from "../../shared/exceptions/database/undefined-column.exception.js";
-import { ConnectionErrorException } from "../../shared/exceptions/database/connection-error.exception.js";
-import { DbErrorCode } from "../../shared/exceptions/database/enum/db-error-code.enum.js";
-import { UnknownErrorException } from "../../shared/exceptions/database/unknown-error.exception.js";
+import { UpdateUserDTO } from '../models/dtos/update-user.dto.js';
+import { User } from '../models/entities/user.entity.js';
+import { IUserRepository } from './i-user.repository.js';
+import { IDatabasePool } from '../../shared/models/interfaces/base/i-database-pool.js';
+import { DatabaseError } from 'pg-protocol';
+import { CreateUserDTO } from '../models/dtos/create-user.dto.js';
+import { UniqueViolationException } from '../../shared/exceptions/database/unique-violation.exception.js';
+import { NotFoundException } from '../../shared/exceptions/database/not-found.exception.js';
+import { ForeignKeyViolationException } from '../../shared/exceptions/database/foreign-key-violation.exception.js';
+import { NotNullViolationException } from '../../shared/exceptions/database/not-null-violation.exception.js';
+import { InvalidInputException } from '../../shared/exceptions/database/invalid-input.exception.js';
+import { UndefinedColumnException } from '../../shared/exceptions/database/undefined-column.exception.js';
+import { ConnectionErrorException } from '../../shared/exceptions/database/connection-error.exception.js';
+import { DbErrorCode } from '../../shared/exceptions/database/enum/db-error-code.enum.js';
+import { UnknownErrorException } from '../../shared/exceptions/database/unknown-error.exception.js';
 
 export class UserRepository implements IUserRepository {
   constructor(private pool: IDatabasePool) {}
 
-  private handleDatabaseError(error: DatabaseError, context?: { username?: string; email?: string }) {
+  private handleDatabaseError(
+    error: DatabaseError,
+    context?: { username?: string; email?: string },
+  ) {
     switch (error.code) {
       case DbErrorCode.UNIQUE_VIOLATION:
         if (context) {
-          if (error.detail?.includes("Key (username)")) {
-            throw new UniqueViolationException(`username ${context.username} already exists`);
+          if (error.detail?.includes('Key (username)')) {
+            throw new UniqueViolationException(
+              `username ${context.username} already exists`,
+            );
           }
-          if (error.detail?.includes("Key (email)")) {
-            throw new UniqueViolationException(`email ${context.email} already exists`);
+          if (error.detail?.includes('Key (email)')) {
+            throw new UniqueViolationException(
+              `email ${context.email} already exists`,
+            );
           }
         }
-        throw new UniqueViolationException(`Unique constraint violation: ${error.detail}`);
+        throw new UniqueViolationException(
+          `Unique constraint violation: ${error.detail}`,
+        );
       case DbErrorCode.FOREIGN_KEY_VIOLATION:
-        throw new ForeignKeyViolationException(`Foreign key violation: ${error.detail}`);
+        throw new ForeignKeyViolationException(
+          `Foreign key violation: ${error.detail}`,
+        );
       case DbErrorCode.NOT_NULL_VIOLATION:
-        throw new NotNullViolationException(`Not null violation: ${error.detail}`);
+        throw new NotNullViolationException(
+          `Not null violation: ${error.detail}`,
+        );
       case DbErrorCode.INVALID_INPUT:
         throw new InvalidInputException(`Invalid input: ${error.detail}`);
       case DbErrorCode.UNDEFINED_COLUMN:
@@ -44,7 +57,10 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  private handleQueryError(error: unknown, context?: { username?: string; email?: string }) {
+  private handleQueryError(
+    error: unknown,
+    context?: { username?: string; email?: string },
+  ) {
     if (error instanceof DatabaseError) {
       this.handleDatabaseError(error, context);
     }
@@ -59,10 +75,17 @@ export class UserRepository implements IUserRepository {
     `;
 
     try {
-      const result = await this.pool.query(query, [user.username, user.email, user.password]);
+      const result = await this.pool.query(query, [
+        user.username,
+        user.email,
+        user.password,
+      ]);
       return result.rows[0] as Partial<User>;
     } catch (error) {
-      throw this.handleQueryError(error, { username: user.username ?? undefined, email: user.email ?? undefined });
+      throw this.handleQueryError(error, {
+        username: user.username ?? undefined,
+        email: user.email ?? undefined,
+      });
     }
   }
 
@@ -83,7 +106,7 @@ export class UserRepository implements IUserRepository {
 
     try {
       const result = await this.pool.query(query, [id]);
-      return result.rows[0] as Partial<User> || null;
+      return (result.rows[0] as Partial<User>) || null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -95,7 +118,7 @@ export class UserRepository implements IUserRepository {
 
     try {
       const result = await this.pool.query(query, [username]);
-      return result.rows[0] as Partial<User> || null;
+      return (result.rows[0] as Partial<User>) || null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -119,7 +142,7 @@ export class UserRepository implements IUserRepository {
 
     try {
       const result = await this.pool.query(query, [email]);
-      return result.rows[0] as Partial<User> || null;
+      return (result.rows[0] as Partial<User>) || null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -149,13 +172,20 @@ export class UserRepository implements IUserRepository {
     `;
 
     try {
-      const result = await this.pool.query(query, [user.id, user.username, user.email]);
+      const result = await this.pool.query(query, [
+        user.id,
+        user.username,
+        user.email,
+      ]);
       if (result.rows.length === 0) {
         throw new NotFoundException(`User not found with id: ${user.id}`);
       }
       return result.rows[0] as Partial<User>;
     } catch (error) {
-      this.handleQueryError(error, { username: user.username ?? undefined, email: user.email ?? undefined });
+      this.handleQueryError(error, {
+        username: user.username ?? undefined,
+        email: user.email ?? undefined,
+      });
       throw error;
     }
   }

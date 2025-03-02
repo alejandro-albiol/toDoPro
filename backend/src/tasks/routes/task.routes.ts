@@ -10,45 +10,44 @@ import { TaskValidator } from '../../middlewares/validators/task-validator.js';
  * @returns Configured Express Router instance
  */
 export const configureTaskRoutes = (controller: ITaskController): Router => {
-    const router = Router();
+  const router = Router();
 
-    router.post('/',
-        TaskValidator.validateCreate(),
-        (req, res) => controller.create(req, res)
-    );
-    
-    router.get('/:id',
-        IdValidator.validate('id'),
-        (req, res) => controller.findById(req, res)
-    );
+  router.post('/', TaskValidator.validateCreate(), (req, res) =>
+    controller.create(req, res),
+  );
 
-    router.get('/user/:userId',
-        IdValidator.validate('userId'),
-        (req, res) => controller.findAllByUserId(req, res)
-    );
+  router.get('/:id', IdValidator.validate('id'), (req, res) =>
+    controller.findById(req, res),
+  );
 
-    router.get('/user/:userId/completed',
-    
-        IdValidator.validate('userId'),
-        (req, res) => controller.findAllCompletedByUserId(req, res)
-    );
+  router.get('/user/:userId', IdValidator.validate('userId'), (req, res) =>
+    controller.findAllByUserId(req, res),
+  );
 
-    router.put('/:id',
-        IdValidator.validate('id'),
-        TaskValidator.validateUpdate(),
-        (req, res) => controller.update(req, res)
-    );
+  router.get(
+    '/user/:userId/completed',
 
-    router.put('/:id/completed',
-    
-        IdValidator.validate('id'),
-        (req, res) => controller.toggleCompleted(req, res)
-    );
+    IdValidator.validate('userId'),
+    (req, res) => controller.findAllCompletedByUserId(req, res),
+  );
 
-    router.delete('/:id',
-        IdValidator.validate('id'),
-        (req, res) => controller.delete(req, res)
-    );
-    
-    return router;
-}; 
+  router.put(
+    '/:id',
+    IdValidator.validate('id'),
+    TaskValidator.validateUpdate(),
+    (req, res) => controller.update(req, res),
+  );
+
+  router.put(
+    '/:id/completed',
+
+    IdValidator.validate('id'),
+    (req, res) => controller.toggleCompleted(req, res),
+  );
+
+  router.delete('/:id', IdValidator.validate('id'), (req, res) =>
+    controller.delete(req, res),
+  );
+
+  return router;
+};

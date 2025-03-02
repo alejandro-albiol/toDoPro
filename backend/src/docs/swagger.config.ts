@@ -15,43 +15,43 @@ export const swaggerConfig = {
   info: {
     title: 'ToDoPro API',
     version: '1.0.0',
-    description: 'API documentation for ToDoPro application'
+    description: 'API documentation for ToDoPro application',
   },
   servers: [
     {
       url: '/api/v1',
-      description: 'API version 1'
-    }
+      description: 'API version 1',
+    },
   ],
   components: {
     securitySchemes: {
       BearerAuth: {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT'
-      }
+        bearerFormat: 'JWT',
+      },
     },
     schemas: {
       ...apiResponseSchema,
       ...taskSchema,
       ...userSchema,
-      ...authSchema
+      ...authSchema,
     },
     responses: {
       ...commonResponses,
       ...taskResponses,
       ...userResponses,
-      ...authResponses
-    }
+      ...authResponses,
+    },
   },
   security: [
     {
-      BearerAuth: []
-    }
+      BearerAuth: [],
+    },
   ],
   paths: {
     ...TaskPaths,
     ...UserPaths,
-    ...AuthPaths
-  }
+    ...AuthPaths,
+  },
 };

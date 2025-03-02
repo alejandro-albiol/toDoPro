@@ -10,11 +10,11 @@ export const userResponses = {
           data: {
             id: '123',
             username: 'john_doe',
-            email: 'john@example.com'
-          }
-        }
-      }
-    }
+            email: 'john@example.com',
+          },
+        },
+      },
+    },
   },
   UserNotFound: {
     description: 'User not found',
@@ -28,12 +28,12 @@ export const userResponses = {
           errors: [
             {
               code: 'U1',
-              message: 'User with id 123 not found'
-            }
-          ]
-        }
-      }
-    }
+              message: 'User with id 123 not found',
+            },
+          ],
+        },
+      },
+    },
   },
   UserConflict: {
     description: 'Username or email already exists',
@@ -49,11 +49,11 @@ export const userResponses = {
               errors: [
                 {
                   code: 'U2',
-                  message: "User with email 'john@example.com' already exists"
-                }
-              ]
+                  message: "User with email 'john@example.com' already exists",
+                },
+              ],
             },
-            summary: 'Email already exists'
+            summary: 'Email already exists',
           },
           usernameConflict: {
             value: {
@@ -63,14 +63,14 @@ export const userResponses = {
               errors: [
                 {
                   code: 'U3',
-                  message: "User with username 'john_doe' already exists"
-                }
-              ]
+                  message: "User with username 'john_doe' already exists",
+                },
+              ],
             },
-            summary: 'Username already exists'
-          }
-        }
-      }
-    }
-  }
-}; 
+            summary: 'Username already exists',
+          },
+        },
+      },
+    },
+  },
+};

@@ -5,7 +5,7 @@ export class DatabaseException extends BaseException {
   constructor(
     message: string,
     public readonly errorCode: DbErrorCode,
-    public readonly detail?: string
+    public readonly detail?: string,
   ) {
     super(message, 500, errorCode, detail);
   }

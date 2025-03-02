@@ -1,7 +1,7 @@
-import { IBaseRepository } from "../../shared/models/interfaces/base/i-repository.js";
-import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
-import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
-import { Task } from "../models/entities/task.entity.js";
+import { IBaseRepository } from '../../shared/models/interfaces/base/i-repository.js';
+import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
+import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';
+import { Task } from '../models/entities/task.entity.js';
 
 /**
  * Interface representing a repository for managing tasks.
@@ -9,7 +9,8 @@ import { Task } from "../models/entities/task.entity.js";
  *
  * @extends {IBaseRepository<Task, CreateTaskDTO, UpdateTaskDTO>}
  */
-export interface ITaskRepository extends IBaseRepository<Task, CreateTaskDTO, UpdateTaskDTO> {
+export interface ITaskRepository
+  extends IBaseRepository<Task, CreateTaskDTO, UpdateTaskDTO> {
   /**
    * Toggles the completion status of a task.
    *

@@ -1,5 +1,5 @@
-import { Request,Response } from "express"
+import { Request, Response } from 'express';
 
-export interface IAiReccomendationController{
-    sendRecommendation(req:Request, res:Response): void
+export interface IAiReccomendationController {
+  sendRecommendation(req: Request, res: Response): void;
 }

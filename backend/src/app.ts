@@ -18,12 +18,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), '..', 'public')));
 
 app.use('/api/v1', apiRouter);
-app.use("/recommendation", configureAiRoutes(aiController));
+app.use('/recommendation', configureAiRoutes(aiController));
 
 app.use(configureStaticRoutes());
 
 app.use('/api-docs', swaggerUi.serve as unknown as express.RequestHandler[]);
-app.use('/api-docs', swaggerUi.setup(swaggerConfig, { explorer: true }) as unknown as express.RequestHandler[]);
+app.use(
+  '/api-docs',
+  swaggerUi.setup(swaggerConfig, {
+    explorer: true,
+  }) as unknown as express.RequestHandler[],
+);
 
 app.use(errorHandler);
 

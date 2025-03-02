@@ -9,11 +9,11 @@ export const authResponses = {
           user: {
             id: '123',
             username: 'john_doe',
-            email: 'john@example.com'
-          }
-        }
-      }
-    }
+            email: 'john@example.com',
+          },
+        },
+      },
+    },
   },
   InvalidCredentials: {
     description: 'Invalid email or password',
@@ -27,12 +27,12 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH1',
-              message: 'Invalid email or password'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Invalid email or password',
+            },
+          ],
+        },
+      },
+    },
   },
   TokenExpired: {
     description: 'User token has expired',
@@ -46,12 +46,12 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH2',
-              message: 'Token has expired'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Token has expired',
+            },
+          ],
+        },
+      },
+    },
   },
   InvalidToken: {
     description: 'Invalid token',
@@ -65,12 +65,12 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH3',
-              message: 'Invalid token'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Invalid token',
+            },
+          ],
+        },
+      },
+    },
   },
   Unauthorized: {
     description: 'User is not authorized',
@@ -84,12 +84,12 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH4',
-              message: 'User is not authorized'
-            }
-          ]
-        }
-      }
-    }
+              message: 'User is not authorized',
+            },
+          ],
+        },
+      },
+    },
   },
   InvalidJwtSecret: {
     description: 'Invalid JWT secret',
@@ -103,12 +103,12 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH5',
-              message: 'Invalid JWT secret'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Invalid JWT secret',
+            },
+          ],
+        },
+      },
+    },
   },
   UnknownError: {
     description: 'Unknown error',
@@ -122,11 +122,11 @@ export const authResponses = {
           errors: [
             {
               code: 'AUTH6',
-              message: 'An unknown error occurred'
-            }
-          ]
-        }
-      }
-    }
-  }
+              message: 'An unknown error occurred',
+            },
+          ],
+        },
+      },
+    },
+  },
 };

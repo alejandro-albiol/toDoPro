@@ -11,30 +11,26 @@ import { IUserController } from '../controller/i-user.controller.js';
  * @returns Configured Express Router instance
  */
 export const configureUserRoutes = (controller: IUserController): Router => {
-    const router = Router();
+  const router = Router();
 
-    router.post('/',
-        UserValidator.validateCreate(),
-        (req, res) => controller.create(req, res)
-    );
-    
-    router.get('/:id',
-        IdValidator.validate('id'),
-        (req, res) => controller.findById(req, res)
-    );
-    
-    router.put('/:id',
-        IdValidator.validate('id'),
-        UserValidator.validateUpdate(),
-        (req, res) => controller.update(req, res)
-    );
-    
-    router.delete('/:id',
-        IdValidator.validate('id'),
-        (req, res) => {
-            controller.delete(req, res);
-        }
-    );
-    
-    return router;
-}; 
+  router.post('/', UserValidator.validateCreate(), (req, res) =>
+    controller.create(req, res),
+  );
+
+  router.get('/:id', IdValidator.validate('id'), (req, res) =>
+    controller.findById(req, res),
+  );
+
+  router.put(
+    '/:id',
+    IdValidator.validate('id'),
+    UserValidator.validateUpdate(),
+    (req, res) => controller.update(req, res),
+  );
+
+  router.delete('/:id', IdValidator.validate('id'), (req, res) => {
+    controller.delete(req, res);
+  });
+
+  return router;
+};

@@ -8,59 +8,72 @@ import { JwtService } from './jwt.service.js';
 import { InvalidTokenException } from '../exceptions/invalid-token.exception.js';
 
 interface ResetTokenData {
-    userId: string;
-    expiresAt: number;
+  userId: string;
+  expiresAt: number;
 }
 
 export class AuthService {
-    private resetTokens: Map<string, ResetTokenData> = new Map();
-    private readonly resetTokenExpiration = 3600000;
+  private resetTokens: Map<string, ResetTokenData> = new Map();
+  private readonly resetTokenExpiration = 3600000;
 
-    constructor(
-        private readonly userService: UserService,
-        private readonly jwtService: JwtService,
-    ) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-    async register(data: CreateUserDTO): Promise<void> {
-        try {
-            await this.userService.create(data);
-        } catch (error) {
-            throw error;
-        }
+  async register(data: CreateUserDTO): Promise<void> {
+    try {
+      await this.userService.create(data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async login(data: LoginDTO): Promise<string> {
+    const user = await this.userService.findByUsername(data.username);
+    if (!user) {
+      throw new InvalidCredentialsException('Invalid username or password');
     }
 
-    async login(data: LoginDTO): Promise<string> {
-        const user = await this.userService.findByUsername(data.username);
-        if (!user) {
-            throw new InvalidCredentialsException('Invalid username or password');
-        }
-
-        const hashedPassword = await this.userService.getPasswordByUsername(data.username);
-        if (!hashedPassword) {
-            throw new InvalidCredentialsException('Invalid username or password');
-        }
-
-        const isValidPassword = await HashService.verifyPassword(data.password, hashedPassword);
-        if (!isValidPassword) {
-            throw new InvalidCredentialsException('Invalid username or password');
-        }
-
-        return this.jwtService.generateToken(user.id!, user.username!);
+    const hashedPassword = await this.userService.getPasswordByUsername(
+      data.username,
+    );
+    if (!hashedPassword) {
+      throw new InvalidCredentialsException('Invalid username or password');
     }
 
-    async changePassword(token: string, data: ChangePasswordDTO): Promise<void> {
-        const decodedToken = this.jwtService.verifyToken(token);
-        const password = await this.userService.getPasswordByUsername(decodedToken.username);
-        
-        if (!password) {
-            throw new InvalidTokenException('Invalid token: user not found');
-        }
-
-        const isValidPassword = await HashService.verifyPassword(data.oldPassword, password);
-        if (!isValidPassword) {
-            throw new InvalidCredentialsException('Current password is incorrect');
-        }
-
-        await this.userService.updatePassword(decodedToken.userId, data.newPassword);
+    const isValidPassword = await HashService.verifyPassword(
+      data.password,
+      hashedPassword,
+    );
+    if (!isValidPassword) {
+      throw new InvalidCredentialsException('Invalid username or password');
     }
+
+    return this.jwtService.generateToken(user.id!, user.username!);
+  }
+
+  async changePassword(token: string, data: ChangePasswordDTO): Promise<void> {
+    const decodedToken = this.jwtService.verifyToken(token);
+    const password = await this.userService.getPasswordByUsername(
+      decodedToken.username,
+    );
+
+    if (!password) {
+      throw new InvalidTokenException('Invalid token: user not found');
+    }
+
+    const isValidPassword = await HashService.verifyPassword(
+      data.oldPassword,
+      password,
+    );
+    if (!isValidPassword) {
+      throw new InvalidCredentialsException('Current password is incorrect');
+    }
+
+    await this.userService.updatePassword(
+      decodedToken.userId,
+      data.newPassword,
+    );
+  }
 }

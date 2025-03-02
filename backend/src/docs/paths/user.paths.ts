@@ -8,14 +8,14 @@ export const UserPaths = {
           in: 'path',
           name: 'id',
           required: true,
-          schema: { type: 'string' }
-        }
+          schema: { type: 'string' },
+        },
       ],
       responses: {
         200: { $ref: '#/components/responses/UserResponse' },
         404: { $ref: '#/components/responses/UserNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
     },
     put: {
       tags: ['Users'],
@@ -25,24 +25,24 @@ export const UserPaths = {
           in: 'path',
           name: 'id',
           required: true,
-          schema: { type: 'string' }
-        }
+          schema: { type: 'string' },
+        },
       ],
       requestBody: {
         required: true,
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/UpdateUserDTO'
-            }
-          }
-        }
+              $ref: '#/components/schemas/UpdateUserDTO',
+            },
+          },
+        },
       },
       responses: {
         200: { $ref: '#/components/responses/UserResponse' },
         404: { $ref: '#/components/responses/UserNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
     },
     delete: {
       tags: ['Users'],
@@ -52,16 +52,16 @@ export const UserPaths = {
           in: 'path',
           name: 'id',
           required: true,
-          schema: { type: 'string' }
-        }
+          schema: { type: 'string' },
+        },
       ],
       responses: {
         204: {
-          description: 'User deleted successfully'
+          description: 'User deleted successfully',
         },
         404: { $ref: '#/components/responses/UserNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
-  }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
 };

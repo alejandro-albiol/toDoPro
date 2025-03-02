@@ -13,11 +13,11 @@ export const taskResponses = {
             description: 'Task description',
             user_id: '456',
             completed: false,
-            creation_date: '2024-01-24T22:10:44.041Z'
-          }
-        }
-      }
-    }
+            creation_date: '2024-01-24T22:10:44.041Z',
+          },
+        },
+      },
+    },
   },
   TaskNotFound: {
     description: 'Task not found',
@@ -31,12 +31,12 @@ export const taskResponses = {
           errors: [
             {
               code: 'T1',
-              message: 'Task with specified ID not found'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Task with specified ID not found',
+            },
+          ],
+        },
+      },
+    },
   },
   InvalidTaskData: {
     description: 'Invalid task data',
@@ -52,11 +52,11 @@ export const taskResponses = {
               errors: [
                 {
                   code: 'T2',
-                  message: 'Invalid task data format'
-                }
-              ]
+                  message: 'Invalid task data format',
+                },
+              ],
             },
-            summary: 'Invalid task data format'
+            summary: 'Invalid task data format',
           },
           invalidTitle: {
             value: {
@@ -66,11 +66,11 @@ export const taskResponses = {
               errors: [
                 {
                   code: 'T3',
-                  message: 'Title must not be empty'
-                }
-              ]
+                  message: 'Title must not be empty',
+                },
+              ],
             },
-            summary: 'Invalid title'
+            summary: 'Invalid title',
           },
           invalidDescription: {
             value: {
@@ -80,15 +80,15 @@ export const taskResponses = {
               errors: [
                 {
                   code: 'T4',
-                  message: 'Description is too long'
-                }
-              ]
+                  message: 'Description is too long',
+                },
+              ],
             },
-            summary: 'Invalid description'
-          }
-        }
-      }
-    }
+            summary: 'Invalid description',
+          },
+        },
+      },
+    },
   },
   TaskCreationFailed: {
     description: 'Task creation failed',
@@ -99,12 +99,10 @@ export const taskResponses = {
           status: 'error',
           message: 'Task creation failed',
           data: null,
-          errors: [
-            { code: 'T6', message: 'Task creation failed' }
-          ]
-        }
-      }
-    }
+          errors: [{ code: 'T6', message: 'Task creation failed' }],
+        },
+      },
+    },
   },
   TaskResponse: {
     description: 'Response for a singular task',
@@ -120,10 +118,10 @@ export const taskResponses = {
             description: 'Task description',
             user_id: '456',
             completed: false,
-            creation_date: '2024-01-24T22:10:44.041Z'
-          }
-        }
-      }
-    }
+            creation_date: '2024-01-24T22:10:44.041Z',
+          },
+        },
+      },
+    },
   },
 };

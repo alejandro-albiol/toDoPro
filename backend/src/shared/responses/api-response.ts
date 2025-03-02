@@ -24,28 +24,35 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
   static success(res: Response, data: any): void {
     res.status(200).json({
       success: true,
-      data
+      data,
     });
   }
 
   static created(res: Response, data: any): void {
     res.status(201).json({
       success: true,
-      data
+      data,
     });
   }
 
-  static error(res: Response, error: BaseException | Error | unknown, statusCode: number = 500): void {
+  static error(
+    res: Response,
+    error: BaseException | Error | unknown,
+    statusCode: number = 500,
+  ): void {
     if (error instanceof BaseException) {
       res.status(statusCode).json({
         success: false,
         errors: {
           code: error.errorCode,
           message: error.message,
-          metadata: process.env.NODE_ENV === 'development' ? {
-            stack: error.stack
-          } : undefined
-        }
+          metadata:
+            process.env.NODE_ENV === 'development'
+              ? {
+                  stack: error.stack,
+                }
+              : undefined,
+        },
       });
     } else if (error instanceof Error) {
       res.status(statusCode).json({
@@ -53,10 +60,13 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
         errors: {
           code: 'INTERNAL_SERVER_ERROR',
           message: error.message,
-          metadata: process.env.NODE_ENV === 'development' ? {
-            stack: error.stack
-          } : undefined
-        }
+          metadata:
+            process.env.NODE_ENV === 'development'
+              ? {
+                  stack: error.stack,
+                }
+              : undefined,
+        },
       });
     } else {
       res.status(statusCode).json({
@@ -65,50 +75,67 @@ export class ApiResponse<T = any> implements IApiResponse<T> {
           code: 'UNKNOWN_ERROR',
           message: 'An unexpected error occurred',
           metadata: {
-            error: error instanceof Object ? JSON.stringify(error) : 'Unknown error'
-          }
-        }
+            error:
+              error instanceof Object ? JSON.stringify(error) : 'Unknown error',
+          },
+        },
       });
     }
   }
 
-  static notFound(res: Response, message: string, errorCode: string = 'NOT_FOUND'): void {
+  static notFound(
+    res: Response,
+    message: string,
+    errorCode: string = 'NOT_FOUND',
+  ): void {
     res.status(404).json({
       success: false,
       errors: {
         code: errorCode,
-        message
-      }
+        message,
+      },
     });
   }
 
-  static badRequest(res: Response, message: string, errorCode: string = 'BAD_REQUEST'): void {
+  static badRequest(
+    res: Response,
+    message: string,
+    errorCode: string = 'BAD_REQUEST',
+  ): void {
     res.status(400).json({
       success: false,
       errors: {
         code: errorCode,
-        message
-      }
+        message,
+      },
     });
   }
 
-  static unauthorized(res: Response, message: string, errorCode: string = 'UNAUTHORIZED'): void {
+  static unauthorized(
+    res: Response,
+    message: string,
+    errorCode: string = 'UNAUTHORIZED',
+  ): void {
     res.status(401).json({
       success: false,
       errors: {
         code: errorCode,
-        message
-      }
+        message,
+      },
     });
   }
 
-  static forbidden(res: Response, message: string, errorCode: string = 'FORBIDDEN'): void {
+  static forbidden(
+    res: Response,
+    message: string,
+    errorCode: string = 'FORBIDDEN',
+  ): void {
     res.status(403).json({
       success: false,
       errors: {
         code: errorCode,
-        message
-      }
+        message,
+      },
     });
   }
 }

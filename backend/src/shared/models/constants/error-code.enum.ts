@@ -2,5 +2,5 @@ export enum ErrorCode {
   INVALID_JSON_FORMAT = 'F1',
   INVALID_ID_FORMAT = 'F2',
   INTERNAL_SERVER_ERROR = 'F3',
-  UNKNOWN_ERROR = 'F4'
+  UNKNOWN_ERROR = 'F4',
 }

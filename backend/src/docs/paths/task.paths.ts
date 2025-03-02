@@ -9,18 +9,18 @@ export const TaskPaths = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/CreateTaskDTO'
-            }
-          }
-        }
+              $ref: '#/components/schemas/CreateTaskDTO',
+            },
+          },
+        },
       },
       responses: {
         201: { $ref: '#/components/responses/TaskCreated' },
         400: { $ref: '#/components/responses/InvalidTaskData' },
         401: { $ref: '#/components/responses/Unauthorized' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/tasks/user/{userId}': {
     get: {
@@ -33,17 +33,17 @@ export const TaskPaths = {
           name: 'userId',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       responses: {
         200: { $ref: '#/components/responses/TaskResponse' },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/tasks/user/{userId}/completed': {
     get: {
@@ -56,17 +56,17 @@ export const TaskPaths = {
           name: 'userId',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       responses: {
         200: { $ref: '#/components/responses/TaskResponse' },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/tasks/{id}': {
     get: {
@@ -79,16 +79,16 @@ export const TaskPaths = {
           name: 'id',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       responses: {
         200: { $ref: '#/components/responses/TaskResponse' },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
     },
     put: {
       tags: ['Tasks'],
@@ -100,26 +100,26 @@ export const TaskPaths = {
           name: 'id',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       requestBody: {
         required: true,
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/UpdateTaskDTO'
-            }
-          }
-        }
+              $ref: '#/components/schemas/UpdateTaskDTO',
+            },
+          },
+        },
       },
       responses: {
         200: { $ref: '#/components/responses/TaskResponse' },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
     },
     delete: {
       tags: ['Tasks'],
@@ -131,19 +131,19 @@ export const TaskPaths = {
           name: 'id',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       responses: {
         204: {
-          description: 'Task deleted successfully'
+          description: 'Task deleted successfully',
         },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/tasks/{id}/toggle-completed': {
     put: {
@@ -156,16 +156,16 @@ export const TaskPaths = {
           name: 'id',
           required: true,
           schema: {
-            type: 'string'
-          }
-        }
+            type: 'string',
+          },
+        },
       ],
       responses: {
         200: { $ref: '#/components/responses/TaskResponse' },
         401: { $ref: '#/components/responses/Unauthorized' },
         404: { $ref: '#/components/responses/TaskNotFound' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
-  }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
 };

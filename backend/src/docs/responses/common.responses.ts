@@ -10,12 +10,12 @@ export const commonResponses = {
           errors: [
             {
               code: 'F1',
-              message: 'Invalid JSON format'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Invalid JSON format',
+            },
+          ],
+        },
+      },
+    },
   },
   InvalidIdFormat: {
     description: 'Invalid ID format',
@@ -28,12 +28,12 @@ export const commonResponses = {
           errors: [
             {
               code: 'F2',
-              message: 'Invalid ID format'
-            }
-          ]
-        }
-      }
-    }
+              message: 'Invalid ID format',
+            },
+          ],
+        },
+      },
+    },
   },
   InternalServerError: {
     description: 'Internal server error',
@@ -46,11 +46,11 @@ export const commonResponses = {
           errors: [
             {
               code: 'INTERNAL_ERROR',
-              message: 'An unexpected error occurred'
-            }
-          ]
-        }
-      }
-    }
-  }
-}; 
+              message: 'An unexpected error occurred',
+            },
+          ],
+        },
+      },
+    },
+  },
+};

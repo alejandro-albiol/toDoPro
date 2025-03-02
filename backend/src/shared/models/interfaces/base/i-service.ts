@@ -6,7 +6,6 @@
  * @template UpdateDTO - The type of the data transfer object used for updating an entity. Defaults to a partial of T.
  */
 export interface IBaseService<T, CreateDTO, UpdateDTO = Partial<T>> {
-  
   /**
    * Finds an entity by its ID.
    *

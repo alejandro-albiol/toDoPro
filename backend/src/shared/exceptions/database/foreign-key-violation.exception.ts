@@ -1,5 +1,5 @@
-import { DatabaseException } from "./database.exception.js";
-import { DbErrorCode } from "./enum/db-error-code.enum.js";
+import { DatabaseException } from './database.exception.js';
+import { DbErrorCode } from './enum/db-error-code.enum.js';
 
 export class ForeignKeyViolationException extends DatabaseException {
   constructor(message: string, detail?: string) {

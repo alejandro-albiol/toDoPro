@@ -8,17 +8,17 @@ export const AuthPaths = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/LoginDTO'
-            }
-          }
-        }
+              $ref: '#/components/schemas/LoginDTO',
+            },
+          },
+        },
       },
       responses: {
         200: { $ref: '#/components/responses/LoginSuccess' },
         400: { $ref: '#/components/responses/InvalidCredentials' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/auth/register': {
     post: {
@@ -29,18 +29,18 @@ export const AuthPaths = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/CreateUserDTO'
-            }
-          }
-        }
+              $ref: '#/components/schemas/CreateUserDTO',
+            },
+          },
+        },
       },
       responses: {
         201: { $ref: '#/components/responses/UserCreated' },
         400: { $ref: '#/components/responses/InvalidUserData' },
         409: { $ref: '#/components/responses/UserConflict' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
   },
   '/auth/password/change': {
     post: {
@@ -51,9 +51,9 @@ export const AuthPaths = {
         required: true,
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/ChangePasswordDTO' }
-          }
-        }
+            schema: { $ref: '#/components/schemas/ChangePasswordDTO' },
+          },
+        },
       },
       responses: {
         200: {
@@ -65,15 +65,15 @@ export const AuthPaths = {
                 status: 'success',
                 message: 'Password updated successfully',
                 data: {
-                  example: 'Password updated successfully'
-                }
-              }
-            }
-          }
+                  example: 'Password updated successfully',
+                },
+              },
+            },
+          },
         },
         401: { $ref: '#/components/responses/Unauthorized' },
-        500: { $ref: '#/components/responses/InternalServerError' }
-      }
-    }
-  }
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
 };

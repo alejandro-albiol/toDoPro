@@ -1,17 +1,17 @@
-import { DatabaseError } from "pg-protocol";
-import { IDatabasePool } from "../../shared/models/interfaces/base/i-database-pool.js";
-import { CreateTaskDTO } from "../models/dtos/create-task.dto.js";
-import { UpdateTaskDTO } from "../models/dtos/update-task.dto.js";
-import { Task } from "../models/entities/task.entity.js";
-import { ITaskRepository } from "./i-task.repository.js";
-import { ConnectionErrorException } from "../../shared/exceptions/database/connection-error.exception.js";
-import { DbErrorCode } from "../../shared/exceptions/database/enum/db-error-code.enum.js";
-import { ForeignKeyViolationException } from "../../shared/exceptions/database/foreign-key-violation.exception.js";
-import { InvalidInputException } from "../../shared/exceptions/database/invalid-input.exception.js";
-import { NotNullViolationException } from "../../shared/exceptions/database/not-null-violation.exception.js";
-import { UndefinedColumnException } from "../../shared/exceptions/database/undefined-column.exception.js";
-import { UnknownErrorException } from "../../shared/exceptions/database/unknown-error.exception.js";
-import { NotFoundException } from "../../shared/exceptions/database/not-found.exception.js";
+import { DatabaseError } from 'pg-protocol';
+import { IDatabasePool } from '../../shared/models/interfaces/base/i-database-pool.js';
+import { CreateTaskDTO } from '../models/dtos/create-task.dto.js';
+import { UpdateTaskDTO } from '../models/dtos/update-task.dto.js';
+import { Task } from '../models/entities/task.entity.js';
+import { ITaskRepository } from './i-task.repository.js';
+import { ConnectionErrorException } from '../../shared/exceptions/database/connection-error.exception.js';
+import { DbErrorCode } from '../../shared/exceptions/database/enum/db-error-code.enum.js';
+import { ForeignKeyViolationException } from '../../shared/exceptions/database/foreign-key-violation.exception.js';
+import { InvalidInputException } from '../../shared/exceptions/database/invalid-input.exception.js';
+import { NotNullViolationException } from '../../shared/exceptions/database/not-null-violation.exception.js';
+import { UndefinedColumnException } from '../../shared/exceptions/database/undefined-column.exception.js';
+import { UnknownErrorException } from '../../shared/exceptions/database/unknown-error.exception.js';
+import { NotFoundException } from '../../shared/exceptions/database/not-found.exception.js';
 
 export class TaskRepository implements ITaskRepository {
   constructor(private pool: IDatabasePool) {}
@@ -19,9 +19,13 @@ export class TaskRepository implements ITaskRepository {
   private handleDatabaseError(error: DatabaseError) {
     switch (error.code) {
       case DbErrorCode.FOREIGN_KEY_VIOLATION:
-        throw new ForeignKeyViolationException(`Foreign key violation: ${error.detail}`);
+        throw new ForeignKeyViolationException(
+          `Foreign key violation: ${error.detail}`,
+        );
       case DbErrorCode.NOT_NULL_VIOLATION:
-        throw new NotNullViolationException(`Not null violation: ${error.detail}`);
+        throw new NotNullViolationException(
+          `Not null violation: ${error.detail}`,
+        );
       case DbErrorCode.INVALID_INPUT:
         throw new InvalidInputException(`Invalid input: ${error.detail}`);
       case DbErrorCode.UNDEFINED_COLUMN:
@@ -48,7 +52,11 @@ export class TaskRepository implements ITaskRepository {
     `;
 
     try {
-      const result = await this.pool.query(query, [task.title, task.description, task.user_id]);
+      const result = await this.pool.query(query, [
+        task.title,
+        task.description,
+        task.user_id,
+      ]);
       return result.rows[0] as Partial<Task>;
     } catch (error) {
       this.handleQueryError(error);
@@ -73,7 +81,7 @@ export class TaskRepository implements ITaskRepository {
 
     try {
       const result = await this.pool.query(query, [userId]);
-      return result.rows.length ? result.rows as Task[] : null;
+      return result.rows.length ? (result.rows as Task[]) : null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -97,7 +105,7 @@ export class TaskRepository implements ITaskRepository {
 
     try {
       const result = await this.pool.query(query, [id]);
-      return result.rows[0] as Task || null;
+      return (result.rows[0] as Task) || null;
     } catch (error) {
       this.handleQueryError(error);
       throw error;
@@ -133,7 +141,9 @@ export class TaskRepository implements ITaskRepository {
     try {
       const result = await this.pool.query(query, values);
       if (result.rows.length === 0) {
-        throw new NotFoundException(`Task not found with id: ${updatedTask.id}`);
+        throw new NotFoundException(
+          `Task not found with id: ${updatedTask.id}`,
+        );
       }
       return result.rows[0] as Task;
     } catch (error) {

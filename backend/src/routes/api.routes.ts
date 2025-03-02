@@ -16,7 +16,6 @@ import { AuthMiddleware } from '../middlewares/auth.middleware.js';
 
 const apiRouter = Express.Router();
 
-
 const userRepository = new UserRepository(pool);
 const taskRepository = new TaskRepository(pool);
 
@@ -32,7 +31,15 @@ const taskController = new TaskController(taskService);
 const authMiddleware = new AuthMiddleware(jwtService);
 
 apiRouter.use('/auth', configureAuthRoutes(authController, authMiddleware));
-apiRouter.use('/users', authMiddleware.authenticate, configureUserRoutes(userController));
-apiRouter.use('/tasks', authMiddleware.authenticate, configureTaskRoutes(taskController));
+apiRouter.use(
+  '/users',
+  authMiddleware.authenticate,
+  configureUserRoutes(userController),
+);
+apiRouter.use(
+  '/tasks',
+  authMiddleware.authenticate,
+  configureTaskRoutes(taskController),
+);
 
 export default apiRouter;
