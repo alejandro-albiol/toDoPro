@@ -1,0 +1,31 @@
+/* styles.css */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 8px;
+  }
+  
+  .modal.visible {
+    display: block;
+  }
+  
+  .modal-content {
+    text-align: center;
+  }
+  
+  #close-modal {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  

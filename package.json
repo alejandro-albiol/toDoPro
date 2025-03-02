@@ -1,55 +1,40 @@
 {
   "name": "todopro",
-  "version": "0.0.1",
-  "description": "To do list generator.",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint \"src/**/*.{js,ts,tsx}\" --fix",
-    "format": "prettier --write \"src/**/*.{js,ts,tsx,css,html}\"",
-    "start": "node build/index.js",
-    "dev": "nodemon --watch src -e ts,json --exec \"npm run build && node build/index.js\"",
-    "build:backend": "tsc --project tsconfig.json",
-    "build:frontend": "tsc --project tsconfig.frontend.json",
-    "build": "npm run prebuild && npm run build:backend && npm run build:frontend",
-    "prebuild": "if not exist public\\scripts mkdir public\\scripts"
-  },
-  "keywords": [
-    "nodejs",
-    "express",
-    "typescript",
-    "javascript",
-    "html",
-    "css",
-    "authentication",
-    "todo-list",
-    "task-manager",
-    "web-development",
-    "backend",
+  "private": true,
+  "workspaces": [
     "frontend",
-    "fullstack"
+    "backend"
   ],
-  "author": "base",
-  "license": "MIT",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "groq-sdk": "^0.9.0",
-    "pg": "^8.13.1"
+  "scripts": {
+    "dev": "npm run dev -w frontend && npm run dev -w backend",
+    "test": "npm run test -w backend",
+    "test:integration": "npm run test:integration -w backend",
+    "test:unit": "npm run test:unit -w backend",
+    "test:backend": "npm run test -w backend",
+    "lint": "npm run lint -w backend",
+    "format": "npm run format -w backend",
+    "docs:backend": "npm run docs -w backend",
+    "docs:frontend": "npm run docs -w frontend",
+    "docs": "concurrently \"npm run docs:backend\" \"npm run docs:frontend\"",
+    "start": "npm run start -w backend"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.8.4",
-    "@types/pg": "^8.11.10",
-    "eslint": "^9.15.0",
+    "@types/jest": "^29.5.14",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "nodemon": "^3.1.7",
-    "prettier": "^3.3.3",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.2",
+    "prettier": "^3.4.2",
+    "supertest": "^7.0.0",
+    "typedoc": "^0.27.6"
   },
-  "type": "module"
+  "dependencies": {
+    "groq-sdk": "^0.9.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
 }

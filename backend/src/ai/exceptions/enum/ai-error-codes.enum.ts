@@ -1,0 +1,4 @@
+export enum AiErrorCodes {
+  GENERATING_RECOMMENDATION_ERROR = 'AI1',
+  CONNECTION_ERROR = 'AI2',
+}

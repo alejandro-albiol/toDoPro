@@ -1,4 +1,34 @@
-.env
-/build
+# Dependencies
 /node_modules
-/public/scripts
+/backend/node_modules
+/frontend/node_modules
+
+# Build outputs
+/backend/dist
+/public/js
+
+# Environment files
+.env
+
+# IDE files
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Coverage files
+coverage/**/*.html
+coverage/
+!public/**/*.html
+
+# TypeDoc generated documentation
+backend/docs/
+
