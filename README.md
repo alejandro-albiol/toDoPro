@@ -85,11 +85,7 @@ toDoPro is a simple yet powerful task manager that leverages AI to help you prio
 
 Clone the repository:
 
-    git clone:
-    
-        https://github.com/alejandro-albiol/toDoPro.git
-
-        
+    git clone https://github.com/alejandro-albiol/toDoPro.git
 
 Navigate to the project directory:
 
